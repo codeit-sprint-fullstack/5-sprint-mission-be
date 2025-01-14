@@ -5,8 +5,13 @@ const addProduct = async ({ title, price, description, tags, imgUrl }) => {
   return await product.save();
 };
 
+const fetchProductList = async (query) => {
+  return await Product.find(query);
+};
+
 const productService = {
   addProduct,
+  fetchProductList,
 };
 
 export default productService;

@@ -28,8 +28,25 @@ const addProduct = async (req, res) => {
   res.status(201).send(product);
 };
 
+const fetchProductList = async (req, res) => {
+  const { keyword } = req.query;
+
+  const searchRegex = new RegExp(keyword, "i");
+  const query = {
+    $or: [
+      { title: searchRegex }, // 제목 검색
+      { description: searchRegex }, // 설명 검색
+      { tags: searchRegex }, // 태그 검색 (배열일 경우 지원)
+    ],
+  };
+
+  const productList = await productService.fetchProductList(query);
+  return res.status(200).send(productList);
+};
+
 const productController = {
   addProduct,
+  fetchProductList,
 };
 
 export default productController;

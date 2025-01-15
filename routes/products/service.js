@@ -10,7 +10,12 @@ const getProductList = async (req, res) => {
 
     //정렬
     const sort = req.query.sort || "recent"; //(기본값: 최신순)
-    const sortOption = { createdAt: sort === "recent" ? -1 : 1 }; //정렬 기준 필드인 createdAt의 정렬 방식 지정("desc": -1)
+    let sortOption;
+    if (sort === "favorite") {
+      sortOption = { favoritesCount: -1 }; //좋아요순
+    } else {
+      sortOption = { createdAt: sort === "recent" ? -1 : 1 }; //최신순 (-1이 "desc"랑 같은 역할)
+    }
 
     //키워드 검색
     const keyword = req.query.keyword || ""; //(기본값: 빈 문자열)

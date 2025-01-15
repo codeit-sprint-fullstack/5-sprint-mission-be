@@ -23,7 +23,7 @@ const getProductList = async (req, res) => {
     //products collection에서 키워드 검색 - 정렬 - skip값 만큼 항목을 건너뛰어 limit개수 만큼 데이터 불러오기
     const products = await Product.find({
       $or: [
-        { productName: { $regex: keyword } },
+        { name: { $regex: keyword } },
         { description: { $regex: keyword } },
         { tags: { $elemMatch: { $regex: keyword } } }, //$eleMatch: 배열의 각 요소에 조건 적용
       ], //name, description, tags에 포함된 단어로 키워드 검색($regex로 부분 문자열 검색 가능하도록)
@@ -35,7 +35,7 @@ const getProductList = async (req, res) => {
     //총 상품 수, 페이지 수 계산
     const totalProducts = await Product.countDocuments({
       $or: [
-        { productName: { $regex: keyword } },
+        { name: { $regex: keyword } },
         { description: { $regex: keyword } },
         { tags: { $elemMatch: { $regex: keyword } } },
       ],
@@ -47,7 +47,7 @@ const getProductList = async (req, res) => {
       status: 200,
       ProductList: products.map((product) => ({
         id: product._id,
-        productName: product.productName,
+        name: product.name,
         description: product.description,
         price: product.price,
         images: product.images,
@@ -93,11 +93,11 @@ const getProduct = async (req, res) => {
 //상품 등록
 const createProduct = async (req, res) => {
   try {
-    const { productName, description, price, images, tags } = req.body;
+    const { name, description, price, images, tags } = req.body;
 
     //상품 등록
     const newProduct = await Product.create({
-      productName,
+      name,
       description,
       price,
       images,

@@ -1,6 +1,6 @@
 const productData = [
   {
-    productName: "로봇청소기",
+    name: "로봇청소기",
     description: "로보락 로봇청소기 입니다~",
     price: 150000,
     images: [
@@ -9,7 +9,7 @@ const productData = [
     tags: ["청소기", "가전"],
   },
   {
-    productName: "청바지",
+    name: "청바지",
     description: "리바이스 여성 청바지 입니다~",
     price: 26500,
     images: [

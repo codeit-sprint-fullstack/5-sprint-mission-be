@@ -7,8 +7,6 @@ const productData = [
       "https://prs.ohou.se/apne2/any/uploads/productions/v1-275175797420032.jpg?gif=1&w=720&h=720&c=c",
     ],
     tags: ["청소기", "가전"],
-    createdAt: "2025-01-15 00:32:22",
-    updatedAt: "2025-01-15 00:32:22",
   },
   {
     productName: "청바지",
@@ -18,8 +16,6 @@ const productData = [
       "https://www.costco.co.kr/medias/sys_master/images/hf7/hc1/242265825738782.jpg",
     ],
     tags: ["바지", "청바지"],
-    createdAt: "2025-01-15 00:35:16",
-    updatedAt: "2025-01-15 00:35:16",
   },
 ];
 

@@ -28,13 +28,9 @@ const ProductSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    createdAt: {
-      type: String,
-      default: Date.now,
-    },
-    updatedAt: {
-      type: String,
-      default: Date.now,
+    favoritesCount: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }

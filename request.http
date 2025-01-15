@@ -1,0 +1,13 @@
+GET http://localhost:8007/products/6787032636fd909e17c94797
+
+###
+PATCH http://localhost:8007/products/6787032636fd909e17c94797
+Content-Type: application/json
+
+{
+  "name": "가죽 가방",
+  "price": "50000"
+}
+
+### 
+DELETE http://localhost:8007/products/6787032636fd909e17c94796

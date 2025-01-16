@@ -3,7 +3,7 @@ services:
     name: express-app
     env: node
     buildCommand: "npm install"
-    startCommand: "node ./src/app.js"
+    startCommand: "npm start"
     repo: https://github.com/m-4verick/5-sprint-mission-be
     envVars:
       - key: MONGODB_URI

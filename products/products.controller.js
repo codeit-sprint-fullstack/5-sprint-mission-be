@@ -4,7 +4,7 @@ import {
   updateProduct as updateProductService,
   deleteProduct as deleteProductService,
   getProducts as getProductsService,
-} from "./product.service.js";
+} from "./products.service.js";
 
 export const getProductById = async (req, res) => {
   try {

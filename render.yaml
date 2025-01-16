@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: express-app
+    env: node
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    repo: https://github.com/m-4verick/5-sprint-mission-be
+    envVars:
+      - key: MONGODB_URI
+        value: "mongodb+srv://theodoreshin99:Wlsghsm8*@rx-9.dvl4h.mongodb.net/?retryWrites=true&w=majority&appName=RX-9"
+    plan: free

@@ -1,0 +1,30 @@
+POST http://localhost:3001/product
+Content-Type: application/json
+
+{
+  "name": "전기자전거", 
+  "description": "훔쳐왔습니다", 
+  "price": 100000, 
+  "tags": "자전거"
+}
+
+###
+
+GET http://localhost:3001/product/6788b5cfb229d840d22faa93
+
+###
+
+PATCH http://localhost:3001/product/6788d6b47b556895322816ed
+Content-Type: application/json
+
+{
+  "price": 590000
+}
+
+###
+
+DELETE http://localhost:3001/product/6788d6e36d7e6ec9f1cf1f69
+
+###
+
+GET http://localhost:3001/product

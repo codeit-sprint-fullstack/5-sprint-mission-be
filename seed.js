@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { DATABASE_URL } from "./env.js";
+import * as dotenv from "dotenv";
 import Product from "./models/Product.js";
 // import * as dotenv from "dotenv";
 // dotenv.config();
@@ -39,7 +39,7 @@ const data = [
   },
 ];
 
-mongoose.connect(DATABASE_URL);
+mongoose.connect(process.env.DATABASE_URL);
 
 await Product.deleteMany({});
 await Product.insertMany(data);

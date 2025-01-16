@@ -1,0 +1,23 @@
+# Node.js 패키지 디렉토리
+node_modules/
+
+# 로그 파일
+*.log
+
+# 환경 설정 파일
+.env
+
+# npm 패키지 캐시
+npm-debug.log*
+
+# OS 관련 파일 (예: macOS, Windows에서 생성되는 파일들)
+.DS_Store
+Thumbs.db
+
+# 빌드 결과물 (배포용 폴더)
+dist/
+build/
+
+# IDE 설정 파일 (예: VS Code, JetBrains 등)
+.vscode/
+.idea/

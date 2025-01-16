@@ -1,0 +1,29 @@
+POST http://localhost:8000/registration
+Content-Type: application/json
+
+{
+  "name": "마우스",
+  "description": "마우스입니다.",
+  "price": 50000,
+  "tags": ["컴퓨터", "전자기기"]
+}
+
+###
+GET http://localhost:8000/items/67889fdfd10fa0b8fdd20c42
+
+###
+PATCH http://localhost:8000/items/67889fdfd10fa0b8fdd20c43
+Content-Type: application/json
+
+{
+  "name": "화장지",
+  "description": "부드러운 화장지입니다.",
+  "price": 3000,
+  "tags": ["생활용품", "화장지"]
+}
+
+###
+DELETE http://localhost:8000/items/6788ba1e11fac3fdfeba6b2c
+
+###
+GET http://localhost:8000/items/?limit=0&keyword=거울

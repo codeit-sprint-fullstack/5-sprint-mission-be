@@ -16,14 +16,11 @@ PATCH http://localhost:8000/items/67889fdfd10fa0b8fdd20c43
 Content-Type: application/json
 
 {
-  "name": "화장지",
-  "description": "부드러운 화장지입니다.",
-  "price": 3000,
-  "tags": ["생활용품", "화장지"]
+  "description": "뽀송한 화장지입니다."
 }
 
 ###
-DELETE http://localhost:8000/items/6788ba1e11fac3fdfeba6b2c
+DELETE http://localhost:8000/items/6789035c3d6ad6c5c5c32bd9
 
 ###
-GET http://localhost:8000/items/?limit=0&keyword=거울
+GET http://localhost:8000/items/?limit=5&keyword=거울

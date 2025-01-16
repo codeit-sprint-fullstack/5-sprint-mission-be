@@ -26,14 +26,12 @@ const patchProduct = async (req, res) => {
 
     const updatedProduct = req.body;
 
-    // todo: 필드 하나만 입력해도 수정이 가능하게 할지, 아니면 다 써야 가능하게 할지(get 요청으로 기존 내역 가져오게 한다음...)
     if (
-      !updatedProduct.name ||
-      !updatedProduct.description ||
-      !updatedProduct.price ||
+      !updatedProduct.name &&
+      !updatedProduct.description & !updatedProduct.price &&
       !updatedProduct.tags
     )
-      return res.status(400).send("필수 입력 값이 누락되었습니다.");
+      return res.status(400).send("하나 이상의 필드 값을 작성해주세요.");
 
     const product = await Product.findById(id);
     if (!product) return res.status(404).send("상품이 존재하지 않습니다.");
@@ -44,7 +42,7 @@ const patchProduct = async (req, res) => {
 
     product.updatedAt = new Date();
 
-    await product.save();
+    await product.save(); // todo: 타입 검증을 하지 않아서 에러 뜰 거 같음
 
     res
       .status(201)
@@ -130,7 +128,6 @@ const getProductsList = async (req, res) => {
 };
 
 const service = {
-  postNewProduct,
   getProductById,
   patchProduct,
   deleteProduct,

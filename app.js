@@ -14,7 +14,7 @@ const PORT = 8007;
 const corsOptions = {
   origin: ["http://127.0.0.1:8007", "http://127.0.0.1:3000"],
 };
-
+const cors = require("cors");
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/", router);

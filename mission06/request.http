@@ -1,0 +1,33 @@
+GET http://localhost/products
+
+###
+
+GET http://localhost/products/5
+
+###
+
+POST http://localhost/products
+Content-Type: application/json
+
+{
+    "tags":["이미지 없음"],
+    "price": 5000,
+    "description": "이미지가 없을 때",
+    "name": "이미지가 없는데"
+}
+
+###
+
+PATCH  http://localhost/products/1
+Content-Type: application/json
+
+{
+    "images":["https://avatars.githubusercontent.com/u/139575548?v=4"],
+    "tags":["프로필 이미지"],
+    "price": 10000,
+    "description": "가격을 수정했습니다.",
+    "name": "프로필"
+}
+
+###
+DELETE http://localhost/products/6786c263e20da353a1ea122e

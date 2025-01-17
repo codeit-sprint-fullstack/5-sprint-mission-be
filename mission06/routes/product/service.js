@@ -16,22 +16,21 @@ const getProduct = async (req, res) => {
 
 const getProductList = async (req, res) => {
   try {
-    const { page=1, pageSize = 10, orderBy, keyword } = req.query;
+    const { page = 1, pageSize = 10, orderBy, keyword } = req.query;
     const sortOption = {
       createdAt: orderBy === 'old' ? 'asc' : 'desc',
     };
     const totalCount = (
-        await Product.find(
-            keyword ? { name: { $regex: keyword } }: {}
-          )
+      await Product.find(keyword ? { name: { $regex: keyword } } : {})
     ).length;
     const products = await Product.find(
-      keyword ? { name: { $regex: keyword } }: {} // 나중에 atlas Search 이용해서 description도 해보자.
+      keyword ? { name: { $regex: keyword } } : {} // 나중에 atlas Search 이용해서 description도 해보자.
     )
       .sort(sortOption)
       .skip((Number(page) - 1) * Number(pageSize))
       .limit(Number(pageSize));
-    if (!products[0]) res.status(400).send({ message: '상품이 존재하지 않습니다.' });
+    if (!products[0])
+      res.status(400).send({ message: '상품이 존재하지 않습니다.' });
     else res.status(200).send({ totalCount, list: products });
   } catch (err) {
     console.log(err);
@@ -49,8 +48,11 @@ const postProduct = async (req, res) => {
     }
     const id = counter.count;
     const { images, tags, price, description, name } = req.body;
-    if (!images || !tags || !price || !description || !name)
-      res.status(404).send({ message: '필수 body 값을 만족하지 못했습니다.' });
+    if (!price || !description || !name) {
+      return res
+        .status(404)
+        .send({ message: '필수 body 값을 만족하지 못했습니다.' });
+    }
     const newProduct = await Product.create({
       id: id,
       images: images,
@@ -59,8 +61,11 @@ const postProduct = async (req, res) => {
       description: description,
       name: name,
     });
-    if (!newProduct)
-      res.status(404).send({ message: 'body 형식이 잘못된 것 같습니다.' });
+    if (!newProduct) {
+      return res
+        .status(404)
+        .send({ message: 'body 형식이 잘못된 것 같습니다.' });
+    }
     await Counter.updateOne({ countName: 'productId' }, { $inc: { count: 1 } });
     res.status(200).send(newProduct);
   } catch (err) {
@@ -73,17 +78,21 @@ const patchProduct = async (req, res) => {
   try {
     const id = req.params.id;
     const { images, tags, price, description, name } = req.body;
-    if (!images || !tags || !price || !description || !name)
-      res.status(404).send({ message: '필수 body 값을 만족하지 못했습니다.' });
+    if (!images || !tags || !price || !description || !name) {
+      return res
+        .status(404)
+        .send({ message: '필수 body 값을 만족하지 못했습니다.' });
+    }
     const updatedProduct = await Product.findOneAndUpdate(
       { id: id },
       { images, tags, price, description, name },
       { new: true }
     );
-    if (!updatedProduct)
-      res
+    if (!updatedProduct) {
+      return res
         .status(403)
         .send({ message: 'id에 해당하는 상품을 찾지 못했습니다.' });
+    }
     res.status(200).send(updatedProduct);
   } catch (err) {
     console.log(err);

@@ -23,7 +23,7 @@ app.use(express.json());
 app.use("/", router);
 
 mongoose
-  .connect(process.env.DATABASE_URL)
+  .connect(DATABASE_URL)
   .then(() => console.log("몽고디비 연결 성공^^"))
   .catch((err) => console.log(err));
 

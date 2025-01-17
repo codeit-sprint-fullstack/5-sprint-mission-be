@@ -15,11 +15,17 @@ const corsOptions = {
   origin: [
     "http://127.0.0.1:8007",
     "http://127.0.0.1:3000",
-    "http://172.30.1.53:3000",
+    "http://127.0.0.1:3000",
   ],
 };
 
 app.use(cors(corsOptions));
+
+app.get("/", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "http://127.0.0.1:3000");
+  res.send(data);
+});
+
 app.use(express.json());
 app.use("/", router);
 

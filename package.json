@@ -4,8 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "node app.js",
-    "build": "npm install"
+    "start": "node ./src/app.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

@@ -12,7 +12,11 @@ const app = express();
 const PORT = 8007;
 
 const corsOptions = {
-  origin: ["http://127.0.0.1:8007", "http://127.0.0.1:3000"],
+  origin: [
+    "http://127.0.0.1:8007",
+    "http://127.0.0.1:3000",
+    "http://172.30.1.53:3000",
+  ],
 };
 
 app.use(cors(corsOptions));

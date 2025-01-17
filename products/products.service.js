@@ -39,15 +39,26 @@ export const deleteProduct = async (id) => {
   }
 };
 
-export const getProducts = async (page, limit) => {
+export const getProducts = async (page, limit, search, orderBy) => {
   try {
     const skip = (page - 1) * limit;
-    return await Product.find()
+    const query = {};
+
+    // Search functionality: if 'search' parameter is provided, use it for filtering
+    if (search) {
+      query.name = { $regex: search, $options: "i" }; // Case-insensitive search
+    }
+
+    // Sorting functionality: order by 'createdAt' or 'price', etc.
+    const sort = orderBy === "recent" ? { createdAt: -1 } : { createdAt: 1 };
+
+    return await Product.find(query)
       .skip(skip)
       .limit(parseInt(limit))
-      .select("id name price createdAt");
+      .sort(sort) // Apply sorting
+      .select("id name price createdAt"); // Select specific fields
   } catch (error) {
-    throw new Error("상품 목록 조회 실패 " + error.message);
+    throw new Error("상품 목록 조회 실패: " + error.message);
   }
 };
 

@@ -68,11 +68,14 @@ export const deleteProduct = async (req, res) => {
 
 export const getProductsList = async (req, res) => {
   try {
-    const { page = 1, limit = 5 } = req.query;
-    const products = await getProductsService(page, limit);
+    const { page = 1, limit = 5, search = "", orderBy = "recent" } = req.query;
+
+    const products = await getProductsService(page, limit, search, orderBy);
+
     if (!products || products.length === 0) {
       return res.status(404).json({ message: "상품을 찾을 수 없음" });
     }
+
     res.status(200).json({ products });
   } catch (error) {
     res.status(500).send("서버 에러");

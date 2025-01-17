@@ -1,26 +1,20 @@
 {
-  "name": "5-sprint-mission-be",
-  "version": "1.0.0",
-  "description": "> _이 저장소는 판다마켓 프로젝트의 백엔드 코드를 관리하는 곳입니다. 프로젝트를 클론하여 개발 환경을 설정하고, 각 브랜치에서 해당 스프린트 미션을 수행해 주세요!_ 🛠️",
-  "homepage": "https://github.com/m-4verick/5-sprint-mission-be#readme",
-  "bugs": {
-    "url": "https://github.com/m-4verick/5-sprint-mission-be/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/m-4verick/5-sprint-mission-be.git"
-  },
-  "license": "ISC",
-  "author": "",
+  "name": "sprint-be",
+  "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./bin/www"
   },
   "dependencies": {
+    "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
+    "debug": "~2.6.9",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "mongoose": "^8.9.5"
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "mongoose": "^8.9.5",
+    "morgan": "~1.9.1",
+    "pug": "2.0.0-beta11"
   }
 }

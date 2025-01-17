@@ -12,10 +12,7 @@ const app = express();
 const PORT = 8007;
 
 const corsOptions = {
-  origin: [
-    "http://127.0.0.1:8007",
-    "https://five-sprint-mission-be-zs3c.onrender.com",
-  ],
+  origin: ["http://127.0.0.1:8007", "http://127.0.0.1:3000"],
 };
 
 app.use(cors(corsOptions));

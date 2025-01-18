@@ -6,7 +6,7 @@ const router = express.Router();
 // 상품 등록 API
 router.post('/', async (req, res) => {
     try {
-        const { name, description, price, tags = [] } = req.body;
+        const { name, description, price, tags } = req.body;
         if (!name || !description || !price) {
             return res.status(400).json({ error: 'name, description, price는 필수입니다.' });
         }
@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
         await product.save();
         res.status(201).json(product);
     } catch (error) {
-        res.status(500).json({ error: '상품 등록 중 오류 발생' });
+        res.status(500).json({ error: "500에러" });
     }
 });
 

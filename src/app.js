@@ -14,7 +14,7 @@ connectDB()
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/products', productRoutes);
+app.use('/', productRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

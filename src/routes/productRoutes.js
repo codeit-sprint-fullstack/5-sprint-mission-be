@@ -66,9 +66,10 @@ router.delete('/:id', async (req, res) => {
 // 상품 목록 조회 API
 router.get('/', async (req, res) => {
     try {
-        const { offset = 0, sort = 'recent', name, description } = req.query;
+        const { offset = 0, sort = 'recent', name, description, limit = 10 } = req.query;
 
         const filter = {};
+
         if (name) filter.name = { $regex: name, $options: 'i' };
         if (description) filter.description = { $regex: description, $options: 'i' };
 
@@ -77,13 +78,16 @@ router.get('/', async (req, res) => {
         const products = await Product.find(filter)
             .sort(sortOption)
             .skip(Number(offset))
-            .limit(10)
+            .limit(limit)
             .select('_id name price createdAt');
 
-        res.status(200).json(products);
+        const totalCount = await Product.countDocuments(filter);
+
+        res.status(200).json({ products, totalCount });
     } catch (error) {
         res.status(500).json({ error: '상품 목록 조회 중 오류 발생' });
     }
 });
+
 
 export default router;

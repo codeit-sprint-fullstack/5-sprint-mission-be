@@ -9,12 +9,18 @@ const ProductSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    images: {
+      type: [String],
+    },
     price: {
       type: Number,
       required: true,
     },
     tags: {
       type: [String], // 문자열 배열
+    },
+    favoriteCount: {
+      type: Number,
     },
   },
   {

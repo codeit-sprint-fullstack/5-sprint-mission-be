@@ -19,11 +19,14 @@ export const createProduct = async ({ name, description, price, tags }) => {
   }
 };
 
-export const updateProduct = async (id, { name, description, price, tags }) => {
+export const updateProduct = async (
+  id,
+  { name, images, description, price, tags }
+) => {
   try {
     return await Product.findByIdAndUpdate(
       id,
-      { name, description, price, tags },
+      { name, images, description, price, tags },
       { new: true }
     );
   } catch (error) {
@@ -44,19 +47,17 @@ export const getProducts = async (page, limit, search, orderBy) => {
     const skip = (page - 1) * limit;
     const query = {};
 
-    // Search functionality: if 'search' parameter is provided, use it for filtering
     if (search) {
-      query.name = { $regex: search, $options: "i" }; // Case-insensitive search
+      query.name = { $regex: search, $options: "i" };
     }
 
-    // Sorting functionality: order by 'createdAt' or 'price', etc.
     const sort = orderBy === "recent" ? { createdAt: -1 } : { createdAt: 1 };
 
     return await Product.find(query)
       .skip(skip)
       .limit(parseInt(limit))
-      .sort(sort) // Apply sorting
-      .select("id name price createdAt"); // Select specific fields
+      .sort(sort)
+      .select("id name price favoriteCount createdAt");
   } catch (error) {
     throw new Error("상품 목록 조회 실패: " + error.message);
   }

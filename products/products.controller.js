@@ -37,9 +37,10 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, tags } = req.body;
+    const { name, images, description, price, tags } = req.body;
     const updatedProduct = await updateProductService(id, {
       name,
+      images,
       description,
       price,
       tags,
@@ -68,7 +69,7 @@ export const deleteProduct = async (req, res) => {
 
 export const getProductsList = async (req, res) => {
   try {
-    const { page = 1, limit = 5, search = "", orderBy = "recent" } = req.query;
+    const { page = 1, limit = 10, search = "", orderBy = "recent" } = req.query;
 
     const products = await getProductsService(page, limit, search, orderBy);
 

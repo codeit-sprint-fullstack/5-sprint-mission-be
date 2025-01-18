@@ -52,7 +52,7 @@ const data = [
     id: "81",
     name: "맥북",
     description: "미개봉 새상품",
-    images: [],
+    images: ["https://cdn.it.chosun.com/news/photo/202101/2021011901887_1.jpg"],
     price: 2000000,
     tags: ["전자기기"],
     favoriteCount: 5,

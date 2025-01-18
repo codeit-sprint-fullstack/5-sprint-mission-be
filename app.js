@@ -22,7 +22,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.get("/", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "http://127.0.0.1:3000");
+  res.header("Access-Control-Allow-Origin", "https://127.0.0.1:3000");
   res.send(data);
 });
 

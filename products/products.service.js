@@ -57,7 +57,7 @@ export const getProducts = async (page, limit, search, orderBy) => {
       .skip(skip)
       .limit(parseInt(limit))
       .sort(sort)
-      .select("id name price favoriteCount createdAt");
+      .select("id name price favoriteCount images createdAt");
   } catch (error) {
     throw new Error("상품 목록 조회 실패: " + error.message);
   }

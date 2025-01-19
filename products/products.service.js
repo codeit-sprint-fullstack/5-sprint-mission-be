@@ -42,9 +42,8 @@ export const deleteProduct = async (id) => {
   }
 };
 
-export const getProducts = async (page, limit, search, orderBy) => {
+export const getProducts = async (offset, limit, search, orderBy) => {
   try {
-    const skip = (page - 1) * limit;
     const query = {};
 
     if (search) {
@@ -54,7 +53,7 @@ export const getProducts = async (page, limit, search, orderBy) => {
     const sort = orderBy === "recent" ? { createdAt: -1 } : { createdAt: 1 };
 
     return await Product.find(query)
-      .skip(skip)
+      .skip(offset)
       .limit(parseInt(limit))
       .sort(sort)
       .select("id name price favoriteCount images createdAt");

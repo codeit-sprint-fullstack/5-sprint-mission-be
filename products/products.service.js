@@ -12,6 +12,9 @@ export const getProduct = async (id) => {
 
 export const createProduct = async ({ name, description, price, tags }) => {
   try {
+    console.log(name);
+    console.log(price);
+    console.log(tags);
     if (!name || !price || !tags) {
       throw new Error("필수 필드가 누락되었습니다.");
     }

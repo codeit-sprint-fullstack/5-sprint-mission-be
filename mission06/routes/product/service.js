@@ -48,26 +48,35 @@ const postProduct = async (req, res) => {
     }
     const id = counter.count;
     const { images, tags, price, description, name } = req.body;
-    if (!price || !description || !name) {
+    if (
+      !price ||
+      !description ||
+      !name ||
+      isNaN(price) ||
+      description.length < 10 ||
+      description.length > 100 ||
+      name.length > 10 ||
+      name.length === 0 ||
+      tags.find((tag) => tag.length > 5)
+    ) {
       return res
         .status(404)
-        .send({ message: '필수 body 값을 만족하지 못했습니다.' });
+        .send({ message: 'body 조건을 만족하지 못했습니다.' });
+    } else {
+      const newProduct = await Product.create({
+        id: id,
+        images: images,
+        tags: tags,
+        price: price,
+        description: description,
+        name: name,
+      });
+      await Counter.updateOne(
+        { countName: 'productId' },
+        { $inc: { count: 1 } }
+      );
+      res.status(200).send(newProduct);
     }
-    const newProduct = await Product.create({
-      id: id,
-      images: images,
-      tags: tags,
-      price: price,
-      description: description,
-      name: name,
-    });
-    if (!newProduct) {
-      return res
-        .status(404)
-        .send({ message: 'body 형식이 잘못된 것 같습니다.' });
-    }
-    await Counter.updateOne({ countName: 'productId' }, { $inc: { count: 1 } });
-    res.status(200).send(newProduct);
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: '예기치 못한 오류 발생!' });
@@ -78,22 +87,34 @@ const patchProduct = async (req, res) => {
   try {
     const id = req.params.id;
     const { images, tags, price, description, name } = req.body;
-    if (!images || !tags || !price || !description || !name) {
+    if (
+      !price ||
+      !description ||
+      !name ||
+      isNaN(price) ||
+      description.length < 10 ||
+      description.length > 100 ||
+      name.length > 10 ||
+      name.length === 0 ||
+      tags.find((tag) => tag.length > 5)
+    ) {
       return res
         .status(404)
-        .send({ message: '필수 body 값을 만족하지 못했습니다.' });
+        .send({ message: 'body 조건을 만족하지 못했습니다.' });
     }
-    const updatedProduct = await Product.findOneAndUpdate(
-      { id: id },
-      { images, tags, price, description, name },
-      { new: true }
-    );
-    if (!updatedProduct) {
-      return res
-        .status(403)
-        .send({ message: 'id에 해당하는 상품을 찾지 못했습니다.' });
+    else{
+      const updatedProduct = await Product.findOneAndUpdate(
+        { id: id },
+        { images, tags, price, description, name },
+        { new: true }
+      );
+      if (!updatedProduct) {
+        return res
+          .status(403)
+          .send({ message: 'id에 해당하는 상품을 찾지 못했습니다.' });
+      }
+      else res.status(200).send(updatedProduct);
     }
-    res.status(200).send(updatedProduct);
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: '예기치 못한 오류 발생!' });

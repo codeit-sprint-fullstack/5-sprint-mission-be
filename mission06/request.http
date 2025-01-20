@@ -10,7 +10,7 @@ POST http://localhost:8000/products
 Content-Type: application/json
 
 {
-    "tags":["이미지 없음"],
+    "tags":["이미지없음","이미지없다"],
     "price": 5000,
     "description": "이미지가 없을 때 입니다.",
     "name": "이미지가 없는데"

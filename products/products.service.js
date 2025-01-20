@@ -20,6 +20,7 @@ export const createProduct = async ({ name, description, price, tags }) => {
       throw new Error("가격은 숫자여야 합니다.");
     }
     const newProduct = new Product({ name, description, price, tags });
+    console.log(newProduct);
     return await newProduct.save();
   } catch (error) {
     console.error("서비스에서 오류 발생:", error);

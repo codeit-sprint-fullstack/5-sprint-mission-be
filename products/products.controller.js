@@ -4,6 +4,7 @@ import {
   updateProduct as updateProductService,
   deleteProduct as deleteProductService,
   getProducts as getProductsService,
+  getTotalProductsCount,
 } from "./products.service.js";
 
 export const getProductById = async (req, res) => {
@@ -72,7 +73,8 @@ export const getProductsList = async (req, res) => {
     const { page = 1, limit = 10, search = "", orderBy = "recent" } = req.query;
     const validLimit = Number.isNaN(Number(limit)) ? 10 : Number(limit); // limit 값이 숫자인지 체크하고 기본값 설정
     const offset = (page - 1) * validLimit; // 페이지와 limit에 맞는 데이터 범위 계산
-    const products = await getProductsService(
+
+    const { products, totalProducts } = await getProductsService(
       offset,
       validLimit,
       search,
@@ -83,7 +85,7 @@ export const getProductsList = async (req, res) => {
       return res.status(404).json({ message: "상품을 찾을 수 없음" });
     }
 
-    res.status(200).json({ products });
+    res.status(200).json({ products, totalProducts });
   } catch (error) {
     res.status(500).send("서버 에러");
   }

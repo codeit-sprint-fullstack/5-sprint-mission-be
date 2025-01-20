@@ -52,13 +52,30 @@ export const getProducts = async (offset, limit, search, orderBy) => {
 
     const sort = orderBy === "recent" ? { createdAt: -1 } : { createdAt: 1 };
 
-    return await Product.find(query)
+    const products = await Product.find(query)
       .skip(offset)
       .limit(parseInt(limit))
       .sort(sort)
       .select("id name price favoriteCount images createdAt");
+    const totalProducts = await getTotalProductsCount(search);
+    return { products, totalProducts };
   } catch (error) {
     throw new Error("상품 목록 조회 실패: " + error.message);
+  }
+};
+
+export const getTotalProductsCount = async (search = "") => {
+  try {
+    const query = {};
+
+    if (search) {
+      query.name = { $regex: search, $options: "i" }; // 검색어가 있을 경우, 이름 필드에 해당하는 상품만 필터링
+    }
+
+    const totalCount = await Product.countDocuments(query).exec(); // query가 빈 객체일 경우, 전체 상품 수 조회
+    return totalCount;
+  } catch (error) {
+    throw new Error("전체 상품 개수 조회 실패: " + error.message);
   }
 };
 

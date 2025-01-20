@@ -23,13 +23,14 @@ export const getProductById = async (req, res) => {
 export const createProduct = async (req, res) => {
   try {
     const { name, description, price, tags } = req.body;
+    console.log("Received data:", { name, description, price, tags });
     const newProduct = await createProductService({
       name,
       description,
       price,
       tags,
     });
-    res.status(201).send("등록 성공~");
+    res.status(201).send({ message: "등록 성공~", product: newProduct });
   } catch (error) {
     res.status(500).send("생성 실패 ㅠㅠ");
   }

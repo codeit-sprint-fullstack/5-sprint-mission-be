@@ -32,6 +32,7 @@ export const createProduct = async (req, res) => {
     });
     res.status(201).send({ message: "등록 성공~", product: newProduct });
   } catch (error) {
+    console.error("Error during product creation:", error);
     res.status(500).send("생성 실패 ㅠㅠ");
   }
 };

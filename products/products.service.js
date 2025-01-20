@@ -12,9 +12,17 @@ export const getProduct = async (id) => {
 
 export const createProduct = async ({ name, description, price, tags }) => {
   try {
+    if (!name || !price || !tags) {
+      throw new Error("필수 필드가 누락되었습니다.");
+    }
+
+    if (typeof price !== "number") {
+      throw new Error("가격은 숫자여야 합니다.");
+    }
     const newProduct = new Product({ name, description, price, tags });
     return await newProduct.save();
   } catch (error) {
+    console.error("서비스에서 오류 발생:", error);
     throw new Error("상품 등록 실패 " + error.message);
   }
 };

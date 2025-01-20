@@ -23,12 +23,19 @@ const ProductSchema = new mongoose.Schema(
         },
         price: {
             type: Number,
+            required: true,
         },
         description: {
             type: String,
+            minLength: 10,
+            maxLength: 100,
+            required: true,
         },
         name: {
             type: String,
+            minLength: 1,
+            maxLength: 10,
+            required: true,
         },
     },
     {

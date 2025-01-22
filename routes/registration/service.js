@@ -13,6 +13,7 @@ const postNewProduct = async (req, res) => {
       description,
       price,
       tags,
+      favorite: 0,
     });
     res
       .status(201)

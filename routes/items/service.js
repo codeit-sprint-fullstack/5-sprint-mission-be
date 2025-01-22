@@ -81,9 +81,13 @@ const getItemsList = (items, sort, offset, limit, keyword) => {
     limit: limit !== undefined ? parseInt(limit) : 5,
     keyword,
   };
-  //sort - 최신순 정렬
-  if (filter.sort === "recent")
+
+  //sort
+  if (filter.sort === "favorite") {
+    paginatedItems.sort((a, b) => b.favorite - a.favorite);
+  } else {
     paginatedItems.sort((a, b) => b.createdAt - a.createdAt);
+  }
 
   // keyword 처리
   if (keyword !== undefined) {
@@ -92,42 +96,48 @@ const getItemsList = (items, sort, offset, limit, keyword) => {
         item.name.includes(keyword) || item.description.includes(keyword)
     );
   }
+
+  const totalCount = paginatedItems.length;
+
   // offset, limit
   paginatedItems = paginatedItems.slice(
     filter.offset,
     filter.offset + filter.limit
   );
-  // id, name, price, createdAt만 리턴 todo: 페이지네이션 위해 전체 products 값도 리턴해야 함
-  const result = paginatedItems.map((item) => {
+  // id, name, price, favorite, createdAt만 리턴
+  const products = paginatedItems.map((item) => {
     return {
       id: item.id,
       name: item.name,
       price: item.price,
+      favorite: item.favorite,
       createdAt: item.createdAt,
     };
   });
+  const result = { products, totalCount };
   return result;
 };
 
 const getProductsList = async (req, res) => {
   try {
     const { sort, offset, limit, keyword } = req.query;
-    const products = await Product.find().lean(); // Document객체 -> 일반 js 객체로 변환
-
-    if (!products)
+    const productsData = await Product.find().lean(); // Document객체 -> 일반 js 객체로 변환
+    if (!productsData)
       return res.status(404).send({ message: "상품이 존재하지 않습니다." });
 
     // todo: 정해진 sort 값 아니면 에러 보내기
-
-    const result = getItemsList(products, sort, offset, limit, keyword);
-    const resultCount = result.length;
-    res
-      .status(200)
-      .send({
-        message: "상품 목록 리스트입니다.",
-        data: result,
-        totalCount: resultCount,
-      });
+    const { products, totalCount } = getItemsList(
+      productsData,
+      sort,
+      offset,
+      limit,
+      keyword
+    );
+    res.status(200).send({
+      message: "상품 목록 리스트입니다.",
+      data: products,
+      totalCount,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).send("서버 에러입니다.");

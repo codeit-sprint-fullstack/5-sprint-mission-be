@@ -4,17 +4,20 @@ const ProductSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      require: true,
+      required: true,
     },
     description: {
       type: String,
     },
     price: {
       type: Number,
-      require: true,
+      required: true,
     },
     tags: {
       type: [String],
+    },
+    favorite: {
+      type: Number,
     },
   },
   {

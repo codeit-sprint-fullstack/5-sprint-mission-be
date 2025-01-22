@@ -120,7 +120,14 @@ const getProductsList = async (req, res) => {
     // todo: 정해진 sort 값 아니면 에러 보내기
 
     const result = getItemsList(products, sort, offset, limit, keyword);
-    res.status(200).send({ message: "상품 목록 리스트입니다.", data: result });
+    const resultCount = result.length;
+    res
+      .status(200)
+      .send({
+        message: "상품 목록 리스트입니다.",
+        data: result,
+        totalCount: resultCount,
+      });
   } catch (err) {
     console.log(err);
     res.status(500).send("서버 에러입니다.");

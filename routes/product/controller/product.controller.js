@@ -18,18 +18,28 @@ const addProduct = async (req, res) => {
       .status(400)
       .send({ message: "Description is required and must be a string." });
 
-  const product = await productService.addProduct({
-    title,
-    price,
-    description,
-    tags,
-    imgUrl,
-  });
-  res.status(201).send(product);
+  try {
+    const product = await productService.addProduct({
+      title,
+      price,
+      description,
+      tags,
+      imgUrl,
+    });
+    res.status(201).send(product);
+  } catch (err) {
+    console.log(`Error API in POST '/products' | message::${err.message}`);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
 };
 
 const fetchProductList = async (req, res) => {
-  const { keyword } = req.query;
+  const { page, pageSize, orderBy, keyword } = req.query;
+  console.log(
+    `fetch product list :: page(${page}), pageSize(${pageSize}), orderBy(${orderBy}), keyword(${keyword})`
+  );
+
+  const skip = (page - 1) * pageSize;
 
   const searchRegex = new RegExp(keyword, "i");
   const query = {
@@ -40,8 +50,19 @@ const fetchProductList = async (req, res) => {
     ],
   };
 
-  const productList = await productService.fetchProductList(query);
-  return res.status(200).send(productList);
+  try {
+    const productList = await productService.fetchProductList(
+      query,
+      skip,
+      pageSize,
+      orderBy
+    );
+    const totalCount = await productService.fetchProductCount();
+    res.status(200).send({ list: productList, totalCount });
+  } catch (err) {
+    console.log(`Error API in GET '/products' | message::${err.message}`);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
 };
 
 const productController = {

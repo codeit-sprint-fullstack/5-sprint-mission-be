@@ -7,7 +7,7 @@ const ProductSchema = new mongoose.Schema(
     description: { type: String, required: true },
     tags: { type: [String], default: [], required: false },
     imgUrl: { type: String, required: false },
-    favoriteCnt: { type: Number, required: false },
+    favoriteCnt: { type: Number, default: 0, required: false },
   },
   {
     timestamps: true,

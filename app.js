@@ -10,7 +10,14 @@ dotenv.config();
 const app = express();
 
 // 미들웨어 설정
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+    credentials: true,
+    allowedHeaders: "*",
+  })
+);
 app.use(express.json());
 
 // mongoDB 연결

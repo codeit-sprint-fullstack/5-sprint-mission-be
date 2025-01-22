@@ -1,0 +1,124 @@
+model User {
+    id                  String                @id @default(uuid())
+    resource            Resource[]
+    resourceOrder       ResourceOrder[]
+    resourceReviews     ResourceReviews[]
+    resourceDownloadLog ResourceDownloadLog[]
+}
+
+//TODO: 프론트에서 데이터 가공해서 사용할수있을거같은 컬럼들
+//FIXME: 잘모르겠는 부분
+//XXX: 테이블 관계
+
+//임시저장 추가하기
+
+//자료 마켓 메인 데이터
+model Resource {
+    id               String    @id @default(uuid()) ///uuid: 데이터 생성할 떄마다 자동으로 생성됨
+    userId           String
+    title            String
+    price            Int       @default(0) ///TODO: 기본 0원, 무료로 프론트에서 알아서 해주세여~ ///FIXME: 굳이 여기서 디폴트 정할 필요가 없는거같기도??
+    berryPrice       Int       @default(0)
+    requiredCategory Category
+    optionalCategory Category? ///카테고리1은 필수, 2는 선택 => TODO: 중복선택에 대해서는 api나 프론트단에서 해달라고 요청하기
+    thumbnailImg     String
+    thumbnailText    String?
+    desc             String?
+    recommend        String[]
+    keyword          String[]
+    isDeleted        Boolean   @default(false) ///XXX: 유저가 자료를 삭제해도 다른 유저가 해당 자료를 구매한 기록은 남아있도록 소프트딜리트
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user                User                  @relation(fields: [userId], references: [id]) ///XXX: 유저-자료 1:N관계.
+    resourceAttachments ResourceAttachments[] ///XXX: 자료-첨부파일 1:N관계
+    resourceOrder       ResourceOrder[] ///XXX: 자료-구매정보 1:N관계 : 하나의 자료에 대해 여러 유저가 구매 가능
+    resourceReviews     ResourceReviews[] ///XXX: 자료-리뷰 1:N관계
+
+    @@index([requiredCategory]) ///XXX: 카테고리 조회 빠르게 하기 위함. 필요없나..??
+}
+
+//한 자료당 첨부 파일
+model ResourceAttachments {
+    id          String  @id @default(uuid())
+    resourceId  String
+    attachments String
+    isDeleted   Boolean @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    resource            Resource              @relation(fields: [resourceId], references: [id]) ///자료-첨부파일 1:N관계
+    resourceDownloadLog ResourceDownloadLog[] ///XXX: 첨부파일-다운 로그 1:N - 한 파일을 유저가 여러번 다운받을수있음
+}
+
+/// 유저가 파일 다운로드한 흔적
+model ResourceDownloadLog {
+    id                    String @id @default(uuid())
+    resourceAttachmentsId String
+    userId                String
+    downloadCount         Int
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    resourceAttachments ResourceAttachments @relation(fields: [resourceAttachmentsId], references: [id]) ///자료-첨부파일 1:N관계
+    user                User                @relation(fields: [userId], references: [id]) ///XXX:유저-다운로그 1:N - 유저가 이 첨부파일을 다운로드한 유무+몇번 다운로드했는지.
+}
+
+//자료 구매 정보
+///resource테이블에서 해당자료에 연결된 첨부파일확인->첨부파일테이블에서 다운로드 여부까지 연결해서 확인.
+///FIXME: fk를 건다고 해서 딱히 성능에 차이가 있는건 아니라고 하니, 이렇게 resource만 참조 걸어놓고 타고타고 들어가도록 하는게 맞는건지??
+model ResourceOrder {
+    id         String      @id @default(uuid())
+    userId     String
+    resourceId String
+    status     OrderStatus ///구매완료 | 구매확정 | 구매취소 ///FIXME: 결제테이블이랑 연결해야됨.
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user            User             @relation(fields: [userId], references: [id])
+    resource        Resource         @relation(fields: [resourceId], references: [id])
+    resourceReviews ResourceReviews?
+}
+
+//XXX: 첨부파일 다운로드 로그에 다운이 있을 경우에만 리뷰 작성 가능하도록 프론트에서 처리하고, 리뷰 테이블에는 어떤 유저가 어떤 자료에 대해 남긴 리뷰인지 데이터만 저장.
+model ResourceReviews {
+    id              String  @id @default(uuid())
+    userId          String
+    resourceId      String
+    resourceOrderID String  @unique
+    rating          Int
+    review          String?
+    isDeleted       Boolean @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user          User          @relation(fields: [userId], references: [id])
+    resource      Resource      @relation(fields: [resourceId], references: [id])
+    resourceOrder ResourceOrder @relation(fields: [resourceOrderID], references: [id])
+}
+
+///TODO:한글 이름은 프론트에서 매칭해서 쓰세여~
+enum Category {
+    CSAT //정시
+    ADMISSION //수시
+    SCHOOL //내신
+    ESSAY //논술
+    KOR //국어
+    ENG //영어
+    MATH //수학
+    SOCIAL //사탐
+    SCIENCE //과탐
+    ART //예체능
+    ETC //기타
+}
+
+enum OrderStatus {
+    COMPLETED // 구매완료: 결제 완료한 시점
+    CONFIRMED // 구매확정: 첨부파일 열람한 시점
+    CANCELLED // 구매취소: 환불
+}

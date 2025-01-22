@@ -21,3 +21,8 @@ build/
 # IDE 설정 파일 (예: VS Code, JetBrains 등)
 .vscode/
 .idea/
+
+# http 파일
+*.http
+
+*.gz

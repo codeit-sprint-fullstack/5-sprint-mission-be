@@ -97,7 +97,7 @@ const getItemsList = (items, sort, offset, limit, keyword) => {
     filter.offset,
     filter.offset + filter.limit
   );
-  // id, name, price, createdAt만 리턴
+  // id, name, price, createdAt만 리턴 todo: 페이지네이션 위해 전체 products 값도 리턴해야 함
   const result = paginatedItems.map((item) => {
     return {
       id: item.id,

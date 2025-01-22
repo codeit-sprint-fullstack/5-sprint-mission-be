@@ -10,7 +10,7 @@ const app = express();
 
 //로컬호스트 주소, 프론트 배포할 주소 추가하기
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://pandamarket-hoeun.netlify.app/"],
+  origin: ["http://localhost:3000", "https://pandamarket-hoeun.netlify.app"],
 };
 
 app.use(cors(corsOptions));

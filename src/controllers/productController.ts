@@ -9,8 +9,10 @@ import {NextFunction, Request, Response} from "express";
 
 export const createProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { title, description, price, tags } = req.body;
-        const product = await createProductService({ title, description, price, tags })
+        const { title, description, tags } = req.body;
+        const { price } = req.body;
+        const numPrice = Number(price);
+        const product = await createProductService({ title, description, numPrice, tags })
         res.status(200).json(product);
     } catch (error) {
         next(error)
@@ -43,7 +45,8 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
     try {
         const { id } = req.params;
         const { title, description, price, tags } = req.body;
-        const product = await updateProductService({ id, title, description, price, tags })
+        const numPrice = Number(price)
+        const product = await updateProductService({ id, title, description, numPrice, tags })
         res.status(200).json(product);
     } catch (error) {
         next(error)

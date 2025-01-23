@@ -35,7 +35,7 @@ export const createProductService = ({title, description, price, tags}: createPr
         description: string,
         price: number,
         tags?: string[],
-    } = {title, description,   price: parseInt(price, 10)}
+    } = {title, description, price: Number(price)}
 
     if (tags) data.tags = tags;
 

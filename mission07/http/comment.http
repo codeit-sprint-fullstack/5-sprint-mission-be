@@ -1,0 +1,31 @@
+GET http://localhost:5004/comment/0fbc08c1-ab28-483a-a9e6-26cfe251f77e?lastId=54556d07-6941-4758-9ec3-cc2fefa2e223
+
+###
+
+POST http://localhost:5004/comment/article/0fbc08c1-ab28-483a-a9e6-26cfe251f77e
+Content-Type: application/json
+
+{
+    "content":"게시글에 댓글을 남겨봅시다."
+}
+
+###
+POST http://localhost:5004/comment/product/3a661564-c5f8-4121-ba85-bb68ded42490
+Content-Type: application/json
+
+{
+    "content":"상품에 댓글을 남겨봅시다."
+}
+
+###
+DELETE http://localhost:5004/comment/806523d3-6980-4035-95d4-d4557ba1261b
+
+
+###
+
+PATCH http://localhost:5004/comment/39c1200a-3a61-4e92-b6bf-1a05d5d9b901
+Content-Type: application/json
+
+{
+    "content":"댓글을 수정해 봅시다."
+}

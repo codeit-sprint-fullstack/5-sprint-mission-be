@@ -1,0 +1,11 @@
+model Article {
+    id        String    @id @default(uuid())
+    idx       Int       @default(autoincrement())
+    title     String
+    content   String
+    img       String[]
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+    authorId  String? /// 나중에 관계 맺어서 가져와야됨. user랑 1:N 관계
+    comments Comment[]
+}

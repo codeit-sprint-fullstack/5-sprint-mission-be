@@ -18,8 +18,8 @@ app.use(errorHandler);
 
 app.use('/product', productRoutes);
 app.use('/article', articleRoutes);
-app.use('/articleComment', articleCommentRoutes);
-app.use('/productComment', productCommentRoutes);
+app.use('/article/comment', articleCommentRoutes);
+app.use('/product/comment', productCommentRoutes);
 
 app.listen(process.env.PORT || 3000, () => {
     console.log(`서버 작동중 ${process.env.PORT || 3000}`);

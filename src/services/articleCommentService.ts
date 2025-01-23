@@ -6,7 +6,7 @@ interface createCommentService {
     content: string;
 }
 
-interface getCommentService {
+interface GetCommentService {
     articleId: string;
     cursor?: string;
     isDesc?: boolean;
@@ -32,7 +32,7 @@ export const createCommentService = async ({articleId, content}: createCommentSe
 }
 
 
-export const getCommentService = async ({articleId, cursor, isDesc, takeCount}: getCommentService) => {
+export const getCommentService = async ({articleId, cursor, isDesc, takeCount}: GetCommentService) => {
     const take = Number(takeCount) || 10;
     const where = {articleId: Number(articleId)}
     const order = isDesc ? 'desc' : 'asc';

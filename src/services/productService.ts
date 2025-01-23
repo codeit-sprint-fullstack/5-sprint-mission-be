@@ -3,7 +3,7 @@ import prisma from '../utils/prismaClient';
 interface createProductService {
     title: string;
     description: string;
-    price: string;
+    price: number;
     tags?: string[];
 }
 
@@ -41,7 +41,7 @@ export const createProductService = ({title, description, price, tags}: createPr
     return prisma.product.create({
         data: {
             ...data,
-            price: parseInt(price, 10)
+            price: Number(price)
         },
     })
 }

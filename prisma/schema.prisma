@@ -38,6 +38,5 @@ model Comment {
   articleId Int
   createdAt DateTime @default(now())
 
-  // 관계 설정
   Article Article @relation(fields: [articleId], references: [id])
 }

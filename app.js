@@ -23,7 +23,7 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("CORS 정책 위반"));
+        callback(new Error("에러"));
       }
     },
     methods: ["GET", "POST", "PATCH", "DELETE"],
@@ -38,8 +38,8 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
 
 sequelize
   .authenticate()
-  .then(() => console.log("PostgreSQL 연결 성공!"))
-  .catch((err) => console.error("PostgreSQL 연결 실패:", err));
+  .then(() => console.log("PostgreSQL 연결 성공!!!!!!!!!"))
+  .catch((err) => console.error("PostgreSQL 연결 실패ㅠㅠㅠ :", err));
 
 sequelize
   .sync({ alter: true })
@@ -228,7 +228,7 @@ app.post("/api/articles/:articleId/comments", async (req, res) => {
 
     res.status(201).send(comment);
   } catch (error) {
-    res.status(500).send({ message: "댓글 등록 실패", error });
+    res.status(500).send({ message: "등록 실패", error });
   }
 });
 
@@ -248,10 +248,10 @@ app.get("/api/articles/:articleId/comments", async (req, res) => {
 
     res.status(200).send(comments);
   } catch (error) {
-    res.status(500).send({ message: "댓글 조회 실패", error });
+    res.status(500).send({ message: "조회 실패", error });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다`);
+  console.log(`서버가 http://localhost:${PORT} 에서 실행 중`);
 });

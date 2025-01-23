@@ -41,10 +41,24 @@ const addProduct = async ({ title, price, description, tags, imgUrl }) => {
   }
 };
 
+const existProduct = async (id) => {
+  try {
+    const product = await prisma.products.findUnique({
+      where: {
+        id,
+      },
+    });
+    return !!product;
+  } catch (err) {
+    throw new Error(`- Database error while exist product :: ${err.message}`);
+  }
+};
+
 const productService = {
   fetchProductList,
   fetchProductCount,
   addProduct,
+  existProduct,
 };
 
 export default productService;

@@ -1,19 +1,15 @@
 import Product from "./models/Product.js";
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
 import { Sequelize, DataTypes } from "sequelize";
 import Article from "./models/Article.js";
 import Comment from "./models/Comments.js";
 import sequelize from "./database.js";
-dotenv.config();
 
 const allowedOrigins = [
   "http://localhost:3000",
   "https://db-1-45k6.onrender.com",
 ];
-const { DATABASE_URL } = process.env;
 const PORT = 8000;
 const app = express();
 app.use(express.json());

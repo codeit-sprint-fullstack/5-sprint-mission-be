@@ -1,0 +1,21 @@
+model Articles {
+    id             String             @id @default(uuid())
+    title          String
+    content        String
+    image          String?
+    favoritesCount Int                @default(0)
+    createdAt      DateTime           @default(now())
+    updatedAt      DateTime           @updatedAt
+    deletedAt      DateTime? ///null이 아니라 존재하면 삭제된 데이터
+    comments       ArticlesComments[] ///1:N
+}
+
+model ArticlesComments {
+    id        String    @id @default(uuid())
+    articleId String
+    content   String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    article   Articles  @relation(fields: [articleId], references: [id])
+}

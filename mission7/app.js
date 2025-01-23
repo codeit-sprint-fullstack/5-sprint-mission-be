@@ -1,16 +1,21 @@
 import * as dotenv from "dotenv";
-import prisma from "./prismaClient.js";
 import express from "express";
-import { assert } from "superstruct";
-import { CreateUser } from "./structs.js";
+import cors from "cors";
+import router from "./routes/index.js";
+
 dotenv.config();
 
 const app = express();
+
+//FIXME: 프론트 배포할 주소 수정하기
+const corsOptions = {
+  origin: ["http://localhost:3000", "https://pandamarket-next-rhe.netlify.app"],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// app.get("/users", async (req, res) => {
-
-// });
+app.use("/", router);
 
 const port = process.env.PORT || 8000;
 

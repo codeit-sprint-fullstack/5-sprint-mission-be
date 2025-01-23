@@ -12,7 +12,6 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://db-1-45k6.onrender.com",
 ];
-dotenv.config();
 const { DATABASE_URL } = process.env;
 const PORT = 8000;
 const app = express();

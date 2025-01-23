@@ -21,7 +21,7 @@ interface updateProductService {
     id: string;
     title: string;
     description: string;
-    price: string;
+    price: number;
     tags?: string[];
 }
 

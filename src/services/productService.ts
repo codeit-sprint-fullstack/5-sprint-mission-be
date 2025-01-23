@@ -41,7 +41,7 @@ export const createProductService = ({title, description, price, tags}: createPr
     return prisma.product.create({
         data: {
             ...data,
-            price: Number(price),
+            price: parseInt(price, 10)
         },
     })
 }

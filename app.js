@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { Sequelize, DataTypes } from "sequelize";
 import Article from "./models/Article.js";
 import Comment from "./models/Comments.js";
+import sequelize from "./database.js";
 dotenv.config();
 
 const allowedOrigins = [
@@ -29,11 +30,6 @@ app.use(
     credentials: true,
   })
 );
-
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: "postgres",
-  logging: false,
-});
 
 sequelize
   .authenticate()

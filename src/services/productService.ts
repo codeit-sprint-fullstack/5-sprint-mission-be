@@ -21,7 +21,7 @@ interface updateProductService {
     id: string;
     title: string;
     description: string;
-    price: number;
+    price: string;
     tags?: string[];
 }
 
@@ -30,12 +30,13 @@ interface deleteProductService {
 }
 
 export const createProductService = ({title, description, price, tags}: createProductService) => {
+    const numPrice = Number(price);
     const data: {
         title: string,
         description: string,
         price: number,
         tags?: string[],
-    } = {title, description, price}
+    } = {title, description, price: numPrice}
 
     if (tags) data.tags = tags;
 

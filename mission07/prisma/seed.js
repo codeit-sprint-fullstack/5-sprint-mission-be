@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   // 기존 데이터 삭제
-  await prisma.product.deleteMany();
+  // await prisma.product.deleteMany();
 
   // 목 데이터 삽입
   await prisma.product.createMany({

@@ -28,4 +28,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:5004/product/3a661564-c5f8-4121-ba85-bb68ded42490
+DELETE http://localhost:5004/product/6672257b-e3ca-4289-86e0-7dc4df6d1036

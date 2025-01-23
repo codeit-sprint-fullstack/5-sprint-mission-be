@@ -34,8 +34,7 @@ const getComments = async (req, res) => {
       productId,
       commentsList: comments, //댓글 목록
       //XXX: 받아온 목록의 마지막 댓글 아이디를 커서로 넘겨줌.
-      //FIXME: 다음 페이지가 없을 때 서버에러로 넘어가는데, 이거 처리해보자.
-      lastCursor: comments[comments.length - 1].id,
+      lastCursor: comments[comments.length - 1]?.id ?? null,
     };
 
     res.status(200).send(response);

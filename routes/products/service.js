@@ -214,25 +214,15 @@ const deleteProduct = async (req, res) => {
       return res.status(404).send({ message: "상품을 찾을 수 없습니다." });
     }
 
-    //업데이트 데이터 정의
-    const updateData = {
-      deletedAt: new Date(),
-    };
-
-    //연결된 태그가 있다면 연결 끊어주기
-    if (existingProduct.productsTags.length >= 1) {
-      updateData.productsTags = {
-        disconnect: existingProduct.productsTags.map((tag) => ({ id: tag.id })),
-      };
-    }
-
     const deletedProduct = await prisma.products.update({
       where: { id },
-      data: updateData,
+      data: {
+        deletedAt: new Date(),
+      },
       select: {
         id: true,
         name: true,
-        productsTags: true, //연결된 외부 테이블 데이터도 include말고 select로 가져옴
+        productsTags: true,
         deletedAt: true,
       },
     });

@@ -113,12 +113,12 @@ const patchComment = async (req, res) => {
     res.status(200).send(updatedComment); //수정된 댓글
   } catch (e) {
     //기타 서버 에러
-    console.log("err: ", e);
+    // console.log("err: ", e);
     res.status(500).send({ message: "서버 에러입니다." });
   }
 };
 
-//댓글 수정
+//댓글 삭제
 const deleteComment = async (req, res) => {
   try {
     const id = req.params.id;
@@ -154,7 +154,7 @@ const deleteComment = async (req, res) => {
     });
   } catch (e) {
     //기타 서버 에러
-    console.log("err: ", e);
+    // console.log("err: ", e);
     res.status(500).send({ message: "서버 에러입니다." });
   }
 };

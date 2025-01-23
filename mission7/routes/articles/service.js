@@ -4,8 +4,8 @@ import prisma from "../../prismaClient.js";
 const getArticleList = async (req, res) => {
   try {
     //페이지네이션
-    const page = parseInt(req.query.page) || 1; //(기본값: 1)
-    const limit = parseInt(req.query.limit) || 100; //(기본값: 100);
+    const page = Number(req.query.page) || 1; //(기본값: 1)
+    const limit = Number(req.query.limit) || 100; //(기본값: 100);
     const skip = (page - 1) * limit; //페이지네이션을 위한 skip값 계산
 
     //정렬
@@ -84,9 +84,6 @@ const getArticle = async (req, res) => {
       where: {
         id,
         deletedAt: null,
-      },
-      include: {
-        comments: true,
       },
     });
 

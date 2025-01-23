@@ -4,7 +4,6 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { Sequelize, DataTypes } from "sequelize";
-import dotenv from "dotenv";
 import Article from "./models/Article.js";
 import Comment from "./models/Comments.js";
 dotenv.config();
@@ -42,6 +41,11 @@ sequelize
   .then(() => console.log("PostgreSQL 연결 성공!"))
   .catch((err) => console.error("PostgreSQL 연결 실패:", err));
 
+sequelize
+  .sync({ alter: true })
+  .then(() => console.log("데이터베이스 테이블 동기화 완료"))
+  .catch((err) => console.error("테이블 동기화 중 오류 발생:", err));
+
 app.get("/", (req, res) => res.send("API 동작"));
 
 //상품등록 API
@@ -52,11 +56,7 @@ app.post("/api/products", async (req, res) => {
   }
 
   try {
-    const lastProduct = await Product.findOne().sort({ id: -1 });
-    const newId = lastProduct ? lastProduct.id + 1 : 1;
-
     const newProduct = await Product.create({
-      id: newId,
       name,
       description,
       price,
@@ -71,24 +71,33 @@ app.post("/api/products", async (req, res) => {
 
 //상품조회
 app.get("/api/products", async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 10, search } = req.query;
 
   try {
-    const products = await Product.find({})
-      .sort({ id: -1 })
-      .skip((page - 1) * limit)
-      .limit(Number(limit));
+    const whereClause = search
+      ? {
+          [Sequelize.Op.or]: [
+            { name: { [Sequelize.Op.iLike]: `%${search}%` } },
+            { description: { [Sequelize.Op.iLike]: `%${search}%` } },
+          ],
+        }
+      : {};
 
-    const total = await Product.countDocuments();
+    const products = await Product.findAndCountAll({
+      where: whereClause,
+      order: [["id", "DESC"]],
+      offset: (page - 1) * limit,
+      limit: parseInt(limit),
+    });
 
-    res.status(200).json({
-      products,
-      total,
-      page: Number(page),
-      totalPages: Math.ceil(total / limit),
+    res.status(200).send({
+      products: products.rows,
+      total: products.count,
+      page: parseInt(page),
+      totalPages: Math.ceil(products.count / limit),
     });
   } catch (error) {
-    res.status(500).json({ message: "상품을 불러오지 못했습니다.", error });
+    res.status(500).send({ message: "상품을 불러오지 못했습니다.", error });
   }
 });
 
@@ -101,10 +110,10 @@ app.patch("/api/products/:id", async (req, res) => {
       new: true,
     });
     if (!product)
-      return res.status(404).json({ message: "상품을 찾을 수 없습니다." });
-    res.status(200).json(product);
+      return res.status(404).send({ message: "상품을 찾을 수 없습니다." });
+    res.status(200).send(product);
   } catch (error) {
-    res.status(500).json({ message: "상품 수정 실패", error });
+    res.status(500).send({ message: "상품 수정 실패", error });
   }
 });
 
@@ -113,10 +122,10 @@ app.delete("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product)
-      return res.status(404).json({ message: "상품을 찾을 수 없습니다." });
-    res.status(200).json({ message: "상품이 삭제되었습니다." });
+      return res.status(404).send({ message: "상품을 찾을 수 없습니다." });
+    res.status(200).send({ message: "상품이 삭제되었습니다." });
   } catch (error) {
-    res.status(500).json({ message: "상품 삭제 실패", error });
+    res.status(500).send({ message: "상품 삭제 실패", error });
   }
 });
 
@@ -141,9 +150,9 @@ app.get("/api/products", async (req, res) => {
 
     const total = await Product.countDocuments(query);
 
-    res.status(200).json({ total, products });
+    res.status(200).send({ total, products });
   } catch (error) {
-    res.status(500).json({ message: "상품 목록 조회 실패", error });
+    res.status(500).send({ message: "상품 목록 조회 실패", error });
   }
 });
 
@@ -156,9 +165,9 @@ app.post("/api/articles", async (req, res) => {
 
   try {
     const article = await Article.create({ title, content });
-    res.status(201).json(article);
+    res.status(201).send(article);
   } catch (error) {
-    res.status(500).json({ message: "게시글 등록 실패", error });
+    res.status(500).send({ message: "게시글 등록 실패", error });
   }
 });
 
@@ -166,9 +175,9 @@ app.post("/api/articles", async (req, res) => {
 app.get("/api/articles", async (req, res) => {
   try {
     const articles = await Article.findAll({ order: [["createdAt", "DESC"]] });
-    res.status(200).json(articles);
+    res.status(200).send(articles);
   } catch (error) {
-    res.status(500).json({ message: "게시글 조회 실패", error });
+    res.status(500).send({ message: "게시글 조회 실패", error });
   }
 });
 
@@ -180,10 +189,10 @@ app.patch("/api/articles/:id", async (req, res) => {
   try {
     const article = await Article.update(updates, { where: { id } });
     if (!article)
-      return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
-    res.status(200).json({ message: "게시글 수정 완료" });
+      return res.status(404).send({ message: "게시글을 찾을 수 없습니다." });
+    res.status(200).send({ message: "게시글 수정 완료" });
   } catch (error) {
-    res.status(500).json({ message: "게시글 수정 실패", error });
+    res.status(500).send({ message: "게시글 수정 실패", error });
   }
 });
 
@@ -194,38 +203,52 @@ app.delete("/api/articles/:id", async (req, res) => {
   try {
     const result = await Article.destroy({ where: { id } });
     if (!result)
-      return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
-    res.status(200).json({ message: "게시글 삭제 완료" });
+      return res.status(404).send({ message: "게시글을 찾을 수 없습니다." });
+    res.status(200).send({ message: "게시글 삭제 완료" });
   } catch (error) {
-    res.status(500).json({ message: "게시글 삭제 실패", error });
+    res.status(500).send({ message: "게시글 삭제 실패", error });
   }
 });
 
 //댓글 등록
 app.post("/api/articles/:articleId/comments", async (req, res) => {
-  const { articleId } = req.params;
+  const articleId = parseInt(req.params.articleId, 10);
   const { content } = req.body;
 
   try {
-    const comment = await Comment.create({ content, articleId });
-    res.status(201).json(comment);
+    const article = await Article.findByPk(articleId);
+    if (!article) {
+      return res.status(404).send({ message: "게시글을 찾을 수 없습니다." });
+    }
+
+    const comment = await Comment.create({
+      content,
+      articleId,
+    });
+
+    res.status(201).send(comment);
   } catch (error) {
-    res.status(500).json({ message: "댓글 등록 실패", error });
+    res.status(500).send({ message: "댓글 등록 실패", error });
   }
 });
 
 //댓글 조회
 app.get("/api/articles/:articleId/comments", async (req, res) => {
-  const { articleId } = req.params;
+  const articleId = parseInt(req.params.articleId, 10);
 
   try {
     const comments = await Comment.findAll({
       where: { articleId },
       order: [["createdAt", "DESC"]],
     });
-    res.status(200).json(comments);
+
+    if (comments.length === 0) {
+      return res.status(404).send({ message: "댓글이 없습니다." });
+    }
+
+    res.status(200).send(comments);
   } catch (error) {
-    res.status(500).json({ message: "댓글 조회 실패", error });
+    res.status(500).send({ message: "댓글 조회 실패", error });
   }
 });
 

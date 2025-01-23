@@ -3,20 +3,45 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { Sequelize, DataTypes } from "sequelize";
+import dotenv from "dotenv";
+import Article from "./models/Article.js";
+import Comment from "./models/Comments.js";
+dotenv.config();
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://db-1-45k6.onrender.com",
+];
 dotenv.config();
 const { DATABASE_URL } = process.env;
 const PORT = 8000;
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS 정책 위반"));
+      }
+    },
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    credentials: true,
+  })
+);
 
-mongoose
-  .connect(DATABASE_URL)
-  .then(() => console.log("MongoDB 연결 성공!!!!!"))
-  .catch((err) => console.error("MongoDB 연결 오류 ㅠㅠ:", err));
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: "postgres",
+  logging: false,
+});
 
-// 기본 경로
+sequelize
+  .authenticate()
+  .then(() => console.log("PostgreSQL 연결 성공!"))
+  .catch((err) => console.error("PostgreSQL 연결 실패:", err));
+
 app.get("/", (req, res) => res.send("API 동작"));
 
 //상품등록 API
@@ -119,6 +144,88 @@ app.get("/api/products", async (req, res) => {
     res.status(200).json({ total, products });
   } catch (error) {
     res.status(500).json({ message: "상품 목록 조회 실패", error });
+  }
+});
+
+//게시글 등록
+app.post("/api/articles", async (req, res) => {
+  const { title, content } = req.body;
+  if (!title || !content) {
+    return res.status(400).send("title과 content는 필수입니다.");
+  }
+
+  try {
+    const article = await Article.create({ title, content });
+    res.status(201).json(article);
+  } catch (error) {
+    res.status(500).json({ message: "게시글 등록 실패", error });
+  }
+});
+
+// 게시글 조회
+app.get("/api/articles", async (req, res) => {
+  try {
+    const articles = await Article.findAll({ order: [["createdAt", "DESC"]] });
+    res.status(200).json(articles);
+  } catch (error) {
+    res.status(500).json({ message: "게시글 조회 실패", error });
+  }
+});
+
+//게시글 수정
+app.patch("/api/articles/:id", async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  try {
+    const article = await Article.update(updates, { where: { id } });
+    if (!article)
+      return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+    res.status(200).json({ message: "게시글 수정 완료" });
+  } catch (error) {
+    res.status(500).json({ message: "게시글 수정 실패", error });
+  }
+});
+
+//게시글 삭제
+app.delete("/api/articles/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await Article.destroy({ where: { id } });
+    if (!result)
+      return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+    res.status(200).json({ message: "게시글 삭제 완료" });
+  } catch (error) {
+    res.status(500).json({ message: "게시글 삭제 실패", error });
+  }
+});
+
+//댓글 등록
+app.post("/api/articles/:articleId/comments", async (req, res) => {
+  const { articleId } = req.params;
+  const { content } = req.body;
+
+  try {
+    const comment = await Comment.create({ content, articleId });
+    res.status(201).json(comment);
+  } catch (error) {
+    res.status(500).json({ message: "댓글 등록 실패", error });
+  }
+});
+
+//댓글 조회
+app.get("/api/articles/:articleId/comments", async (req, res) => {
+  const { articleId } = req.params;
+
+  try {
+    const comments = await Comment.findAll({
+      where: { articleId },
+      order: [["createdAt", "DESC"]],
+    });
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ message: "댓글 조회 실패", error });
   }
 });
 

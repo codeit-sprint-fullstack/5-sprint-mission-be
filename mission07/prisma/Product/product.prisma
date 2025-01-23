@@ -1,22 +1,12 @@
 model Product {
-  id          String      @id @default(uuid())
-  name        String
-  description String?
-  category    Category
-  price       Float
-  stock       Int
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  orderItems  OrderItem[]
-  savedUsers  User[]
-}
-
-enum Category {
-  FASHION
-  BEAUTY
-  SPORTS
-  ELECTRONICS
-  HOME_INTERIOR
-  HOUSEHOLD_SUPPLIES
-  KITCHENWARE
+  id             String           @id @default(uuid())
+  name           String
+  description    String
+  price          Int
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  CommentProduct CommentProduct[]
+  LikesProduct   LikesProduct[]
+  userId         String
+  User           User             @relation(fields: [userId], references: [id])
 }

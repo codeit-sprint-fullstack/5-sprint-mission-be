@@ -30,7 +30,8 @@ interface deleteProductService {
 }
 
 export const createProductService = ({title, description, price, tags}: createProductService) => {
-    const numPrice = Number(price)
+    const numPrice = parseInt(price, 10)
+    console.log(numPrice);
     const data: {
         title: string,
         description: string,

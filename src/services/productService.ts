@@ -3,7 +3,7 @@ import prisma from '../utils/prismaClient';
 interface createProductService {
     title: string;
     description: string;
-    numPrice: number;
+    price: number;
     tags?: string[];
 }
 
@@ -21,7 +21,7 @@ interface updateProductService {
     id: string;
     title: string;
     description: string;
-    numPrice: number;
+    price: string;
     tags?: string[];
 }
 
@@ -29,20 +29,19 @@ interface deleteProductService {
     id: string;
 }
 
-export const createProductService = ({title, description, numPrice, tags}: createProductService) => {
-    const price = numPrice;
+export const createProductService = ({title, description, price, tags}: createProductService) => {
     const data: {
         title: string,
         description: string,
-        price: number,
         tags?: string[],
-    } = {title, description, price}
+    } = {title, description}
 
     if (tags) data.tags = tags;
 
     return prisma.product.create({
         data: {
             ...data,
+            price: Number(price)
         },
     })
 }
@@ -66,8 +65,7 @@ export const getProductListService = ({page, pageSize, order}: getProductListSer
     })
 }
 
-export const updateProductService = ({id, title, description, numPrice, tags}: updateProductService) => {
-    const price = numPrice
+export const updateProductService = ({id, title, description, price, tags}: updateProductService) => {
     const data: {
         title?: string;
         description?: string;

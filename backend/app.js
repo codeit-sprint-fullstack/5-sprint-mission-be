@@ -21,7 +21,7 @@ app.use("/product", productRouter);
 // //2. 상품 상세 조회 API를 만들어 주세요.
 // app.get("/product/:id", service.getProduct);
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다`);
 });

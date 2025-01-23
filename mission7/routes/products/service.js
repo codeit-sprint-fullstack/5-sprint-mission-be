@@ -36,7 +36,7 @@ const getProductList = async (req, res) => {
       ],
     };
 
-    //products collection에서 키워드 검색 - 정렬 - skip값 만큼 항목을 건너뛰어 limit개수 만큼 데이터 불러오기
+    //products collection에서 키워드 검색 - 정렬 - skip값 만큼 항목을 건너뛰어 limit개수 만큼 데이터 불러오기(deletedAt 컬럼 제외)
     const products = await prisma.products.findMany({
       where: searchCriteria,
       orderBy: sortOption,
@@ -227,7 +227,7 @@ const deleteProduct = async (req, res) => {
       };
     }
 
-    const deleteddProduct = await prisma.products.update({
+    const deletedProduct = await prisma.products.update({
       where: { id },
       data: updateData,
       select: {
@@ -240,7 +240,7 @@ const deleteProduct = async (req, res) => {
 
     res.status(202).send({
       message: "삭제 처리가 완료되었습니다.",
-      data: deleteddProduct,
+      data: deletedProduct,
     });
   } catch (e) {
     console.log("err: ", e);

@@ -23,7 +23,7 @@ app.use(express.json());
 // mongoDB 연결
 mongoose
   .connect(process.env.DATABASE_URL)
-  .then(() => "MongoDB 연결 성공")
+  .then(() => console.log("MongoDB 연결 성공"))
   .catch((err) => console.log(err));
 
 app.use("/", router);

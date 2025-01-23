@@ -30,18 +30,19 @@ interface deleteProductService {
 }
 
 export const createProductService = ({title, description, price, tags}: createProductService) => {
-    const numPrice = Number(price);
     const data: {
         title: string,
         description: string,
-        price: number,
         tags?: string[],
-    } = {title, description, price: numPrice}
+    } = {title, description}
 
     if (tags) data.tags = tags;
 
     return prisma.product.create({
-        data: data,
+        data: {
+            ...data,
+            price: Number(price),
+        },
     })
 }
 

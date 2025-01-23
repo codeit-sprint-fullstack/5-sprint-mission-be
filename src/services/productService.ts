@@ -3,7 +3,7 @@ import prisma from '../utils/prismaClient';
 interface createProductService {
     title: string;
     description: string;
-    price: number;
+    price: string;
     tags?: string[];
 }
 

@@ -6,7 +6,8 @@ import dotenv from "dotenv";
 import errorHandler from './utils/errorHandler'
 import articleRoutes from './routes/articleRoutes';
 import productRoutes from "./routes/productRoutes";
-import commentRoutes from "./routes/commentRoutes";
+import articleCommentRoutes from "./routes/articleCommentRoutes";
+import productCommentRoutes from "./routes/productCommentRoutes";
 
 dotenv.config({ path: '../.env'});
 
@@ -17,7 +18,8 @@ app.use(errorHandler);
 
 app.use('/product', productRoutes);
 app.use('/article', articleRoutes);
-app.use('/comment', commentRoutes);
+app.use('/articleComment', articleCommentRoutes);
+app.use('/productComment', productCommentRoutes);
 
 app.listen(process.env.PORT || 3000, () => {
     console.log(`서버 작동중 ${process.env.PORT || 3000}`);

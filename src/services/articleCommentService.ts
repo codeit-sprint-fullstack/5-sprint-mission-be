@@ -1,4 +1,5 @@
 import prisma from '../utils/prismaClient';
+import {Prisma} from "@prisma/client";
 
 interface createCommentService {
     articleId: string;
@@ -7,6 +8,9 @@ interface createCommentService {
 
 interface getCommentService {
     articleId: string;
+    cursor?: string;
+    isDesc?: boolean;
+    takeCount?: string;
 }
 
 interface updateCommentService {
@@ -19,7 +23,7 @@ interface deleteCommentService {
 }
 
 export const createCommentService = async ({articleId, content}: createCommentService) => {
-    return prisma.comment.create({
+    return prisma.articleComment.create({
         data: {
             content,
             Article: {connect: {id: Number(articleId)},}
@@ -27,21 +31,32 @@ export const createCommentService = async ({articleId, content}: createCommentSe
     })
 }
 
-export const getCommentService = async ({articleId}: getCommentService) => {
-    return prisma.comment.findMany({
-        where: {id: Number(articleId)},
-    })
+
+export const getCommentService = async ({articleId, cursor, isDesc, takeCount}: getCommentService) => {
+    const take = Number(takeCount) || 10;
+    const where = {articleId: Number(articleId)}
+    const order = isDesc ? 'desc' : 'asc';
+    const query = cursor
+        ? {skip: 1, cursor: {id: Number(cursor)}}
+        : {skip: 0}
+    return prisma.articleComment.findMany({
+        where,
+        take,
+        ...query,
+        orderBy: {createdAt: order}
+    } as Prisma.ArticleCommentFindManyArgs)
 }
 
+
 export const updateCommentService = async ({id, content}: updateCommentService) => {
-    return prisma.comment.update({
+    return prisma.articleComment.update({
         where: {id: Number(id)},
         data: {content},
     })
 }
 
 export const deleteCommentService = async ({id}: deleteCommentService) => {
-    return prisma.comment.delete({
+    return prisma.articleComment.delete({
         where: {id: Number(id)},
     })
 }

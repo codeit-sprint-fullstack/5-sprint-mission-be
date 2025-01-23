@@ -1,4 +1,4 @@
-import { getComment, createComment, deleteComment, updateComment} from "../controllers/commentController";
+import { getComment, createComment, deleteComment, updateComment} from "../controllers/articleCommentController";
 import express from "express";
 
 const router = express.Router();

@@ -1,21 +1,27 @@
-import { createCommentService, deleteCommentService, updateCommentService, getCommentService } from "../services/commentService";
+import { createCommentService, deleteCommentService, updateCommentService, getCommentService } from "../services/productCommentService";
 import {NextFunction, Request, Response} from "express";
 
 export const createComment = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { articleId } = req.params;
+        const { productId } = req.params;
         const { content } = req.body;
-        const comment = await createCommentService({ articleId, content });
+        const comment = await createCommentService({ productId, content });
         res.status(200).send(comment);
     } catch (error) {
         next(error);
     }
 }
-
-export const getComment = async (req: Request, res: Response, next: NextFunction) => {
+interface GetCommentQuery {
+    productId: string;
+    isDesc?: boolean;
+    cursor?: string;
+    takeCount?: string;
+}
+export const getComment = async (req: Request<GetCommentQuery>, res: Response, next: NextFunction) => {
     try {
-        const { articleId } = req.params;
-        const comment = await getCommentService({ articleId});
+        const { productId, isDesc, takeCount } = req.params;
+        const cursor = typeof req.query.cursor === 'string' ? req.query.cursor : undefined;
+        const comment = await getCommentService({ productId, cursor, isDesc, takeCount });
         res.status(200).send(comment);
     } catch (error) {
         next(error);

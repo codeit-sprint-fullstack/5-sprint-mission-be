@@ -1,5 +1,6 @@
 import { createCommentService, deleteCommentService, updateCommentService, getCommentService } from "../services/productCommentService";
 import {NextFunction, Request, Response} from "express";
+import {GetProductCommentQuery} from "../utils/interfaces";
 
 export const createComment = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -11,13 +12,8 @@ export const createComment = async (req: Request, res: Response, next: NextFunct
         next(error);
     }
 }
-interface GetCommentQuery {
-    productId: string;
-    isDesc?: boolean;
-    cursor?: string;
-    takeCount?: string;
-}
-export const getComment = async (req: Request<GetCommentQuery>, res: Response, next: NextFunction) => {
+
+export const getComment = async (req: Request<GetProductCommentQuery>, res: Response, next: NextFunction) => {
     try {
         const { productId, isDesc, takeCount } = req.params;
         const cursor = typeof req.query.cursor === 'string' ? req.query.cursor : undefined;

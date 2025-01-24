@@ -1,35 +1,12 @@
 import prisma from '../utils/prismaClient';
+import {
+    createProductServiceInterface, deleteProductServiceInterface,
+    getProductListServiceInterface,
+    getProductServiceInterface, updateProductServiceInterface
+} from "../utils/interfaces";
 
-interface createProductService {
-    title: string;
-    description: string;
-    price: number;
-    tags?: string[];
-}
 
-interface getProductService {
-    id: string;
-}
-
-interface getProductListService {
-    page: string | undefined ;
-    pageSize: string | undefined ;
-    order: string | undefined ;
-}
-
-interface updateProductService {
-    id: string;
-    title: string;
-    description: string;
-    price: number;
-    tags?: string[];
-}
-
-interface deleteProductService {
-    id: string;
-}
-
-export const createProductService = ({title, description, price, tags}: createProductService) => {
+export const createProductService = ({title, description, price, tags}: createProductServiceInterface) => {
     const data: {
         title: string,
         description: string,
@@ -46,13 +23,13 @@ export const createProductService = ({title, description, price, tags}: createPr
     })
 }
 
-export const getProductService = ({id}: getProductService) => {
+export const getProductService = ({id}: getProductServiceInterface) => {
     return prisma.product.findUnique({
         where: {id: Number(id)}
     })
 }
 
-export const getProductListService = ({page, pageSize, order}: getProductListService) => {
+export const getProductListService = ({page, pageSize, order}: getProductListServiceInterface) => {
     const currentPage = Number(page) || 1;
     const currentPageSize = Number(pageSize) || 10;
     const sort = order === 'desc' ? 'desc' : 'asc';
@@ -65,7 +42,7 @@ export const getProductListService = ({page, pageSize, order}: getProductListSer
     })
 }
 
-export const updateProductService = ({id, title, description, price, tags}: updateProductService) => {
+export const updateProductService = ({id, title, description, price, tags}: updateProductServiceInterface) => {
     const data: {
         title?: string;
         description?: string;
@@ -84,7 +61,7 @@ export const updateProductService = ({id, title, description, price, tags}: upda
     })
 }
 
-export const deleteProductService = ({id}: deleteProductService) => {
+export const deleteProductService = ({id}: deleteProductServiceInterface) => {
     return prisma.product.delete({
         where: {id: Number(id)},
     })

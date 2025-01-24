@@ -1,28 +1,13 @@
 import prisma from '../utils/prismaClient';
 import {Prisma} from "@prisma/client";
+import {
+    createCommentServiceInterface, deleteCommentServiceInterface,
+    getCommentServiceInterface,
+    updateCommentServiceInterface
+} from "../utils/interfaces";
 
-interface createCommentService {
-    productId: string;
-    content: string;
-}
 
-interface getCommentService {
-    productId: string;
-    cursor?: string;
-    isDesc?: boolean;
-    takeCount?: string;
-}
-
-interface updateCommentService {
-    id: string;
-    content: string;
-}
-
-interface deleteCommentService {
-    id: string;
-}
-
-export const createCommentService = async ({productId, content}: createCommentService) => {
+export const createCommentService = async ({productId, content}: createCommentServiceInterface) => {
     return prisma.productComment.create({
         data: {
             content,
@@ -31,7 +16,7 @@ export const createCommentService = async ({productId, content}: createCommentSe
     })
 }
 
-export const getCommentService = async ({productId, cursor, isDesc, takeCount}: getCommentService) => {
+export const getCommentService = async ({productId, cursor, isDesc, takeCount}: getCommentServiceInterface) => {
     const take = Number(takeCount) || 10;
     const where = {productId: Number(productId)}
     const order = isDesc ? 'desc' : 'asc';
@@ -46,14 +31,14 @@ export const getCommentService = async ({productId, cursor, isDesc, takeCount}: 
     } as Prisma.ProductCommentFindManyArgs)
 }
 
-export const updateCommentService = async ({id, content}: updateCommentService) => {
+export const updateCommentService = async ({id, content}: updateCommentServiceInterface) => {
     return prisma.productComment.update({
         where: {id: Number(id)},
         data: {content},
     })
 }
 
-export const deleteCommentService = async ({id}: deleteCommentService) => {
+export const deleteCommentService = async ({id}: deleteCommentServiceInterface) => {
     return prisma.productComment.delete({
         where: {id: Number(id)},
     })

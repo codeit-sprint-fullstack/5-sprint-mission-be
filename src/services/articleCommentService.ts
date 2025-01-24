@@ -1,28 +1,13 @@
 import prisma from '../utils/prismaClient';
 import {Prisma} from "@prisma/client";
+import {
+    createArticleCommentService,
+    deleteArticleCommentService,
+    GetArticleCommentService,
+    updateArticleCommentService
+} from "../utils/interfaces";
 
-interface createCommentService {
-    articleId: string;
-    content: string;
-}
-
-interface GetCommentService {
-    articleId: string;
-    cursor?: string;
-    isDesc?: boolean;
-    takeCount?: string;
-}
-
-interface updateCommentService {
-    id: string;
-    content: string;
-}
-
-interface deleteCommentService {
-    id: string;
-}
-
-export const createCommentService = async ({articleId, content}: createCommentService) => {
+export const createCommentService = async ({articleId, content}: createArticleCommentService) => {
     return prisma.articleComment.create({
         data: {
             content,
@@ -32,7 +17,7 @@ export const createCommentService = async ({articleId, content}: createCommentSe
 }
 
 
-export const getCommentService = async ({articleId, cursor, isDesc, takeCount}: GetCommentService) => {
+export const getCommentService = async ({articleId, cursor, isDesc, takeCount}: GetArticleCommentService) => {
     const take = Number(takeCount) || 10;
     const where = {articleId: Number(articleId)}
     const order = isDesc ? 'desc' : 'asc';
@@ -48,14 +33,14 @@ export const getCommentService = async ({articleId, cursor, isDesc, takeCount}: 
 }
 
 
-export const updateCommentService = async ({id, content}: updateCommentService) => {
+export const updateCommentService = async ({id, content}: updateArticleCommentService) => {
     return prisma.articleComment.update({
         where: {id: Number(id)},
         data: {content},
     })
 }
 
-export const deleteCommentService = async ({id}: deleteCommentService) => {
+export const deleteCommentService = async ({id}: deleteArticleCommentService) => {
     return prisma.articleComment.delete({
         where: {id: Number(id)},
     })

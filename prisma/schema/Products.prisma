@@ -2,7 +2,7 @@ model Products {
     id             String             @id @default(uuid())
     name           String
     description    String
-    price          Int
+    price          String
     images         String[]           @default([])
     favoritesCount Int                @default(0)
     createdAt      DateTime           @default(now())

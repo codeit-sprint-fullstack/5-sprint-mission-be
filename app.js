@@ -11,7 +11,7 @@ app.use(cors());
 
 app.use(express.json());
 
-const DATABASE_URL = process.env.DB_URL;
+const DATABASE_URL = process.env.MONGODB_URL;
 mongoose
   .connect(DATABASE_URL)
   .then(() => console.log("몽고디비 연결 성공^^"))

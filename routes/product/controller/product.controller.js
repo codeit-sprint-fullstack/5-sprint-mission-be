@@ -1,15 +1,13 @@
 import productService from "../service/product.service.js";
 
 const addProduct = async (req, res) => {
-  const { title, price, description, tags, imgUrl } = req.body;
-
-  console.log(typeof title);
+  const { title, price, description, tags = [], imgUrl = "" } = req.body;
 
   if (!title || typeof title !== "string")
     return res
       .status(400)
       .send({ message: "Title is required and must be a string." });
-  if (!price || typeof price !== "number")
+  if (!price || typeof Number(price) !== "number")
     return res
       .status(400)
       .send({ message: "Price is required and must be a number." });
@@ -21,7 +19,7 @@ const addProduct = async (req, res) => {
   try {
     const product = await productService.addProduct({
       title,
-      price,
+      price: Number(price),
       description,
       tags,
       imgUrl,

@@ -3,6 +3,7 @@ import Product from "../model/Product.js";
 const addProduct = async ({ title, price, description, tags, imgUrl }) => {
   try {
     const product = new Product({ title, price, description, tags, imgUrl });
+
     return await product.save();
   } catch (err) {
     throw new Error("- Database error while add product");

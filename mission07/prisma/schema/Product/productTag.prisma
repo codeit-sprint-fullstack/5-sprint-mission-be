@@ -1,0 +1,7 @@
+model ProductTag {
+  id        String  @id @default(uuid())
+  productId Int
+  tagId     String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id])
+}

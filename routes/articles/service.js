@@ -114,7 +114,7 @@ const createArticle = async (req, res) => {
   } catch (e) {
     // console.log("err", e);
     //기타 서버 에러
-    res.status(500).send({ message: "서버 에러입니다." });
+    res.status(500).send({ message: "서버 에러입니다.", data: e });
   }
 };
 

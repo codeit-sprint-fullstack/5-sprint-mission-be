@@ -1,0 +1,54 @@
+###
+POST http://localhost:5005/product
+Content-Type: application/json
+
+{
+  "name": "MacBook Pro 16-inch",
+  "description": "Apple M2 Max 칩을 탑재한 고성능 노트북",
+  "price": 3499,
+  "tags": ["laptop", "Apple", "M2 Max"]
+}
+
+###
+POST http://localhost:5005/product
+Content-Type: application/json
+
+{
+  "name": "MacBook Pro 16-inch",
+  "description": "Apple M2 Max 칩을 탑재한 고성능 노트북",
+  "tags": ["laptop", "Apple", "M2 Max"]
+}
+
+###
+GET http://localhost:5005/product
+
+### 정상 ID
+GET http://localhost:5005/product/67886bd263377d4b7aa6643e
+
+### 잘못된 ID
+GET http://localhost:5005/product/67886bd263377d4b7aa66431
+
+
+### 
+GET http://localhost:5005/product?search=macbook
+
+###
+GET http://localhost:5005/product?search=apple
+
+###
+GET http://localhost:5005/product?limit=50
+
+###
+GET http://localhost:5005/product?search=00
+
+###
+PATCH http://localhost:5005/product/6788ba8da0146153f3233d46
+Content-Type: application/json
+
+{
+    "price": 100,
+    "description": "캠핑 텐트 수정을 합시다~"
+}
+
+### 
+DELETE http://localhost:5005/product/6788d11adb892124c103c550

@@ -1,18 +1,27 @@
-import mongoose from "mongoose";
-import Product from "../../models/Product.js";
+import { PrismaClient } from "@prisma/client";
 // todo: 메시지 객체로 정리
+
+const prisma = new PrismaClient();
 
 // 상품 상세 조회 API - 상품 클릭하면 해당 상품 상세 조회
 const getProductById = async (req, res) => {
   try {
     const id = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(400).json("유효하지 않은 ID 형식입니다.");
-    const result = await Product.findById(id);
-    if (!result) return res.status(404).send("상품이 존재하지 않습니다.");
+    // error1: id 형식 맞지 않음(400)
+    // todo...
+
+    // findUnique
+    const result = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    // error2: 상품 없음(404)
+    // todo...
+
     res.status(200).send({ message: "상품 조회 결과입니다.", data: result });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    // error3: 서버 에러(500)
+    console.log(error);
     res.status(500).send("서버 에러입니다.");
   }
 };
@@ -21,34 +30,38 @@ const getProductById = async (req, res) => {
 const patchProduct = async (req, res) => {
   try {
     const id = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(400).json("유효하지 않은 ID 형식입니다.");
+    // error1: id 형식 오류(400)
+    // todo...
 
-    const updatedProduct = req.body;
+    // findMany
+    const currentProduct = await prisma.product.findUnique({ where: id });
+    // error2: 상품 없음(404)
+    // todo...
 
-    if (
-      !updatedProduct.name &&
-      !updatedProduct.description & !updatedProduct.price &&
-      !updatedProduct.tags
-    )
-      return res.status(400).send("하나 이상의 필드 값을 작성해주세요.");
+    const { name, description, price, tags, images } = req.body;
+    // error3: 입력 값 유효성 검증(400)
+    // todo...
+    const updatedProduct = {
+      ...currentProduct,
+      ...(name !== undefined && { name }),
+      ...(description !== undefined && { description }),
+      ...(price !== undefined && { price }),
+      ...(tags !== undefined && { tags }),
+      ...(images !== undefined && { images }),
+    };
 
-    const product = await Product.findById(id);
-    if (!product) return res.status(404).send("상품이 존재하지 않습니다.");
-
-    for (let key in updatedProduct) {
-      product[key] = updatedProduct[key];
-    }
-
-    product.updatedAt = new Date();
-
-    await product.save(); // todo: 타입 검증을 하지 않아서 에러 뜰 거 같음
+    // update
+    const result = await prisma.product.update({
+      where: { id },
+      data: updatedProduct,
+    });
 
     res
       .status(201)
-      .send({ message: "상품 정보가 수정되었습니다.", data: product });
-  } catch (err) {
-    console.log(err);
+      .send({ message: "상품 정보가 수정되었습니다.", data: result });
+  } catch (error) {
+    // error4: 서버 에러(500)
+    console.log(error);
     res.status(500).send("서버 에러입니다.");
   }
 };
@@ -57,89 +70,69 @@ const patchProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   try {
     const id = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(400).json("유효하지 않은 ID 형식입니다.");
+    // error1: id 형식 맞지 않음(400)
+    // todo...
 
-    const result = await Product.findByIdAndDelete(id);
-    if (!result) return res.status(404).send("상품이 존재하지 않습니다.");
+    // delete
+    const result = await prisma.product.delete({
+      where: { id },
+    });
+
+    // error2: 상품 없음(404)
+    // todo...
+
     res
       .status(200) // 메시지 반환하려고 204 대신 200씀
       .send({ message: "상품이 성공적으로 삭제되었습니다.", data: result });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    // error3: 서버 에러(500)
+    console.log(error);
     res.status(500).send("서버 에러입니다.");
   }
-};
-
-// 상품 목록 조회 API
-const getItemsList = (items, sort, offset, limit, keyword) => {
-  let paginatedItems = [...items];
-  // todo: offset, limit의 맞지 않는 형식에 대해 오류처리도 해야할까(현재는 parseInt를 통해 NaN이 되고 slice에서 0으로 바뀌어서 오류 안뜸)
-  const filter = {
-    sort: sort || "recent",
-    offset: offset !== undefined ? parseInt(offset) : 0,
-    limit: limit !== undefined ? parseInt(limit) : 5,
-    keyword,
-  };
-
-  //sort
-  if (filter.sort === "favorite") {
-    paginatedItems.sort((a, b) => b.favorite - a.favorite);
-  } else {
-    paginatedItems.sort((a, b) => b.createdAt - a.createdAt);
-  }
-
-  // keyword 처리
-  if (keyword !== undefined) {
-    paginatedItems = paginatedItems.filter(
-      (item) =>
-        item.name.includes(keyword) || item.description.includes(keyword)
-    );
-  }
-
-  const totalCount = paginatedItems.length;
-
-  // offset, limit
-  paginatedItems = paginatedItems.slice(
-    filter.offset,
-    filter.offset + filter.limit
-  );
-  // id, name, price, favorite, createdAt만 리턴
-  const products = paginatedItems.map((item) => {
-    return {
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      favorite: item.favorite,
-      createdAt: item.createdAt,
-    };
-  });
-  const result = { products, totalCount };
-  return result;
 };
 
 const getProductsList = async (req, res) => {
   try {
     const { sort, offset, limit, keyword } = req.query;
-    const productsData = await Product.find().lean(); // Document객체 -> 일반 js 객체로 변환
-    if (!productsData)
-      return res.status(404).send({ message: "상품이 존재하지 않습니다." });
+    // error1: query 형식 맞지 않음(400)
+    // todo ...
 
-    // todo: 정해진 sort 값 아니면 에러 보내기
-    const { products, totalCount } = getItemsList(
-      productsData,
-      sort,
-      offset,
-      limit,
-      keyword
-    );
-    res.status(200).send({
-      message: "상품 목록 리스트입니다.",
-      data: products,
-      totalCount,
+    // 정렬 조건
+    let orderBy;
+    switch (sort) {
+      case "recent":
+        orderBy = { createdAt: "desc" };
+        break;
+      case "favorite":
+        orderBy = { favorite: "desc" };
+        break;
+    }
+
+    // 검색 조건
+    const where = keyword
+      ? {
+          OR: [
+            { name: { contain: keyword, mode: "insensitive" } },
+            { description: { contain: keyword, mode: "insensitive" } },
+          ],
+        }
+      : {};
+
+    // findMany
+    const result = await prisma.product.findMany({
+      where,
+      orderBy,
+      skip: parseInt(offset),
+      take: parseInt(limit),
     });
-  } catch (err) {
-    console.log(err);
+
+    // error2: 목록 없음(404)
+    // todo ...
+
+    res.send({ message: "상품 목록 조회 결과입니다.", data: result });
+  } catch (error) {
+    // error3: 서버 에러(500)
+    console.log(error);
     res.status(500).send("서버 에러입니다.");
   }
 };

@@ -1,0 +1,7 @@
+model articleLikes {
+  id        String  @id @default(uuid())
+  userId    String
+  articleId Int
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}

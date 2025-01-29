@@ -13,18 +13,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String    @id @default(uuid())
-  email    String    @unique
-  password String
-  Product  Product[]
-  Article  Article[]
-  Comment  Comment[]
-}
+// model User {
+//   id       String @id @default(uuid())
+//   email    String @unique
+//   password String
+//   Product  Product[]
+//   Article  Article[]
+//   Comment  Comment[]
+// }
 
 model Product {
   id          String   @id @default(uuid())
-  userId      String   @default("Anonymous")
+  // userId      String   @default("Anonymous")
   name        String
   description String
   price       Float // Int 말고?
@@ -33,30 +33,30 @@ model Product {
   favorite    Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: SetDefault)
+  // user        User     @relation(fields: [userId], references: [id], onDelete: SetDefault)
 }
 
 model Article {
   id        String    @id @default(uuid())
-  userId    String    @default("Anonymous")
+  // userId    String    @default("Anonymous")
   title     String
   content   String
   images    String[]
   favorite  Int       @default(0)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  user      User      @relation(fields: [userId], references: [id], onDelete: SetDefault)
+  // user      User      @relation(fields: [userId], references: [id], onDelete: SetDefault)
   Comment   Comment[]
 }
 
 model Comment {
   id        String   @id @default(uuid())
-  userId    String   @default("Anonymous")
+  // userId    String   @default("Anonymous")
   articleId String
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: SetDefault)
+  // user      User     @relation(fields: [userId], references: [id], onDelete: SetDefault)
   article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 

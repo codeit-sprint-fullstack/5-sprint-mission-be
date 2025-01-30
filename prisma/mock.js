@@ -240,3 +240,81 @@ export const PRODUCTS = [
     updatedAt: new Date(),
   },
 ];
+
+export const ARTICLES = [
+  {
+    title: "안녕하세요~",
+    content: "반갑습니당!",
+    images: [],
+    favorite: 10,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    title: "컴퓨터 중고 삽니다.",
+    content: "일반 사무용으로 사고 싶습니다. 연락 주세요",
+    images: [],
+    favorite: 7,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    title: "판다마켓 좋네요!",
+    content: "앞으로 자주 이용하겠습니다^^",
+    images: [],
+    favorite: 5,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    title: "중랑구 사시는 분 있으신가요",
+    content: "제가 곧 이사를 가는데 책상을 사고 싶습니다. 파실 분 연락 주세요.",
+    images: [],
+    favorite: 8,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    title: "판다마켓에서 원하는 물건 찾으려면 어떻게 하는지 아시는분",
+    content: "제곧내",
+    images: [],
+    favorite: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    title: "여의도에 사시는 분들은 아이폰 거래 시 조심하세요.",
+    content:
+      "이번에 아이폰 중고로 사신다고 해서 만났는데 사기 당할 뻔 했네요;; 여러분도 조심하세요.",
+    images: [],
+    favorite: 30,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    title: "안녕하세요~ 이번에 가입했습니다.",
+    content: "저는 대전에 살고 있습니다. 대전 유저분들 친하게 지내요!",
+    images: [],
+    favorite: 10,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    title: "안녕하세요 묵동 외톨이 인사박습니다.",
+    content:
+      "저는 34년을 외롭게 지냈습니다. 이 글도 댓글이 없어서 혼자 울며 자겠지요..",
+    images: [],
+    favorite: 2,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    title: "2030 러닝 크루 모집(남자마감)",
+    content:
+      "2030 달산(달려야 산다) 모집합니다. 현재 여자 10명, 남자 20명으로 여자 10명 충원중입니다..",
+    images: [],
+    favorite: 20,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];

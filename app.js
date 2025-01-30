@@ -3,7 +3,7 @@ import * as dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 import router from "./routes/index.js";
-import { errorHandler } from "./utils/errorHandler.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 dotenv.config();
 

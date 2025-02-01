@@ -1,0 +1,15 @@
+GET http://localhost:8007/products
+
+###
+PATCH http://localhost:8007/products/678b92a2808ca5b1b4de9020
+Content-Type: application/json
+
+{
+  "images" : ["https://images.pexels.com/photos/1268131/pexels-photo-1268131.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"]
+}
+
+### 
+DELETE http://localhost:8007/products/6787032636fd909e17c94796
+
+###
+GET http://localhost:8007/products/678b92a2808ca5b1b4de901a

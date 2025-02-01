@@ -12,19 +12,21 @@ const app = express();
 const PORT = 8007;
 
 const corsOptions = {
-  origin: [
-    "http://127.0.0.1:8007",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:3000",
-  ],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      "http://127.0.0.1:8007",
+      "http://127.0.0.1:3000",
+      "https://pandamarket-fe-eunbi.netlify.app/",
+    ];
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true); // Allow the origin
+    } else {
+      callback(new Error("Not allowed by CORS")); // Block the origin
+    }
+  },
 };
 
 app.use(cors(corsOptions));
-
-app.get("/", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://127.0.0.1:3000");
-  res.send(data);
-});
 
 app.use(express.json());
 app.use("/", router);

@@ -15,6 +15,13 @@ const getProductById = asyncHandler(async (req, res) => {
   // findUnique
   const result = await prisma.product.findUnique({
     where: { id },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      description: true,
+      createdAt: true,
+    },
   });
 
   // error: 상품 없음(404)

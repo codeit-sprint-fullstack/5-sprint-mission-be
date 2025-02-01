@@ -37,27 +37,30 @@ model Product {
 }
 
 model Article {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid())
   // userId    String    @default("Anonymous")
   title     String
   content   String
   images    String[]
-  favorite  Int       @default(0)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  favorite  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   // user      User      @relation(fields: [userId], references: [id], onDelete: SetDefault)
-  Comment   Comment[]
 }
 
 model Comment {
-  id        String   @id @default(uuid())
+  id         String     @id @default(uuid())
   // userId    String   @default("Anonymous")
-  articleId String
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  targetId   String
+  targetType TargetType
+  content    String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
   // user      User     @relation(fields: [userId], references: [id], onDelete: SetDefault)
-  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
-// todo: 대댓글 기능 추가
+enum TargetType {
+  PRODUCT
+  ARTICLE
+  COMMENT
+}

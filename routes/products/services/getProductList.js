@@ -2,7 +2,6 @@ import { PrismaClient } from "@prisma/client";
 import asyncHandler from "../../../middlewares/asyncHandler.js";
 import { assert } from "superstruct";
 import { productListQueryValidation } from "../../../validation/queryValidation.js";
-import { createError } from "../../../middlewares/errorHandler.js";
 
 const prisma = new PrismaClient();
 
@@ -48,10 +47,11 @@ const getProductList = asyncHandler(async (req, res) => {
     take: limit,
   });
 
-  // error: 상품 없음(404)
-  if (!result) throw createError("상품이 존재하지 않습니다.", 404);
-
-  res.send({ message: "상품 목록 조회 결과입니다.", data: result });
+  res.send({
+    message: "상품 목록 조회 결과입니다.",
+    data: result,
+    count: result.length,
+  });
 });
 
 export default getProductList;

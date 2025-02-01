@@ -1,0 +1,13 @@
+model User {
+  id String @id @default(uuid())
+  userName String
+  password String
+  email String @unique
+  createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    products Product[] @relation("UserProducts")
+    articles Article[] @relation("UserArticles")
+    comments  Comment[]
+    productLikes ProductLike[]
+    articleLikes ArticleLike[]
+}

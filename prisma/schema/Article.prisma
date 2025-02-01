@@ -1,0 +1,12 @@
+model Article {
+  id String @id @default(uuid())
+  userId String?
+  title String
+  content String
+  image String[]
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  comments Comment[] 
+  likes ArticleLike[]
+  user User? @relation("UserArticles", fields: [userId], references: [id], onDelete: Cascade )
+}

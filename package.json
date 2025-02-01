@@ -1,19 +1,23 @@
 {
   "type": "module",
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
     "build": "npm install"
   },
   "dependencies": {
-    "axios": "^1.7.9",
+    "@prisma/client": "^5.21.1",
     "cors": "^2.8.5",
-    "cra-template": "1.2.0",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "mongoose": "^8.9.5"
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "is-email": "^1.0.2",
+    "superstruct": "^2.0.2"
   },
   "devDependencies": {
+    "prisma": "^6.2.1",
     "nodemon": "^3.1.9"
   }
 }

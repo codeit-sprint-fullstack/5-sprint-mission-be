@@ -1,0 +1,13 @@
+model Product {
+  id String @id @default(uuid())
+  userId String?
+  name String 
+  description String 
+  price Int
+  tags String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  comments Comment[]
+  likes ProductLike[]
+  user User? @relation("UserProducts", fields: [userId], references: [id], onDelete: Cascade)
+}

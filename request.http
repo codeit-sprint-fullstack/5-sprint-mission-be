@@ -1,0 +1,30 @@
+GET http://localhost:8000/item?limit=10&currentPage=1
+###
+
+#const limit = parseInt(req.query.limit) || 10; // 기본값을 10으로 설정
+#const currentPage = parseInt(req.query.currentPage) || 1; // 기본값을 1로 설정
+#const totalCount = Product.length;
+#const totalPages = Math.ceil(totalCount / limit); // Math.ceil 요놈들은 올림하는 놈
+#const data = await Product.find({})
+#  .skip((currentPage - 1) * limit) // 전 페이지까지 건너뛰기
+#  .limit(limit);
+#res.json({ data, totalCount, totalPages, currentPage });
+
+POST http://localhost:8000/register
+Content-Type: application/json
+
+#   img: { type: String, default: "basic" },
+#   title: { type: String, required: true },
+#   price: { type: Number, required: true },
+#   like: { type: Number, default: 0 },
+#   introduce: { type: String, required: true },
+#   tag: { type: String, required: true },
+#   createdAt: { type: String, default: todayNow },
+#   updatedAt: { type: String, default: todayNow },
+
+{
+  "name": "제목",
+  "price": 100,
+  "description": "아무튼 개쩌는 내용",
+  "tags": "해쉬태그"
+}

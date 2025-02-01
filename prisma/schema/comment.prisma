@@ -1,0 +1,11 @@
+/// 댓글
+model Comment {
+    id            String        @id @default(uuid())
+    contents      String // 댓글 내용
+    createdAt     DateTime      @default(now())
+    updatedAt     DateTime      @updatedAt
+    userId        String // 댓글 글 쓴 정보
+    WritingId     String // 게시판 글 쓴 사람
+    user          User          @relation(fields: [userId], references: [id])
+    bulletinBoard BulletinBoard @relation(fields: [WritingId], references: [id])
+}

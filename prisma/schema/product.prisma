@@ -1,0 +1,12 @@
+/// 상품
+model Product {
+    id          String   @id @default(uuid())
+    img         String?  @default("basicImg") // 상품 이미지
+    title       String // 제목
+    price       Int // 가격
+    like        Int?     @default(0) // 찜
+    description String?  @default("basicDescription") // 글 상세정보
+    tags        String?  @default("basicTags") // 태그
+    updatedAt   DateTime @updatedAt
+    createdAt   DateTime @default(now())
+}

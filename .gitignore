@@ -1,0 +1,24 @@
+# Node.js 기본
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 환경 변수 파일
+.env
+
+# Prisma 관련
+prisma/.env
+prisma/migrations/
+
+# OS별 임시 파일
+.DS_Store
+Thumbs.db
+
+# 기타 IDE/Editor 설정 파일
+.vscode/
+.idea/
+.cursor/
+*.swp
+
+test.request/

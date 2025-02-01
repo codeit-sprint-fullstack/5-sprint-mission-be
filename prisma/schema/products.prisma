@@ -1,0 +1,13 @@
+model Products {
+  id          String   @id @default(uuid())
+  title       String
+  price       Int
+  description String
+  tags        String[]
+  imgUrl      String?
+  favoriteCnt Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([favoriteCnt])
+}

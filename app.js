@@ -10,8 +10,6 @@ import commentRoutes from "./routes/comment/controller.js";
 
 dotenv.config();
 
-const prisma = new PrismaClient();
-
 const app = express();
 app.use(express.json());
 
@@ -19,7 +17,7 @@ app.use(express.json());
 app.use("/article", articleRoutes);
 app.use("/comment", commentRoutes);
 
-const port = 3333;
+const port = process.env.PORT || 3333;
 app.listen(port, () => {
   console.log(`서버가 ${port}번 포트에서 실행 중입니다.`);
 });

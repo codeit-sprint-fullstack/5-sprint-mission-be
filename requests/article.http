@@ -1,0 +1,51 @@
+### 게시긍 생성
+POST http://localhost:3000/articles
+Content-Type: application/json
+
+
+    "title": "제목444",
+    "content": "내용444444"
+}
+
+### 특정 게시글 조회
+GET http://localhost:3000/article/1
+
+###
+GET http://localhost:3000/article/100
+
+### 게시글 수정
+PATCH http://localhost:3000/article/1
+Content-Type: application/json
+
+{
+    "title": "제목수정",
+    "content": "내용수정"
+}
+
+###
+PATCH http://localhost:3000/article/1
+Content-Type: application/json
+
+{
+    "title": "제목수정11"
+}
+
+###
+PATCH http://localhost:3000/article/1
+Content-Type: application/json
+
+{
+    
+}
+
+### 게시글 삭제
+DELETE http://localhost:3000/article/9
+
+### 게시글 목록 조회
+GET http://localhost:3000/articles
+###
+GET http://localhost:3000/articles?limit=5&page=1
+###
+GET http://localhost:3000/articles?limit=5&page=2&sort=recent
+###
+GET http://localhost:3000/articles?sort=recent

@@ -1,0 +1,61 @@
+GET http://localhost:5555/articles/12345abcdefg/comments
+
+###
+GET http://localhost:5555/articles/123
+
+###
+
+POST http://localhost:5555/products
+Content-Type: application/json
+
+{
+  "name": "테스트22  ",
+  "description": "테스트",
+  "price": 1000,
+  "tags":["테스트"]
+}
+
+###
+
+PATCH http://localhost:5555/articles/12345abcdefg/comments/12345abcdegbd333
+Content-Type: application/json
+
+{
+  "content": "너무 추우어어"
+}
+
+###
+
+DELETE http://localhost:5555/products/81/comments/321c0fa6-097c-4c2f-8562-be64d0ea4f4a
+
+###
+GET  http://localhost:5555/products/88/comments
+
+###
+POST http://localhost:5555/articles/12345abcdefg/comments
+Content-Type: application/json
+
+{
+  "content": "겨울 싫어어어",
+  "articleId" : "12345abcdefg"
+}
+
+###
+PATCH http://localhost:5555/products/81/comments/f0ae9c1b-22f9-4dfa-8b74-d08faba92263
+Content-Type: application/json
+
+{
+  "content": "????"
+}
+
+###
+DELETE http://localhost:5555/articles/81/comments/4a09816c-ba64-4b1f-8bd5-5ab590df2ff2
+
+###
+POST http://localhost:5555/products/88/comments
+Content-Type: application/json
+
+{
+  "content": "한국에도 팔아요",
+  "productId":"88"
+}

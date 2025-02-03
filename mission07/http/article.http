@@ -1,0 +1,32 @@
+GET http://localhost:5004/article
+
+###
+
+POST http://localhost:5004/article
+Content-Type: application/json
+
+{
+   "title": "게시글을 등록해보자.",
+   "content": "이것은 게시글의 내용입니다.",
+   "img": ["이미지 링크1"]
+}
+
+###
+
+PATCH http://localhost:5004/article/0fbc08c1-ab28-483a-a9e6-26cfe251f77e
+Content-Type: application/json
+
+{
+   "title": "수정된 게시글을 등록해보자.",
+   "content": "이것은 수정된 게시글의 내용입니다.",
+   "img": ["수정된 이미지 링크1"]
+}
+
+
+###
+
+GET http://localhost:5004/article/b9a68d65-5752-4fb3-aa89-ff000d927b86
+
+
+###
+DELETE http://localhost:5004/article/b9a68d65-5752-4fb3-aa89-ff000d927b86

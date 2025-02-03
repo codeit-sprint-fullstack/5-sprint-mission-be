@@ -1,0 +1,31 @@
+GET http://localhost:5004/product
+
+###
+
+POST http://localhost:5004/product
+Content-Type: application/json
+
+{
+    "tags":["이미지없음","이미지없다"],
+    "price": 5000,
+    "description": "저것도찾아보고 그럽시다",
+    "name": "이것도찾아보고"
+}
+
+###
+GET http://localhost:5004/product/3a661564-c5f8-4121-ba85-bb68ded42490
+
+###
+
+PATCH http://localhost:5004/product/f6cc7490-0b22-4156-9b08-2d9ca194bd75
+Content-Type: application/json
+
+{
+    "tags":["이미지없음","이미지없다"],
+    "price": 5000,
+    "description": "이미지가 없을 때 입니다.",
+    "name": "수정이 될까 이름이 길때도?"
+}
+
+###
+DELETE http://localhost:5004/product/6672257b-e3ca-4289-86e0-7dc4df6d1036

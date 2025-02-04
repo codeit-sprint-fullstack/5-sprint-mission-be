@@ -1,10 +1,10 @@
 import express from "express";
-import itemsRouter from "./items/controller.js";
-import registrationRouter from "./registration/controller.js";
+import productsRouter from "./products/controller.js";
+import articlesRouter from "./articles/controller.js";
 
 const router = express.Router();
 
-router.use("/items", itemsRouter);
-router.use("/registration", registrationRouter);
+router.use("/products", productsRouter);
+router.use("/articles", articlesRouter);
 
 export default router;

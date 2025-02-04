@@ -1,10 +1,14 @@
 import express from "express";
-import mongoose from "mongoose";
 import * as dotenv from "dotenv";
-import router from "./routes/index.js";
+import { PrismaClient } from "@prisma/client";
 import cors from "cors";
+import router from "./routes/index.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 dotenv.config();
+
+// Prisma 클라이언트 생성
+const prisma = new PrismaClient();
 
 // Express 애플리케이션 생성
 const app = express();
@@ -18,18 +22,20 @@ app.use(
     allowedHeaders: "*",
   })
 );
+
 app.use(express.json());
 
-// mongoDB 연결
-mongoose
-  .connect(process.env.DATABASE_URL)
-  .then(() => console.log("MongoDB 연결 성공"))
-  .catch((err) => console.log(err));
-
 app.use("/", router);
+
+app.use(errorHandler);
 
 // 서버 시작
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다`);
+});
+
+process.on("SIGINT", async () => {
+  await prisma.$disconnect();
+  process.exit(0);
 });

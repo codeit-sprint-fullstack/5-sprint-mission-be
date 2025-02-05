@@ -1,4 +1,4 @@
-const { pool } = require("../config/db");
+import { pool } from "../config/db.js";
 
 const Article = {
   /**
@@ -86,4 +86,4 @@ const Article = {
   },
 };
 
-module.exports = Article;
+export default Article;

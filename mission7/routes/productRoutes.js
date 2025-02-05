@@ -1,6 +1,7 @@
-const express = require("express");
+import express from "express";
+import * as productController from "../controllers/productController.js";
+
 const router = express.Router();
-const productController = require("../controllers/productController");
 
 // 상품 등록 (Create)
 router.post("/", productController.createProduct);
@@ -21,4 +22,4 @@ router.delete("/:id", productController.deleteProduct);
 // 상품의 좋아요를 추가하거나 취소합니다.
 router.patch("/:id/like", productController.toggleLike);
 
-module.exports = router;
+export default router;

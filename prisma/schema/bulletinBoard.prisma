@@ -1,0 +1,13 @@
+/// 게시글
+model BulletinBoard {
+    id        String    @id @default(uuid())
+    title     String
+    contents  String // 게시글 내용
+    img       String?   @default("basicImg") // 게시글 이미지
+    like      Int?      @default(0) // 찜? 좋아요 받은 갯수
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    userId    String // 유저 정보
+    comment   Comment[]
+    user      User      @relation(fields: [userId], references: [id])
+}

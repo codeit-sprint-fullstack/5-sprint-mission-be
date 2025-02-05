@@ -9,8 +9,29 @@ dotenv.config();
 
 // 2. 데이터베이스 연결 설정
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL, // 환경변수에서 DB 연결 문자열 가져오기
+  connectionString: process.env.POSTGRES_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  max: 10, // 최대 연결 수
+  idleTimeoutMillis: 300000, // 유휴 연결 타임아웃
+  connectionTimeoutMillis: 5000, // 연결 타임아웃
 });
+
+// 연결 에러 핸들링
+pool.on("error", (err, client) => {
+  console.error("Unexpected error on idle client", err);
+});
+
+// 연결 상태 모니터링
+setInterval(async () => {
+  try {
+    const client = await pool.connect();
+    client.release();
+  } catch (err) {
+    console.error("Connection pool health check failed:", err);
+  }
+}, 60000); // 1분마다 체크
 
 // 3. 데이터베이스 연결 및 테이블 생성 함수
 export const connectDB = async () => {

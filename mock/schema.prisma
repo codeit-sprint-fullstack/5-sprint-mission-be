@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//model
+
+//게시글 Article 스키마
+model Article {
+  id        String    @id @default(uuid())
+  nickname  String
+  title     String
+  content   String
+  image     String?
+  Heart     Int       @default(0) //게시글 좋아요 수
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  comments  Comment[] //게시글 1:N 댓글
+}
+
+//댓글 Comment 스키마
+model Comment {
+  id        String   @id @default(uuid())
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  articleId String //외래 키
+  article   Article  @relation(fields: [articleId], references: [id])
+}

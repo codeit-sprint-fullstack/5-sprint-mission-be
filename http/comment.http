@@ -1,0 +1,26 @@
+# TODO: 댓글 CRUD안되는 거 디버깅+백엔드 배포
+
+GET http://localhost:3333/comment/87dbdfe5-89f7-419d-bd28-1acb2491c9ad?limit=2&cursorId=df0ef274-8833-4354-9ca5-0fb8dc926233
+
+###
+
+POST http://localhost:3333/comment/87dbdfe5-89f7-419d-bd28-1acb2491c9ad
+Content-Type: application/json
+
+{
+  "userId": "충동구매판다",
+  "content": "바로 입금하겠습니다"
+}
+
+###
+
+PATCH http://localhost:3333/comment/34c8d2f9-3ed7-4331-bfd7-e84c8e2e9d52
+Content-Type: application/json
+
+{
+  "userId": "직거래살인마"
+}
+
+###
+
+DELETE http://localhost:3333/comment/417e2f9b-e050-4700-957a-d9fce4bcb31b

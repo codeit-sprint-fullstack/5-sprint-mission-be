@@ -1,0 +1,14 @@
+POST   http://localhost:8000/api/products
+Content-Type: application/json
+
+{
+  "name": "만든순서",
+  "description": "123123",
+  "price": 13,
+  "tags": ["123"]
+} 
+
+
+###
+DELETE http://localhost:8000/api/products/678776b9203c52ed4556a6ef
+Content-Type: application/json

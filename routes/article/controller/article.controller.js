@@ -1,7 +1,7 @@
 import articleService from "../service/article.service.js";
 
 const addArticle = async (req, res) => {
-  const { title, content } = req.body;
+  const { userId, imageUrl, title, content } = req.body;
 
   if (!title || typeof title !== "string")
     return res
@@ -13,7 +13,7 @@ const addArticle = async (req, res) => {
       .send({ message: "Content is required and must be a string." });
 
   try {
-    const article = await articleService.addArticle(title, content);
+    const article = await articleService.addArticle(req.body);
     res.status(201).send(article);
   } catch (err) {
     console.log(`Error API in POST '/articles' | message::${err.message}`);
@@ -36,7 +36,7 @@ const fetchArticle = async (req, res) => {
 };
 
 const modifyArticle = async (req, res) => {
-  const { id, title, content } = req.body;
+  const { id, title, content, imageUrl } = req.body;
 
   if (!title || typeof title !== "string")
     return res
@@ -51,7 +51,12 @@ const modifyArticle = async (req, res) => {
     if (!(await articleService.existArticle(id)))
       return res.status(400).send({ message: "Invalid article's id" });
 
-    const article = await articleService.modifyArticle(id, title, content);
+    const article = await articleService.modifyArticle(
+      id,
+      title,
+      content,
+      imageUrl
+    );
     res.status(201).send(article);
   } catch (err) {
     console.log(`Error API in PATCH '/articles' | message::${err.message}`);
@@ -81,12 +86,12 @@ const fetchArticleList = async (req, res) => {
     pageSize = 10,
     orderBy = "recent",
     keyword = "",
-  } = req.body;
+  } = req.query;
 
   try {
     const articleList = await articleService.fetchArticleList(
-      page,
-      pageSize,
+      Number(page),
+      Number(pageSize),
       orderBy,
       keyword
     );

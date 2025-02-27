@@ -13,7 +13,7 @@ const fetchCommentList = async (cursor, limit, resourceType, resourceId) => {
       resourceType,
       resourceId,
     },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: "desc" },
   });
 };
 
@@ -26,10 +26,10 @@ const fetchCommentCount = async (resourceType, resourceId) => {
   });
 };
 
-const addComment = async (resourceType, resourceId, content) => {
+const addComment = async (resourceType, resourceId, userId, content) => {
   try {
     return await prisma.comments.create({
-      data: { resourceType, resourceId, content },
+      data: { resourceType, resourceId, userId, content },
     });
   } catch (err) {
     throw new Error(`- Database error while add comments :: ${err.message}`);

@@ -30,7 +30,9 @@ const fetchCommentList = async (req, res) => {
 };
 const addComment = async (req, res) => {
   const { resourceType, resourceId } = extractResource(req);
-  const { content } = req.body;
+  const { userId, content } = req.body;
+
+  console.log(userId, content);
 
   if (!content || typeof content !== "string")
     return res
@@ -45,6 +47,7 @@ const addComment = async (req, res) => {
     const comment = await commentService.addComment(
       resourceType,
       resourceId,
+      userId,
       content
     );
     res.status(201).send(comment);

@@ -1,9 +1,9 @@
 import prisma from "../../../prismaClient.js";
 
-const addArticle = async (title, content) => {
+const addArticle = async (data) => {
   try {
     return await prisma.articles.create({
-      data: { title, content },
+      data,
     });
   } catch (err) {
     throw new Error(`- Database error while add article :: ${err.message}`);
@@ -12,20 +12,21 @@ const addArticle = async (title, content) => {
 
 const fetchArticle = async (id) => {
   try {
-    return await prisma.articles.findUnique({
+    const res = await prisma.articles.findUnique({
       where: {
         id,
       },
     });
+    return { ...res, nickname: "총명한판다" };
   } catch (err) {
     throw new Error(`- Database error while fetch article :: ${err.message}`);
   }
 };
 
-const modifyArticle = async (id, title, content) => {
+const modifyArticle = async (id, title, content, imageUrl) => {
   try {
     return await prisma.articles.update({
-      data: { title, content },
+      data: { title, content, imageUrl },
       where: {
         id,
       },
@@ -63,9 +64,9 @@ const existArticle = async (id) => {
 const fetchArticleList = async (page, pageSize, orderBy, keyword) => {
   const skip = (page - 1) * pageSize;
   const orderByOption =
-    orderBy === "favorite" ? { favoriteCnt: "desc" } : { createdAt: "desc" };
+    orderBy === "favorite" ? { likeCnt: "desc" } : { createdAt: "desc" };
 
-  return await prisma.articles.findMany({
+  const articleList = await prisma.articles.findMany({
     skip,
     take: pageSize,
     where: {
@@ -76,6 +77,12 @@ const fetchArticleList = async (page, pageSize, orderBy, keyword) => {
     },
     orderBy: orderByOption,
   });
+  const articles = articleList.map((article) => ({
+    ...article,
+    nickname: "총명한판다",
+  }));
+
+  return articles;
 };
 
 const fetchArticleCount = async (keyword) => {

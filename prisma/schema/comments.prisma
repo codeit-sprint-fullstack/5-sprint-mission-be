@@ -1,5 +1,6 @@
 model Comments {
   id           String   @id @default(uuid())
+  userId       String
   resourceType String
   resourceId   String
   content      String

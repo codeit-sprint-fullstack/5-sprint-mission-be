@@ -9,7 +9,6 @@ yarn-error.log*
 
 # Prisma 관련
 prisma/.env
-prisma/migrations/
 
 # OS별 임시 파일
 .DS_Store

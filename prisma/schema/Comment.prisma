@@ -1,0 +1,11 @@
+model Comment {
+    id        String    @id @default(uuid())
+    content   String
+    authorId  String? /// 나중에 관계 맺어서 가져와야됨. user랑 1:N 관계
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+    articleId String? /// 게시글에 해당하는 댓글일 때
+    article Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+    productId String? /// 상품에 해당하는 댓글일 때
+    product Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}

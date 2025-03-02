@@ -1,0 +1,35 @@
+GET http://localhost:5004/users
+
+###
+
+GET http://localhost:5004/users/ff84470e-ff2d-4bd4-bab7-ae7a8cb370ad
+
+###
+
+POST http://localhost:5004/users
+Content-Type: application/json
+
+{
+  "age": 20,
+  "email": "taejin@taejin.com", 
+  "name": "강태진",
+  "address": "강남구 삼성동"
+}
+
+###
+
+PATCH http://localhost:5004/users/ff84470e-ff2d-4bd4-bab7-ae7a8cb370ad
+Content-Type: application/json
+
+{
+  "name" : "동혁"
+}
+
+###
+
+DELETE http://localhost:5004/users/ff84470e-ff2d-4bd4-bab7-ae7a8cb370ad
+
+
+###
+
+GET http://localhost:5004/users/order/age/140

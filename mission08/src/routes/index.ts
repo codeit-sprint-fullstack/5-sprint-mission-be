@@ -1,10 +1,10 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import articleRouter from "./controllers/article";
 
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.send("Hello from the Express Router!");
+  res.send("🐼Panda Market Server!");
 });
 
 router.use("/article", articleRouter);

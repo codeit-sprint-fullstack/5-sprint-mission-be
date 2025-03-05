@@ -7,9 +7,8 @@ dotenv.config();
 
 const app = express();
 
-//FIXME: 프론트 배포할 주소 수정하기
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://panda-next-iota.vercel.app"],
+  origin: ["http://localhost:3000", "https://panda-next-hoeun.vercel.app"],
 };
 
 app.use(cors(corsOptions));

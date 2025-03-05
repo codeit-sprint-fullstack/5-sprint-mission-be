@@ -1,10 +1,10 @@
 import prisma from "../../prisma";
-import { RequestHandler } from "express";
+import { RequestHandler, Request, Response } from "express";
 import requestHandler from "../../../utils/requestHandler";
 
 // 인기 게시글 TOP 3 조회 : 메인 페이지에 적용
 export const getArticleTop3: RequestHandler = requestHandler(
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const top3Articles = await prisma.article.findMany({
       take: 3,
       orderBy: [
@@ -25,7 +25,7 @@ export const getArticleTop3: RequestHandler = requestHandler(
 
 // 게시글 목록 조회 : 메인 페이지에 적용
 export const getArticleList: RequestHandler = requestHandler(
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const limit = Number(req.query.limit) || 8;
     const { keyword, sortBy, cursorId } = req.query;
 
@@ -81,29 +81,31 @@ export const getArticleList: RequestHandler = requestHandler(
 );
 
 // 특정 게시글 조회 (댓글까지 조회) : 게시글 상세 페이지에 적용
-export const getArticle: RequestHandler = requestHandler(async (req, res) => {
-  const { id } = req.params;
+export const getArticle: RequestHandler = requestHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
 
-  const article = await prisma.article.findUnique({
-    where: { id },
-    include: {
-      comments: {
-        orderBy: { createdAt: "desc" },
+    const article = await prisma.article.findUnique({
+      where: { id },
+      include: {
+        comments: {
+          orderBy: { createdAt: "desc" },
+        },
       },
-    },
-  });
+    });
 
-  if (!article) {
-    res.status(404).send({ message: "게시글이 존재하지 않습니다." });
-    return;
+    if (!article) {
+      res.status(404).send({ message: "게시글이 존재하지 않습니다." });
+      return;
+    }
+
+    res.status(200).send(article);
   }
-
-  res.status(200).send(article);
-});
+);
 
 // 게시글 작성
 export const createArticle: RequestHandler = requestHandler(
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const newArticle = await prisma.article.create({
       data: req.body,
     });
@@ -119,7 +121,7 @@ export const createArticle: RequestHandler = requestHandler(
 
 // 게시글 수정
 export const updateArticle: RequestHandler = requestHandler(
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const updatedArticle = await prisma.article.update({
@@ -138,7 +140,7 @@ export const updateArticle: RequestHandler = requestHandler(
 
 // 게시글 삭제
 export const deleteArticle: RequestHandler = requestHandler(
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const { id } = req.params;
 
     await prisma.article.delete({

@@ -1,10 +1,10 @@
 import prisma from "../../prisma";
-import { RequestHandler } from "express";
+import { RequestHandler, Request, Response } from "express";
 import requestHandler from "../../../utils/requestHandler";
 
 // 댓글 작성
 export const createArticleComment: RequestHandler = requestHandler(
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const articleId = req.params.id;
     const { content } = req.body;
 
@@ -21,7 +21,7 @@ export const createArticleComment: RequestHandler = requestHandler(
 
 // 댓글 수정
 export const updateArticleComment: RequestHandler = requestHandler(
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const { id } = req.params;
     const { content } = req.body;
 
@@ -38,7 +38,7 @@ export const updateArticleComment: RequestHandler = requestHandler(
 
 // 댓글 삭제
 export const deleteArticleComment: RequestHandler = requestHandler(
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const { id } = req.params;
 
     await prisma.articleComment.delete({

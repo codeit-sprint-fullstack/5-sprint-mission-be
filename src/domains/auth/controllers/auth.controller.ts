@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { SignInRequest, SignInResponse } from '../dtos/signin.dto';
-import { RefreshResponse } from '../dtos/refresh.dto';
-import { SignUpRequest, SignUpResponse } from '../dtos/signup.dto';
+import { SignInRequest } from '../dtos/signin.dto';
+import { SignUpRequest } from '../dtos/signup.dto';
 import authService from '../services/auth.service';
-import { UserResponse } from '../../user/dtos/user.dto';
+import { AuthResponse } from '../interfaces/auth.interface';
 
 type ApiAuth = (req: Request, res: Response, next: NextFunction) => Promise<void>
 
@@ -16,7 +15,7 @@ const signUp: ApiAuth = async (req, res) => {
   res.cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "strict" });
   res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "strict" });
 
-  const response: SignUpResponse = { accessToken, refreshToken, user }
+  const response: AuthResponse = { accessToken, refreshToken, user }
 
   res.status(201).send(response);
 };
@@ -30,7 +29,7 @@ const signIn: ApiAuth = async (req, res) => {
   res.cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "strict" });
   res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "strict" });
 
-  const response: SignInResponse = { accessToken, refreshToken, user }
+  const response: AuthResponse = { accessToken, refreshToken, user }
 
   res.status(201).send(response);
 };

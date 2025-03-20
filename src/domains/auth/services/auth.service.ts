@@ -3,8 +3,8 @@ import { Users } from '@prisma/client';
 import jwtUtil from "../../../utils/jwt";
 import prisma from "../../../utils/prismaClient";
 import { CustomError } from '../../../utils/errorHandler';
-import { SignUpRequest, SignUpResponse } from "../dtos/signup.dto";
-import { SignInRequest, SignInResponse } from '../dtos/signin.dto';
+import { SignUpRequest } from "../dtos/signup.dto";
+import { SignInRequest } from '../dtos/signin.dto';
 import { AuthResponse } from '../interfaces/auth.interface';
 
 type SignUp = (data: SignUpRequest) => Promise<AuthResponse>

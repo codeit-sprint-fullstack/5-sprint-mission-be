@@ -1,0 +1,7 @@
+model Favorites {
+  id           String   @id @default(uuid())
+  userId       String
+  resourceType String
+  resourceId   String
+  createdAt    DateTime @default(now())
+}

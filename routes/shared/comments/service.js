@@ -3,22 +3,23 @@ import prisma from "../../../prismaClient.js";
 const getFieldType = (type) => {
   if (type === "articles") {
     return {
-      commentTable: "articlesComments",
+      commentTable: "articleComment",
       mainTable: "article",
       idField: "articleId",
     };
   } else if (type === "products") {
     return {
-      commentTable: "productsComments",
+      commentTable: "productComment",
       mainTable: "product",
       idField: "productId",
     };
   }
 };
 
+// TODO: product 동작 확인 후에 댓글 생성/수정/삭제 시에도 인증된 유저만 가능하도록 수정
 // 전체 댓글 목록 조회
 // 커서 페이지네이션 - 받은 데이터의 마지막 아이디를 lastCursor로 보내줌. 프론트는 다음 요청 시 받은 lastCursor를 쿼리에 담아 보낸다.
-export const getComments = async (req, res) => {
+export const getComments = async (req, res, next) => {
   try {
     const domainId = req.params.domainId;
     const { lastCursor, type } = req.query;
@@ -57,13 +58,12 @@ export const getComments = async (req, res) => {
 
     res.status(200).send(response);
   } catch (e) {
-    // console.log("err:", e);
-    res.status(500).send({ message: "서버 에러입니다." });
+    next(e);
   }
 };
 
 //댓글 등록
-const createComment = async (req, res) => {
+const createComment = async (req, res, next) => {
   try {
     const domainId = req.params.domainId;
     const { type } = req.query;
@@ -79,14 +79,12 @@ const createComment = async (req, res) => {
 
     res.status(201).send(newComment);
   } catch (e) {
-    // console.log("e", e);
-    //기타 서버 에러
-    res.status(500).send({ message: "서버 에러입니다." });
+    next(e);
   }
 };
 
 //댓글 수정
-const patchComment = async (req, res) => {
+const patchComment = async (req, res, next) => {
   try {
     const id = req.params.id;
     const { type } = req.query;
@@ -112,14 +110,12 @@ const patchComment = async (req, res) => {
 
     res.status(200).send(updatedComment); //수정된 댓글
   } catch (e) {
-    //기타 서버 에러
-    // console.log("err: ", e);
-    res.status(500).send({ message: "서버 에러입니다." });
+    next(e);
   }
 };
 
 //댓글 삭제
-const deleteComment = async (req, res) => {
+const deleteComment = async (req, res, next) => {
   try {
     const id = req.params.id;
     const { type } = req.query;
@@ -153,9 +149,7 @@ const deleteComment = async (req, res) => {
       data: deletedComment,
     });
   } catch (e) {
-    //기타 서버 에러
-    // console.log("err: ", e);
-    res.status(500).send({ message: "서버 에러입니다." });
+    next(e);
   }
 };
 

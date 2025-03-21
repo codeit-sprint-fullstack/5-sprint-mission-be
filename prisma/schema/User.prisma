@@ -1,0 +1,36 @@
+model User {
+    id String @id @default(uuid())
+
+    email          String           @unique
+    password       String
+    nickname       String
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
+    deletedAt      DateTime? ///null이 아니라 존재하면 삭제된 데이터
+    Product        Product[] ///1:N
+    ProductComment ProductComment[] ///1:N
+    LikeProduct    LikeProduct[] ///1:N
+    Article        Article[] ///1:N
+    ArticleComment ArticleComment[] ///1:N
+    LikeArticle    LikeArticle[] ///1:N
+}
+
+model LikeProduct {
+    id        String    @id @default(uuid())
+    userId    String
+    productId String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    User      User      @relation(fields: [userId], references: [id])
+}
+
+model LikeArticle {
+    id        String    @id @default(uuid())
+    userId    String
+    articleId String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    User      User      @relation(fields: [userId], references: [id])
+}

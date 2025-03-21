@@ -1,0 +1,32 @@
+model Product {
+    id             String           @id @default(uuid())
+    userId         String
+    name           String
+    description    String
+    price          String
+    images         String[]         @default([])
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
+    deletedAt      DateTime?
+    User           User             @relation(fields: [userId], references: [id])
+    ProductComment ProductComment[] ///1:N
+    ProductTag     ProductTag[] ///XXX: N:N 하나의 상품이 여러 개의 태그 - 하나의 태그를 여러 개의 상품이 가지고 있을 수 있음
+}
+
+model ProductTag {
+    id       String    @id @default(uuid())
+    tag      String    @unique
+    Products Product[]
+}
+
+model ProductComment {
+    id        String    @id @default(uuid())
+    userId    String
+    productId String
+    content   String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    User      User      @relation(fields: [userId], references: [id])
+    Product   Product   @relation(fields: [productId], references: [id])
+}

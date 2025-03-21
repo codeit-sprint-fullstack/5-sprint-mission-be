@@ -4,4 +4,6 @@ model Favorites {
   resourceType String
   resourceId   String
   createdAt    DateTime @default(now())
+
+  @@unique([userId, resourceType, resourceId])
 }

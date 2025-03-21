@@ -5,3 +5,8 @@ export interface AuthResponse {
   refreshToken: string,
   user: UserResponse
 }
+
+export interface AuthInfo {
+  userId: string,
+  role: string
+}

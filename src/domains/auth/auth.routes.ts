@@ -1,7 +1,8 @@
 import express from 'express'
 import authController from './controllers/auth.controller';
-import { signInValidationRules, signUpValidationRules, validateReq } from '../../middlewares/auth.middleware';
+import { signInValidationRules, signUpValidationRules } from '../../middlewares/auth.middleware';
 import { requestHandler } from '../../utils/requestHandler';
+import { validateReq } from '../../middlewares/validator.middleware';
 
 const router = express.Router();
 

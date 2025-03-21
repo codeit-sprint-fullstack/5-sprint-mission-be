@@ -1,13 +1,11 @@
-import { NextFunction, Request, Response } from 'express';
 import { SignInRequest } from '../dtos/signin.dto';
 import { SignUpRequest } from '../dtos/signup.dto';
 import authService from '../services/auth.service';
 import { AuthResponse } from '../interfaces/auth.interface';
-
-type ApiAuth = (req: Request, res: Response, next: NextFunction) => Promise<void>
+import { ApiSignature } from '../../../utils/apiResponse.interface';
 
 // 회원가입
-const signUp: ApiAuth = async (req, res) => {
+const signUp: ApiSignature = async (req, res) => {
   const data: SignUpRequest = req.body;
 
   const { accessToken, refreshToken, user } = await authService.signUp(data);
@@ -20,8 +18,8 @@ const signUp: ApiAuth = async (req, res) => {
   res.status(201).send(response);
 };
 
-// 로그인인
-const signIn: ApiAuth = async (req, res) => {
+// 로그인
+const signIn: ApiSignature = async (req, res) => {
   const data: SignInRequest = req.body;
 
   const { accessToken, refreshToken, user } = await authService.signIn(data);
@@ -34,7 +32,8 @@ const signIn: ApiAuth = async (req, res) => {
   res.status(201).send(response);
 };
 
-const refresh: ApiAuth = async (req, res) => {
+// access token 리프레쉬
+const refresh: ApiSignature = async (req, res) => {
   const { refreshToken } = req.body;
 
   const accessToken = await authService.refresh(refreshToken);

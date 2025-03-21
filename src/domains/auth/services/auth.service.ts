@@ -5,7 +5,7 @@ import prisma from "../../../utils/prismaClient";
 import { CustomError } from '../../../utils/errorHandler';
 import { SignUpRequest } from "../dtos/signup.dto";
 import { SignInRequest } from '../dtos/signin.dto';
-import { AuthResponse } from '../interfaces/auth.interface';
+import { AuthInfo, AuthResponse } from '../interfaces/auth.interface';
 
 type SignUp = (data: SignUpRequest) => Promise<AuthResponse>
 type SignIn = (data: SignInRequest) => Promise<AuthResponse>
@@ -15,7 +15,7 @@ const signUp: SignUp = async (data) => {
   await checkDuplicateUserOrThrow(data);
 
   const user = await createUser(data);
-  const { accessToken, refreshToken, expiresAt } = generateTokens(user.email);
+  const { accessToken, refreshToken, expiresAt } = generateTokens(user.id);
 
   await storeAuthInfo(user.id, refreshToken, expiresAt);
 
@@ -39,7 +39,7 @@ const signIn: SignIn = async (data) => {
   if (!isPasswordValid)
     throw new CustomError('비밀번호가 일치하지 않습니다.', 401);
 
-  const { accessToken, refreshToken, expiresAt } = generateTokens(email);
+  const { accessToken, refreshToken, expiresAt } = generateTokens(user.id);
   await storeAuthInfo(user.id, refreshToken, expiresAt);
 
   const { password: _ignored, ...userWithoutPassword } = user;
@@ -59,8 +59,8 @@ const refresh = async (refreshToken: string | null) => {
   const decoded = jwtUtil.verifyRefreshToken(refreshToken);
   if (!decoded || typeof decoded === "string") throw new CustomError("Invalid refresh token", 403);
 
-  const { email, role } = decoded;
-  const newAccessToken = jwtUtil.generateAccessToken({ email, role });
+  const { userId, role } = decoded;
+  const newAccessToken = jwtUtil.generateAccessToken({ userId, role });
 
   return newAccessToken;
 }
@@ -105,8 +105,8 @@ const getUserOrThrow = async (email: string): Promise<Users> => {
 }
 
 // 토큰 생성 함수 => 회원가입, 로그인
-const generateTokens = (email: string) => {
-  const payload = { email, role: "admin" };
+const generateTokens = (userId: string) => {
+  const payload: AuthInfo = { userId, role: "admin" };
   const accessToken = jwtUtil.generateAccessToken(payload);
   const refreshToken = jwtUtil.generateRefreshToken(payload);
   const expiresAt = jwtUtil.getExpireAt(refreshToken);

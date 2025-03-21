@@ -1,23 +1,26 @@
-
-import { body, validationResult } from 'express-validator';
-import { Request, Response, NextFunction } from "express";
+import { body } from 'express-validator';
+import { Response, NextFunction, Request } from "express";
 import jwtUtil from "../utils/jwt";
+import { RequestWithUser } from '../utils/apiResponse.interface';
 
 export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Unauthorized" });
+    return;
   }
 
   const token = authHeader.split(" ")[1];
   const decoded = jwtUtil.verifyAccessToken(token);
 
   if (!decoded) {
-    return res.status(403).json({ message: "Invalid or expired token" });
+    res.status(403).json({ message: "Invalid or expired token" });
+    return;
   }
 
-  (req as any).user = decoded; // 인증된 사용자 정보 저장
+  // req.user = decoded as { userId: string; role: string; }; // 인증된 사용자 정보 저장
+  (req as RequestWithUser).user = decoded as { userId: string; role: string; }; // 인증된 사용자 정보 저장
   next();
 };
 
@@ -60,19 +63,3 @@ export const signInValidationRules = [
     .matches(/^([a-z]|[A-Z]|[0-9]|[!@#$%^&*])+$/)
     .withMessage('비밀번호는 영문자, 숫자 및 특수문자 (!@#$%^&*) 만 사용할 수 있습니다.'),
 ];
-
-// 검증 결과 처리 미들웨어
-export const validateReq = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      res.status(400).send({ errors: errors.array() });
-      return;
-    }
-    next();
-  } catch (error) {
-    console.error('유효성 검사 오류:', error);
-    res.status(500).send({ message: '유효성 검사 중 서버 오류 발생' });
-    return;
-  }
-};

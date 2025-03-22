@@ -11,6 +11,7 @@ const app = express();
 
 const corsOptions = {
   origin: ["http://localhost:3000", "https://panda-next-hoeun.vercel.app"],
+  credentials: true,
 };
 
 app.use(cors(corsOptions));

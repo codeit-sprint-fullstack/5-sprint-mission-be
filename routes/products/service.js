@@ -5,15 +5,15 @@ const getProductList = async (req, res, next) => {
   try {
     //페이지네이션
     const page = Number(req.query.page) || 1; //(기본값: 1)
-    const limit = Number(req.query.limit) || 10; //(기본값: 10);
-    const skip = (page - 1) * limit; //페이지네이션을 위한 skip값 계산
+    const pageSize = Number(req.query.pageSize) || 10; //(기본값: 10);
+    const skip = (page - 1) * pageSize; //페이지네이션을 위한 skip값 계산
 
     //정렬
-    const sort = req.query.sort || "recent"; //(기본값: 최신순)
+    const orderBy = req.query.orderBy || "recent"; //(기본값: 최신순)
     const sortOption =
-      sort === "favorite"
+      orderBy === "favorite"
         ? { favoritesCount: "desc" } //좋아요순
-        : { createdAt: sort === "recent" ? "desc" : "asc" };
+        : { createdAt: orderBy === "recent" ? "desc" : "asc" };
 
     //키워드 검색
     const keyword = req.query.keyword || ""; //(기본값: 빈 문자열)
@@ -41,7 +41,7 @@ const getProductList = async (req, res, next) => {
       where: searchCriteria,
       orderBy: sortOption,
       skip,
-      take: limit,
+      take: pageSize,
       select: {
         id: true,
         userId: true,
@@ -105,8 +105,9 @@ const getProductList = async (req, res, next) => {
     //검색 키워드에 맞는 전체 데이터 개수 불러오기
     const totalProducts = await prisma.product.count({
       where: searchCriteria,
+      deletedAt: null,
     });
-    const totalPages = Math.ceil(totalProducts / limit);
+    const totalPages = Math.ceil(totalProducts / pageSize);
 
     //요청 성공 시 응답 객체
     const response = {

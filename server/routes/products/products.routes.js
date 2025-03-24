@@ -1,0 +1,461 @@
+import express from "express";
+import {
+  getProducts,
+  getProduct,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "../../controllers/products.controller.js";
+import { validateUser } from "../../middlewares/authHandler.js";
+import { checkUUID } from "../../middlewares/validateParams.js";
+import asyncHandler from "../../middlewares/asyncHandler.js";
+import {
+  addComment,
+  getComments,
+} from "../../controllers/comments.controller.js";
+import {
+  addFavorite,
+  removeFavorite,
+} from "../../controllers/favorites.controller.js";
+
+const router = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Product
+ *   description: 상품 관련 API
+ */
+
+/**
+ * @swagger
+ * /products:
+ *   post:
+ *     summary: 상품 등록
+ *     tags: [Product]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: 상품 이름
+ *               description:
+ *                 type: string
+ *                 description: 상품 설명
+ *               price:
+ *                 type: number
+ *                 description: 상품 가격
+ *               imageUrls:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: 상품 이미지 URL들
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: 상품 태그들
+ *     responses:
+ *       201:
+ *         description: 상품 등록 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: 상품 ID
+ *                 name:
+ *                   type: string
+ *                   description: 상품 이름
+ *                 description:
+ *                   type: string
+ *                   description: 상품 설명
+ *                 price:
+ *                   type: number
+ *                   description: 상품 가격
+ *                 imageUrls:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: 상품 이미지 URL들
+ *                 tags:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: 상품 태그들
+ *       400:
+ *         description: 잘못된 입력 형식
+ */
+router.post("/", validateUser, ...createProduct);
+
+/**
+ * @swagger
+ * /products:
+ *   get:
+ *     summary: 모든 상품 조회
+ *     tags: [Product]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: 검색어
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *           enum: [recent, favorites]
+ *           default: recent
+ *         description: 정렬 기준
+ *       - in: query
+ *         name: cursor
+ *         schema:
+ *           type: string
+ *         description: 페이지네이션을 위한 커서 (마지막 상품 ID)
+ *       - in: query
+ *         name: take
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: 가져올 상품 개수 (정수만)
+ *     responses:
+ *       200:
+ *         description: 상품 목록 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: 상품 ID
+ *                   name:
+ *                     type: string
+ *                     description: 상품 이름
+ *                   description:
+ *                     type: string
+ *                     description: 상품 설명
+ *                   price:
+ *                     type: number
+ *                     format: float
+ *                     description: 상품 가격
+ *                   imageUrls:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     description: 상품 이미지 URL들
+ *                   tags:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     description: 상품 태그들
+ *                   createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                   updatedAt:
+ *                         type: string
+ *                         format: date-time
+ */
+router.get("/", asyncHandler(getProducts));
+
+/**
+ * @swagger
+ * /products/{productId}:
+ *   get:
+ *     summary: 특정 상품 조회
+ *     tags: [Product]
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 상품 ID
+ *     responses:
+ *       200:
+ *         description: 상품 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: 상품 ID
+ *                 name:
+ *                   type: string
+ *                   description: 상품 이름
+ *                 description:
+ *                   type: string
+ *                   description: 상품 설명
+ *                 price:
+ *                   type: number
+ *                   format: float
+ *                   description: 상품 가격
+ *                 imageUrls:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: 상품 이미지 URL들
+ *                 tags:
+ *                   type: array
+ *                   items:
+ *                      type: string
+ *                   description: 상품 태그들
+ *                 createdAt:
+ *                      type: string
+ *                      format: date-time
+ *                 updatedAt:
+ *                      type: string
+ *                      format: date-time
+ *       404:
+ *         description: 상품을 찾을 수 없음
+ */
+router.get("/:id", validateUser, checkUUID, asyncHandler(getProduct));
+
+/**
+ * @swagger
+ * /products/{productId}:
+ *   patch:
+ *     summary: 상품 수정
+ *     tags: [Product]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 상품 ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: 상품 이름
+ *               description:
+ *                 type: string
+ *                 description: 상품 설명
+ *               price:
+ *                 type: number
+ *                 description: 상품 가격
+ *               imageUrls:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: 상품 이미지 URL들
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: 상품 태그들
+ *     responses:
+ *       200:
+ *         description: 상품 수정 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: 상품 ID
+ *                 name:
+ *                   type: string
+ *                   description: 상품 이름
+ *                 description:
+ *                   type: string
+ *                   description: 상품 설명
+ *                 price:
+ *                   type: number
+ *                   description: 상품 가격
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: 상품 생성 시각
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: 상품 수정 시각
+ *       404:
+ *         description: 상품을 찾을 수 없음
+ *       403:
+ *         description: 수정 권한 없음
+ */
+router.patch("/:id", validateUser, checkUUID, asyncHandler(updateProduct));
+
+/**
+ * @swagger
+ * /product/{productId}:
+ *   delete:
+ *     summary: 상품 삭제
+ *     tags: [Product]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 상품 ID
+ *     responses:
+ *       204:
+ *         description: 상품 삭제 성공
+ *       404:
+ *         description: 상품을 찾을 수 없음
+ *       403:
+ *         description: 삭제 권한 없음
+ */
+router.delete("/:id", validateUser, checkUUID, asyncHandler(deleteProduct));
+
+/**
+ * @swagger
+ * /products/{productId}/favorites:
+ *   post:
+ *     summary: 상품 좋아요 추가
+ *     tags: [Product]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 상품 ID
+ *     responses:
+ *       201:
+ *         description: 좋아요 추가 성공
+ *       400:
+ *         description: 이미 좋아요한 경우
+ */
+router.post(
+  "/:productId/favorite",
+  validateUser,
+  checkUUID,
+  asyncHandler(addFavorite)
+);
+
+/**
+ * @swagger
+ * /products/{productId}/favorites:
+ *   delete:
+ *     summary: 상품 좋아요 취소
+ *     tags: [Product]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 상품 ID
+ *     responses:
+ *       200:
+ *         description: 좋아요 취소 성공
+ *       404:
+ *         description: 좋아요가 없는 경우
+ */
+router.delete(
+  "/:productId/favorite",
+  validateUser,
+  checkUUID,
+  asyncHandler(removeFavorite)
+);
+
+/**
+ * @swagger
+ * /products/{productId}/comments:
+ *   post:
+ *     summary: 상품에 댓글 작성
+ *     tags: [Comment]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 상품 ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 description: 댓글 내용
+ *     responses:
+ *       201:
+ *         description: 댓글 작성 성공
+ *       400:
+ *         description: 댓글 내용이 비어 있음
+ */
+router.post(
+  "/:productId/comments",
+  validateUser,
+  checkUUID,
+  asyncHandler(addComment)
+);
+
+/**
+ * @swagger
+ * /products/{productId}/comments:
+ *   get:
+ *     summary: 상품의 모든 댓글 조회
+ *     tags: [Comment]
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 상품 ID
+ *     responses:
+ *       200:
+ *         description: 댓글 목록 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   content:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   user:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       nickname:
+ *                         type: string
+ */
+router.get("/:productId/comments", checkUUID, asyncHandler(getComments));
+
+export default router;

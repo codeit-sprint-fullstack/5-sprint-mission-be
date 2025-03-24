@@ -28,6 +28,9 @@ const signup = async (req, res, next) => {
     // 저장된 데이터에서 비밀번호 필터링하여 response로 전달
     const filteredUserData = userUtils.filterSensitiveUserData(createdUser);
 
+    // 세션에 유저id 저장
+    req.session.userId = filteredUserData.id;
+
     return res.status(201).json(filteredUserData);
   } catch (e) {
     next(e);

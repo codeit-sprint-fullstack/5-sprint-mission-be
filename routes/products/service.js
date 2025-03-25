@@ -12,7 +12,11 @@ const getProductList = async (req, res, next) => {
     const orderBy = req.query.orderBy || "recent"; //(기본값: 최신순)
     const sortOption =
       orderBy === "favorite"
-        ? { favoritesCount: "desc" } //좋아요순
+        ? {
+            LikeProduct: {
+              _count: "desc", // 좋아요 수를 기준으로 내림차순 정렬
+            },
+          }
         : { createdAt: orderBy === "recent" ? "desc" : "asc" };
 
     //키워드 검색
@@ -61,8 +65,27 @@ const getProductList = async (req, res, next) => {
       },
     });
 
+    // 각 상품의 좋아요 수를 별도로 조회
+    const productsWithLikeCounts = await Promise.all(
+      products.map(async (product) => {
+        const likeCount = await prisma.likeProduct.count({
+          where: {
+            productId: product.id,
+            deletedAt: null,
+          },
+        });
+
+        return {
+          ...product,
+          _count: {
+            LikeProduct: likeCount,
+          },
+        };
+      })
+    );
+
     // 사용자가 로그인한 경우 좋아요 정보 추가
-    let productsWithLike = products;
+    let productsWithLike = productsWithLikeCounts;
     if (req.user && req.user.id) {
       const { id: userId } = req.user;
 
@@ -83,7 +106,7 @@ const getProductList = async (req, res, next) => {
       );
 
       // 각 상품에 isLiked 필드와 소유자 정보 추가
-      productsWithLike = products.map((product) => ({
+      productsWithLike = productsWithLikeCounts.map((product) => ({
         ...product,
         isLiked: likedProductIds.has(product.id),
         ownerId: product.User.id,
@@ -92,7 +115,7 @@ const getProductList = async (req, res, next) => {
       }));
     } else {
       // 로그인하지 않은 사용자는 모든 상품에 isLiked: false 설정
-      productsWithLike = products.map((product) => ({
+      productsWithLike = productsWithLikeCounts.map((product) => ({
         ...product,
         isLiked: false,
         ownerId: product.User.id,
@@ -105,7 +128,6 @@ const getProductList = async (req, res, next) => {
     //검색 키워드에 맞는 전체 데이터 개수 불러오기
     const totalProducts = await prisma.product.count({
       where: searchCriteria,
-      deletedAt: null,
     });
     const totalPages = Math.ceil(totalProducts / pageSize);
 

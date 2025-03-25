@@ -1,7 +1,12 @@
-import { Products, Users } from "@prisma/client";
+import { Products } from "@prisma/client";
 import { ProductResponse } from "../../domains/product/interfaces/product.interface";
 
-export const toProductResponse = (product: Products, user: Users, isFavorite?: boolean): ProductResponse => {
+type User = {
+  ownerId: string,
+  ownerNickname: string,
+}
+
+export const toProductResponse = (product: Products, user: User, isFavorite?: boolean): ProductResponse => {
   const response: ProductResponse = {
     id: product.id,
     name: product.name,
@@ -9,8 +14,8 @@ export const toProductResponse = (product: Products, user: Users, isFavorite?: b
     description: product.description,
     images: product.images,
     tags: product.tags,
-    ownerId: user.id,
-    ownerNickname: user.nickname,
+    ownerId: user.ownerId,
+    ownerNickname: user.ownerNickname,
     favoriteCount: product.favoriteCount,
     createdAt: product.createdAt,
   };

@@ -4,10 +4,10 @@ import prisma from "../../../utils/prismaClient";
 import { AuthInfo } from "../../auth/interfaces/auth.interface";
 import { ProductListResponse, ProductRequest, ProductResponse } from "../interfaces/product.interface";
 import { CustomError } from "../../../utils/errorHandler";
-import { PaginationQueryDto } from "../dtos/query.dto";
+import { PaginationQueryDto } from "../../../utils/query.dto";
 
 type CreateProduct = (data: ProductRequest, authInfo: AuthInfo) => Promise<ProductResponse>;
-type GetProductList = (params: PaginationQueryDto, authInfo: AuthInfo) => Promise<ProductListResponse>;
+type GetProductList = (params: PaginationQueryDto) => Promise<ProductListResponse>;
 type GetProductDetail = (productId: string, authInfo: AuthInfo) => Promise<ProductResponse>;
 type PatchProduct = (productId: string, data: ProductRequest, authInfo: AuthInfo) => Promise<ProductResponse>;
 type DeleteProductDetail = (productId: string, authInfo: AuthInfo) => Promise<string>;
@@ -32,7 +32,7 @@ const createProduct: CreateProduct = async (data, authInfo) => {
     }
   });
 
-  return toProductResponse(product, user);
+  return toProductResponse(product, { ownerId: user.id, ownerNickname: user.nickname });
 }
 
 /**
@@ -41,13 +41,11 @@ const createProduct: CreateProduct = async (data, authInfo) => {
  * @param authInfo 
  * @returns 
  */
-const getProductList: GetProductList = async (params, authInfo) => {
+const getProductList: GetProductList = async (params) => {
   const { page, pageSize, orderBy, keyword } = params;
   const orderByOption = orderBy === 'favorite'
     ? { favoriteCount: 'desc' as const }
     : { createdAt: 'desc' as const };
-
-  const user = await getUserOrThrow(authInfo.userId);
 
   const totalCount = await prisma.products.count({
     where: {
@@ -72,17 +70,20 @@ const getProductList: GetProductList = async (params, authInfo) => {
     orderBy: orderByOption
   });
 
-  const favorites = await prisma.favorites.findMany({
-    where: {
-      userId: user.id,
-      resourceType: 'PRODUCT',
-      resourceId: { in: productList.map(product => product.id) },
-    },
+  const userIds = new Set(productList.map(product => product.userId));
+  const users = await prisma.users.findMany({
+    where: { id: { in: Array.from(userIds) } },
+    select: { id: true, nickname: true }
   });
+  const userMap = new Map(users.map(user => [user.id, user]));
 
-  const favoriteIds = new Set(favorites.map(fav => fav.resourceId));
-
-  const productListWithFavorite = productList.map(product => toProductResponse(product, user, favoriteIds.has(product.id)));
+  const productListWithFavorite = productList.map(product => {
+    const owner = userMap.get(product.userId);
+    return toProductResponse(product, {
+      ownerId: owner?.id!,
+      ownerNickname: owner?.nickname!,
+    });
+  });
 
   return {
     totalCount,
@@ -113,7 +114,7 @@ const getProductDetail: GetProductDetail = async (productId, authInfo) => {
     }
   });
 
-  return toProductResponse(product, user, !!favorite);
+  return toProductResponse(product, { ownerId: user.id, ownerNickname: user.nickname }, !!favorite);
 }
 
 /**
@@ -144,7 +145,7 @@ const patchProduct: PatchProduct = async (productId, data, authInfo) => {
     }
   });
 
-  return toProductResponse(updatedProduct, user);
+  return toProductResponse(updatedProduct, { ownerId: user.id, ownerNickname: user.nickname });
 }
 
 const deleteProduct: DeleteProductDetail = async (productId, authInfo) => {

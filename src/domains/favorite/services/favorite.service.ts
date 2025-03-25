@@ -4,10 +4,20 @@ import { toProductResponse } from "../../../utils/mappers/product.mapper";
 import prisma from "../../../utils/prismaClient";
 import { ProductResponse } from "../../product/interfaces/product.interface";
 import { AuthInfo } from "../../auth/interfaces/auth.interface";
+import { ArticleResponse } from "../../article/interdaces/article.interface";
+import { toArticleResponse } from "../../../utils/mappers/article.mapper";
 
-type FavoriteMapper = (resourceType: string, resourceId: string, authInfo: AuthInfo) => Promise<ProductResponse>;
+type FavoriteProduct = (resourceType: string, resourceId: string, authInfo: AuthInfo) => Promise<ProductResponse>;
+type FavoriteArticle = (resourceType: string, resourceId: string, authInfo: AuthInfo) => Promise<ArticleResponse>;
 
-const createProductFavorite: FavoriteMapper = async (resourceType, resourceId, authInfo) => {
+/**
+ * 
+ * @param resourceType 
+ * @param resourceId 
+ * @param authInfo 
+ * @returns 
+ */
+const createProductFavorite: FavoriteProduct = async (resourceType, resourceId, authInfo) => {
   const user = await getUserOrThrow(authInfo.userId);
 
   const favorite = await prisma.favorites.findUnique({
@@ -47,10 +57,17 @@ const createProductFavorite: FavoriteMapper = async (resourceType, resourceId, a
     }
   });
 
-  return toProductResponse(product, user);
+  return toProductResponse(product, { ownerId: user.id, ownerNickname: user.nickname });
 }
 
-const deleteProductFavorite: FavoriteMapper = async (resourceType, resourceId, authInfo) => {
+/**
+ * 
+ * @param resourceType 
+ * @param resourceId 
+ * @param authInfo 
+ * @returns 
+ */
+const deleteProductFavorite: FavoriteProduct = async (resourceType, resourceId, authInfo) => {
   const user = await getUserOrThrow(authInfo.userId);
 
   const favorite = await prisma.favorites.findUnique({
@@ -92,7 +109,102 @@ const deleteProductFavorite: FavoriteMapper = async (resourceType, resourceId, a
     }
   });
 
-  return toProductResponse(product, user);
+  return toProductResponse(product, { ownerId: user.id, ownerNickname: user.nickname });
+}
+
+/**
+ * 
+ * @param resourceType 
+ * @param resourceId 
+ * @param authInfo 
+ * @returns 
+ */
+const createArticleFavorite: FavoriteArticle = async (resourceType, resourceId, authInfo) => {
+  const user = await getUserOrThrow(authInfo.userId);
+
+  const favorite = await prisma.favorites.findUnique({
+    where: {
+      userId_resourceType_resourceId: {
+        userId: user.id,
+        resourceType,
+        resourceId
+      },
+    }
+  });
+
+  if (favorite) {
+    throw new CustomError('Article already favorited', 404);
+  }
+
+  const article = await prisma.articles.update({
+    where: {
+      id: resourceId
+    },
+    data: {
+      likeCount: {
+        increment: 1
+      }
+    }
+  });
+
+  if (!article) {
+    throw new CustomError('Article not found', 404);
+  }
+
+  await prisma.favorites.create({
+    data: {
+      userId: user.id,
+      resourceType,
+      resourceId: resourceId
+    }
+  });
+
+  return toArticleResponse(article, { ownerId: user.id, ownerNickname: user.nickname }, true);
+}
+
+const deleteArticleFavorite: FavoriteArticle = async (resourceType, resourceId, authInfo) => {
+  const user = await getUserOrThrow(authInfo.userId);
+
+  const favorite = await prisma.favorites.findUnique({
+    where: {
+      userId_resourceType_resourceId: {
+        userId: user.id,
+        resourceType,
+        resourceId
+      },
+    }
+  });
+
+  if (!favorite) {
+    throw new CustomError('Article not favorited', 404);
+  }
+
+  const article = await prisma.articles.update({
+    where: {
+      id: resourceId
+    },
+    data: {
+      likeCount: {
+        decrement: 1
+      }
+    }
+  });
+
+  if (!article) {
+    throw new CustomError('Article not found', 404);
+  }
+
+  await prisma.favorites.delete({
+    where: {
+      userId_resourceType_resourceId: {
+        userId: user.id,
+        resourceType,
+        resourceId
+      },
+    }
+  });
+
+  return toArticleResponse(article, { ownerId: user.id, ownerNickname: user.nickname }, false);
 }
 
 /**
@@ -109,7 +221,9 @@ const getUserOrThrow = async (userId: string): Promise<Users> => {
 
 const favoriteService = {
   createProductFavorite,
-  deleteProductFavorite
+  deleteProductFavorite,
+  createArticleFavorite,
+  deleteArticleFavorite
 }
 
 export default favoriteService;

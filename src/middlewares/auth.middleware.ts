@@ -19,7 +19,6 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
     return;
   }
 
-  // req.user = decoded as { userId: string; role: string; }; // 인증된 사용자 정보 저장
   (req as RequestWithUser).user = decoded as { userId: string; role: string; }; // 인증된 사용자 정보 저장
   next();
 };

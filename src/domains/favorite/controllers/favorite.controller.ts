@@ -20,9 +20,29 @@ const deleteProductFavorite: ApiSignature = async (req, res) => {
   res.status(200).send(response);
 }
 
+const createArticleFavorite: ApiSignature = async (req, res) => {
+  const articleId = req.params.articleId;
+  const authInfo = req.user;
+
+  const response = await favoriteService.createArticleFavorite('ARTICLE', articleId, authInfo!);
+
+  res.status(200).send(response);
+}
+
+const deleteArticleFavorite: ApiSignature = async (req, res) => {
+  const articleId = req.params.articleId;
+  const authInfo = req.user;
+
+  const response = await favoriteService.deleteArticleFavorite('ARTICLE', articleId, authInfo!);
+
+  res.status(200).send(response);
+}
+
 const favoriteController = {
   createProductFavorite,
-  deleteProductFavorite
+  deleteProductFavorite,
+  createArticleFavorite,
+  deleteArticleFavorite
 }
 
 export default favoriteController;

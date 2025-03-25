@@ -1,5 +1,5 @@
 import { ApiSignature } from "../../../utils/apiResponse.interface";
-import { PaginationQueryDto } from "../dtos/query.dto";
+import { PaginationQueryDto } from "../../../utils/query.dto";
 import { ProductListResponse, ProductRequest, ProductResponse } from "../interfaces/product.interface";
 import productService from "../services/product.service";
 
@@ -19,9 +19,8 @@ const getProductList: ApiSignature = async (req, res) => {
     orderBy: String(req.query.orderBy ?? 'createdAt'),
     keyword: String(req.query.keyword ?? '')
   };
-  const authInfo = req.user;
 
-  const response: ProductListResponse = await productService.getProductList(params, authInfo!);
+  const response: ProductListResponse = await productService.getProductList(params);
 
   res.status(200).send(response);
 }

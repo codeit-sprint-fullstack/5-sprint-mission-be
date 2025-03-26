@@ -9,17 +9,17 @@ router.get("/:domainId", sharedCommentService.getComments);
 // 인증 필요
 router.post(
   "/:domainId",
-  authMiddleware.verifySessionLogin,
+  authMiddleware.verifyToken,
   sharedCommentService.createComment
 );
 router.patch(
   "/:id",
-  authMiddleware.verifySessionLogin,
+  authMiddleware.verifyToken,
   sharedCommentService.patchComment
 );
 router.delete(
   "/:id",
-  authMiddleware.verifySessionLogin,
+  authMiddleware.verifyToken,
   sharedCommentService.deleteComment
 );
 

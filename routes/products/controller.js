@@ -12,7 +12,7 @@ router.get("/:id", service.getProduct);
 // 상품 등록 - 이미지 업로드 + 유효성 검사 미들웨어 적용
 router.post(
   "/",
-  authMiddleware.verifySessionLogin,
+  authMiddleware.verifyToken,
   createProductMiddleware.verifyProductFields,
   createProductMiddleware.handleImageUpload,
   service.createProduct
@@ -20,17 +20,13 @@ router.post(
 // 상품 수정 - 이미지 업로드 + 유효성 검사 미들웨어 적용
 router.patch(
   "/:id",
-  authMiddleware.verifySessionLogin,
+  authMiddleware.verifyToken,
   createProductMiddleware.verifyProductFields,
   createProductMiddleware.handleImageUpload,
   service.patchProduct
 );
-router.delete("/:id", authMiddleware.verifySessionLogin, service.deleteProduct);
-router.post("/:id/like", authMiddleware.verifySessionLogin, service.createLike);
-router.delete(
-  "/:id/like",
-  authMiddleware.verifySessionLogin,
-  service.deleteLike
-);
+router.delete("/:id", authMiddleware.verifyToken, service.deleteProduct);
+router.post("/:id/like", authMiddleware.verifyToken, service.createLike);
+router.delete("/:id/like", authMiddleware.verifyToken, service.deleteLike);
 
 export default router;

@@ -1,4 +1,5 @@
 import userUtils from "../../utils/userUtils.js";
+import jwtUtils from "../../utils/jwtUtils.js";
 
 // TODO: 회원가입/로그인 테스트완료, 나머지는 프론트에서도 해당 로그인/회원가입 기능 잘 되는지, 쿠키에 저장잘되는지 확인 후 상품 테스트 해보고, + 게시글/댓글 기능 추가하기
 // 회원가입
@@ -28,8 +29,16 @@ const signup = async (req, res, next) => {
     // 저장된 데이터에서 비밀번호 필터링하여 response로 전달
     const filteredUserData = userUtils.filterSensitiveUserData(createdUser);
 
-    // 세션에 유저id 저장
-    req.session.userId = filteredUserData.id;
+    // JWT 토큰 생성
+    const token = jwtUtils.generateToken(filteredUserData.id);
+
+    // 쿠키에 토큰 저장
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000, // 1일
+    });
 
     return res.status(201).json(filteredUserData);
   } catch (e) {
@@ -62,10 +71,44 @@ const signin = async (req, res, next) => {
 
     const loginUser = await getUser(email, password);
 
-    // 세션에 유저id 저장
-    req.session.userId = loginUser.id;
+    // JWT 토큰 생성
+    const token = jwtUtils.generateToken(loginUser.id);
+
+    // 쿠키에 토큰 저장
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000, // 1일
+    });
 
     return res.status(200).json(loginUser);
+  } catch (e) {
+    next(e);
+  }
+};
+
+// 로그아웃
+const signout = async (req, res, next) => {
+  try {
+    // 쿠키 삭제
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
+
+    return res.status(200).json({ message: "로그아웃 되었습니다." });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// 현재 로그인된 사용자 정보 조회
+const me = async (req, res, next) => {
+  try {
+    // auth 미들웨어에서 설정한 user 정보 반환
+    return res.status(200).json(req.user);
   } catch (e) {
     next(e);
   }
@@ -74,6 +117,8 @@ const signin = async (req, res, next) => {
 const service = {
   signup,
   signin,
+  signout,
+  me,
 };
 
 export default service;

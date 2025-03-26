@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import router from "./routes/index.js";
-import session from "express-session";
+import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errorHandler.js";
 
 dotenv.config();
@@ -16,19 +16,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(
-  session({
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.COOKIE_SECRET,
-    cookie: {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000, // 유효기간 24시간
-    },
-  })
-);
+app.use(cookieParser(process.env.COOKIE_SECRET));
+
 // 정적 파일 제공을 위한 미들웨어 추가
 app.use("/uploads", express.static("uploads"));
 app.use("/", router);

@@ -1,7 +1,6 @@
 import userUtils from "../../utils/userUtils.js";
 import jwtUtils from "../../utils/jwtUtils.js";
 
-// TODO: 회원가입/로그인 테스트완료, 나머지는 프론트에서도 해당 로그인/회원가입 기능 잘 되는지, 쿠키에 저장잘되는지 확인 후 상품 테스트 해보고, + 게시글/댓글 기능 추가하기
 // 회원가입
 const signup = async (req, res, next) => {
   try {

@@ -80,7 +80,6 @@ const upload = multer({
 // 이미지 업로드 미들웨어
 const uploadImages = upload.array("images", 3);
 
-// TODO: 여기 테스트 해보고 에러 제대로 뜨는지 확인해보기
 // 이미지 업로드 처리 미들웨어
 const handleImageUpload = (req, res, next) => {
   uploadImages(req, res, function (err) {

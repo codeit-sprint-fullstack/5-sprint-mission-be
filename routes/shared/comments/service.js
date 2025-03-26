@@ -16,7 +16,6 @@ const getFieldType = (type) => {
   }
 };
 
-// TODO: product 동작 확인 후에 댓글 생성/수정/삭제 시에도 인증된 유저만 가능하도록 수정
 // 전체 댓글 목록 조회
 // 커서 페이지네이션 - 받은 데이터의 마지막 아이디를 lastCursor로 보내줌. 프론트는 다음 요청 시 받은 lastCursor를 쿼리에 담아 보낸다.
 export const getComments = async (req, res, next) => {

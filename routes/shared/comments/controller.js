@@ -4,10 +4,11 @@ import authMiddleware from "../../../middlewares/auth.js";
 
 const router = express.Router();
 
-// 모든 라우트에 verifyToken 미들웨어 적용
+router.get("/:domainId", sharedCommentService.getComments);
+
+// 댓글 목록 조회 제외한 모든 라우트에 verifyToken 미들웨어 적용
 router.use(authMiddleware.verifyToken);
 
-router.get("/:domainId", sharedCommentService.getComments);
 router.post("/:domainId", sharedCommentService.createComment);
 router.patch("/:id", sharedCommentService.patchComment);
 router.delete("/:id", sharedCommentService.deleteComment);

@@ -13,16 +13,16 @@ router.get("/:id", service.getProduct);
 router.post(
   "/",
   authMiddleware.verifyToken,
-  createProductMiddleware.verifyProductFields,
   createProductMiddleware.handleImageUpload,
+  createProductMiddleware.verifyProductFields,
   service.createProduct
 );
 // 상품 수정 - 이미지 업로드 + 유효성 검사 미들웨어 적용
 router.patch(
   "/:id",
   authMiddleware.verifyToken,
-  createProductMiddleware.verifyProductFields,
   createProductMiddleware.handleImageUpload,
+  createProductMiddleware.verifyProductFields,
   service.patchProduct
 );
 router.delete("/:id", authMiddleware.verifyToken, service.deleteProduct);

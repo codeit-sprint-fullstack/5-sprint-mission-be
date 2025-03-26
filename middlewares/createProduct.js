@@ -2,6 +2,17 @@ import multer from "multer";
 import path from "path";
 
 const verifyProductFields = (req, res, next) => {
+  // req.body가 문자열로 전달된 경우 파싱
+  if (typeof req.body === "string") {
+    try {
+      req.body = JSON.parse(req.body);
+    } catch (e) {
+      return res
+        .status(400)
+        .send({ message: "요청 데이터 형식이 올바르지 않습니다." });
+    }
+  }
+
   const { name, description, price } = req.body;
 
   if (!name || !description || !price) {
@@ -33,7 +44,7 @@ const verifyProductFields = (req, res, next) => {
 };
 
 // 이미지 저장 디렉토리 설정
-const uploadDir = multer({ dest: "uploads/" });
+const uploadDir = "uploads/"; // dest 속성 제거하고 문자열만 지정
 
 // 파일 저장 설정
 const storage = multer.diskStorage({
@@ -100,7 +111,7 @@ const handleImageUpload = (req, res, next) => {
     }
 
     // 업로드된 파일 경로를 req.body.images 배열에 저장
-    req.body.images = req.files.map((file) => `/${uploadDir}/${file.filename}`);
+    req.body.images = req.files.map((file) => `/${file.path}`); // uploadDir 경로 수정
 
     next();
   });

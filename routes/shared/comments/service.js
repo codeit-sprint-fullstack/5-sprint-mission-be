@@ -43,16 +43,34 @@ export const getComments = async (req, res, next) => {
         content: true,
         createdAt: true,
         updatedAt: true,
+        userId: true,
+        User: {
+          select: {
+            id: true,
+            nickname: true,
+          },
+        },
       },
     });
+
+    const formattedComments = comments.map((comment) => ({
+      id: comment.id,
+      content: comment.content,
+      createdAt: comment.createdAt,
+      updatedAt: comment.updatedAt,
+      writer: {
+        id: comment.userId,
+        nickname: comment.User.nickname,
+      },
+    }));
 
     //요청 성공 시 응답 객체
     const response = {
       status: 200,
       idField,
-      commentsList: comments, //댓글 목록
+      commentsList: formattedComments, //댓글 목록
       //XXX: 받아온 목록의 마지막 댓글 아이디를 커서로 넘겨줌.
-      lastCursor: comments[comments.length - 1]?.id ?? null,
+      lastCursor: comments[formattedComments.length - 1]?.id ?? null,
     };
 
     res.status(200).send(response);

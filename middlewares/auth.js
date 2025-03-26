@@ -6,24 +6,14 @@ const verifySessionLogin = async (req, res, next) => {
     const { userId } = req.session;
 
     if (!userId) {
-      return res.status(401).json({
-        status: 401,
-        path: req.path,
-        method: req.method,
-        message: "로그인 후 이용해주세요.",
-      });
+      userUtils.throwUnauthorizedError();
     }
 
     const user = await userUtils.findById(req.session.userId);
 
     // 유저id가 데이터베이스에 존재하지 않으면 인증 실패
     if (!user) {
-      return res.status(401).json({
-        status: 401,
-        path: req.path,
-        method: req.method,
-        message: "로그인 후 이용해주세요.",
-      });
+      userUtils.throwUnauthorizedError();
     }
 
     // 이후 편리성을 위한 유저 정보 전달

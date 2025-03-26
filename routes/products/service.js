@@ -190,7 +190,7 @@ const createProduct = async (req, res, next) => {
       throw error;
     }
 
-    const { name, description, price, images, tags } = req.body;
+    const { name, description, price, images = [], tags = [] } = req.body;
     const { id: userId } = req.user; // 로그인한 사용자 ID 가져오기
 
     const newProduct = await prisma.product.create({
@@ -199,15 +199,16 @@ const createProduct = async (req, res, next) => {
         name,
         description,
         price: Number(price), // 문자열로 들어올 수 있으므로 숫자로 변환
-        images, // 미들웨어에서 처리된 이미지 경로 배열
+        images: images || [], // 이미지가 없으면 빈 배열로 설정
         //기존에 있던 tag라면 거기에 상품id연결해주고, 새로운 tag라면 새 id와 함께 생성+상품id연결
         ProductTag: {
-          connectOrCreate: tags
-            ? tags.map((tag) => ({
-                where: { tag },
-                create: { tag },
-              }))
-            : [],
+          connectOrCreate:
+            tags && tags.length > 0
+              ? tags.map((tag) => ({
+                  where: { tag },
+                  create: { tag },
+                }))
+              : [],
         },
       },
       include: {
@@ -246,7 +247,7 @@ const patchProduct = async (req, res, next) => {
     }
 
     const id = req.params.id;
-    const { name, description, price, images, tags } = req.body;
+    const { name, description, price, images = [], tags } = req.body;
     const { id: userId } = req.user; // 로그인한 사용자 ID 가져오기
 
     // 상품 존재 여부 확인
@@ -278,17 +279,20 @@ const patchProduct = async (req, res, next) => {
       name,
       description,
       price: Number(price),
-      images,
+      images: images || [], // 이미지가 없으면 빈 배열로 설정
     };
 
     if (tags) {
       updateData.ProductTag = {
         //기존에 있던 태그는 테이블 연결 해제하고 새로운 태그 연결해주기
         disconnect: existingProduct.ProductTag.map((tag) => ({ id: tag.id })),
-        connectOrCreate: tags.map((tag) => ({
-          where: { tag },
-          create: { tag },
-        })),
+        connectOrCreate:
+          tags.length > 0
+            ? tags.map((tag) => ({
+                where: { tag },
+                create: { tag },
+              }))
+            : [],
       };
     }
 

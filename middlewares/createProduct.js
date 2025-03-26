@@ -103,15 +103,13 @@ const handleImageUpload = (req, res, next) => {
       return res.status(400).send({ message: err.message });
     }
 
-    // 업로드된 파일이 없는 경우
-    if (!req.files || req.files.length === 0) {
-      return res
-        .status(400)
-        .send({ message: "최소 한 개 이상의 이미지를 업로드해주세요." });
+    if (req.files && req.files.length > 0) {
+      // 업로드된 파일 경로를 req.body.images 배열에 저장
+      req.body.images = req.files.map((file) => `/${file.path}`);
+    } else {
+      // 이미지가 없는 경우 빈 배열 설정
+      req.body.images = [];
     }
-
-    // 업로드된 파일 경로를 req.body.images 배열에 저장
-    req.body.images = req.files.map((file) => `/${file.path}`); // uploadDir 경로 수정
 
     next();
   });

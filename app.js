@@ -21,7 +21,12 @@ app.use(
     resave: false,
     saveUninitialized: false,
     secret: process.env.COOKIE_SECRET,
-    cookie: { httpOnly: true, secure: false },
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000, // 유효기간 24시간
+    },
   })
 );
 // 정적 파일 제공을 위한 미들웨어 추가

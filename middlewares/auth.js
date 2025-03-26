@@ -6,15 +6,18 @@ const verifySessionLogin = async (req, res, next) => {
     const { userId } = req.session;
 
     if (!userId) {
-      // 세션에 유저id가 없으면 인증 실패
-      userUtils.throwUnauthorizedError();
+      const error = new Error("인증이 필요합니다.");
+      error.name = "UnauthorizedError";
+      throw error;
     }
 
     const user = await userUtils.findById(req.session.userId);
 
     // 유저id가 데이터베이스에 존재하지 않으면 인증 실패
     if (!user) {
-      userUtils.throwUnauthorizedError();
+      const error = new Error("인증이 필요합니다.");
+      error.name = "UnauthorizedError";
+      throw error;
     }
 
     // 이후 편리성을 위한 유저 정보 전달
@@ -25,7 +28,7 @@ const verifySessionLogin = async (req, res, next) => {
       provider: user.provider,
       providerId: user.providerId,
     };
-
+    // 사용자가 로그인되어 있다면 다음 미들웨어 처리
     next();
   } catch (error) {
     next(error); // 에러 핸들러로 전달

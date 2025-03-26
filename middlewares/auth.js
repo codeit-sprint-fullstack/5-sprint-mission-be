@@ -25,10 +25,10 @@ const verifySessionLogin = async (req, res, next) => {
       provider: user.provider,
       providerId: user.providerId,
     };
-    // 사용자가 로그인되어 있다면 다음 미들웨어 처리
+
     next();
   } catch (error) {
-    next(error);
+    next(error); // 에러 핸들러로 전달
   }
 };
 

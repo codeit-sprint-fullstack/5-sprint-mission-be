@@ -77,9 +77,7 @@ const getProductList = async (req, res, next) => {
 
         return {
           ...product,
-          _count: {
-            LikeProduct: likeCount,
-          },
+          likeCount, // 좋아요 수 추가
         };
       })
     );
@@ -172,9 +170,18 @@ const getProduct = async (req, res, next) => {
       throw error;
     }
 
+    // 좋아요 수 조회
+    const likeCount = await prisma.likeProduct.count({
+      where: {
+        productId: id,
+        deletedAt: null,
+      },
+    });
+
     // 사용자가 로그인한 경우 좋아요 정보 추가 + 소유자 정보 추가
     let productWithLike = {
       ...product,
+      likeCount, // 좋아요 수 추가
       isLiked: false,
       ownerId: product.User.id,
       ownerNickname: product.User.nickname,

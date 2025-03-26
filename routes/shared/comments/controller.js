@@ -4,23 +4,12 @@ import authMiddleware from "../../../middlewares/auth.js";
 
 const router = express.Router();
 
-router.get("/:domainId", sharedCommentService.getComments);
+// 모든 라우트에 verifyToken 미들웨어 적용
+router.use(authMiddleware.verifyToken);
 
-// 인증 필요
-router.post(
-  "/:domainId",
-  authMiddleware.verifyToken,
-  sharedCommentService.createComment
-);
-router.patch(
-  "/:id",
-  authMiddleware.verifyToken,
-  sharedCommentService.patchComment
-);
-router.delete(
-  "/:id",
-  authMiddleware.verifyToken,
-  sharedCommentService.deleteComment
-);
+router.get("/:domainId", sharedCommentService.getComments);
+router.post("/:domainId", sharedCommentService.createComment);
+router.patch("/:id", sharedCommentService.patchComment);
+router.delete("/:id", sharedCommentService.deleteComment);
 
 export default router;

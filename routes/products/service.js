@@ -43,6 +43,26 @@ const getProductList = async (req, res, next) => {
       ],
     };
 
+    // 현재 로그인한 사용자 ID
+    const userId = req.user?.id;
+
+    // 로그인한 사용자인 경우, 해당 사용자가 좋아요한 상품 ID 목록을 먼저 조회
+    let likedProductIds = [];
+    if (userId) {
+      // 삭제되지 않은 좋아요 정보만 조회
+      const userLikes = await prisma.likeProduct.findMany({
+        where: {
+          userId: userId,
+          deletedAt: null,
+        },
+        select: {
+          productId: true,
+        },
+      });
+
+      likedProductIds = userLikes.map((item) => item.productId);
+    }
+
     //product collection에서 키워드 검색 - 정렬 - skip값 만큼 항목을 건너뛰어 limit개수 만큼 데이터 불러오기(deletedAt 컬럼 제외)
     const products = await prisma.product.findMany({
       where: searchCriteria,
@@ -67,31 +87,31 @@ const getProductList = async (req, res, next) => {
             nickname: true,
           },
         },
-        LikeProduct: {
-          where: {
-            deletedAt: null,
-          },
-        },
       },
       skip,
       take: pageSize,
     });
 
     // 응답 데이터 형식 변환
-    const formattedProducts = products.map((product) => ({
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      images: product.images,
-      tags: product.ProductTag.map((pt) => pt.tag),
-      likeCount: product.favoritesCount,
-      isLiked: product.LikeProduct.length > 0,
-      ownerId: product.User.id,
-      ownerNickname: product.User.nickname,
-      createdAt: product.createdAt.toISOString(),
-      updatedAt: product.updatedAt.toISOString(),
-    }));
+    const formattedProducts = products.map((product) => {
+      const isLiked = userId ? likedProductIds.includes(product.id) : false;
+      console.log(`Product ${product.id} isLiked:`, isLiked);
+
+      return {
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        images: product.images,
+        tags: product.ProductTag.map((pt) => pt.tag),
+        likeCount: product.favoritesCount,
+        isLiked: isLiked,
+        ownerId: product.User.id,
+        ownerNickname: product.User.nickname,
+        createdAt: product.createdAt.toISOString(),
+        updatedAt: product.updatedAt.toISOString(),
+      };
+    });
 
     //총 상품 수, 페이지 수 계산
     //검색 키워드에 맞는 전체 데이터 개수 불러오기
@@ -117,8 +137,9 @@ const getProductList = async (req, res, next) => {
 const getProduct = async (req, res, next) => {
   try {
     const id = req.params.id;
+    const userId = req.user?.id; // 로그인한 사용자 ID (없을 수도 있음)
 
-    //id 일치하는 상품 찾기
+    // 상품 존재 여부 확인
     const product = await prisma.product.findUnique({
       where: {
         id,
@@ -149,30 +170,30 @@ const getProduct = async (req, res, next) => {
       },
     });
 
-    // 사용자가 로그인한 경우 좋아요 정보 추가 + 소유자 정보 추가
-    let productWithLike = {
-      ...product,
-      likeCount, // 좋아요 수 추가
-      isLiked: false,
-      ownerId: product.User.id,
-      ownerNickname: product.User.nickname,
-      User: undefined, // 원본 User 객체 제거
-    };
-
-    if (req.user && req.user.id) {
-      const { id: userId } = req.user;
-
-      // 사용자가 이 상품을 좋아요했는지 확인
-      const likeInfo = await prisma.likeProduct.findFirst({
+    // 로그인한 사용자인 경우 좋아요 여부 확인
+    let isLiked = false;
+    if (userId) {
+      // 삭제되지 않은 좋아요 정보만 조회
+      const likeExists = await prisma.likeProduct.findFirst({
         where: {
-          userId,
+          userId: userId,
           productId: id,
           deletedAt: null,
         },
       });
 
-      productWithLike.isLiked = !!likeInfo;
+      isLiked = !!likeExists; // likeExists가 존재하면 true, 없으면 false
     }
+
+    // 사용자가 로그인한 경우 좋아요 정보 추가 + 소유자 정보 추가
+    const productWithLike = {
+      ...product,
+      likeCount, // 좋아요 수 추가
+      isLiked: isLiked, // 사용자의 좋아요 여부
+      ownerId: product.User.id,
+      ownerNickname: product.User.nickname,
+      User: undefined, // 원본 User 객체 제거
+    };
 
     res.status(200).send(productWithLike);
   } catch (e) {
@@ -452,6 +473,7 @@ const createLike = async (req, res, next) => {
         like,
         product: {
           ...updatedProduct,
+          isLiked: true, // 좋아요를 생성했으므로 isLiked를 true로 설정
           ownerId: updatedProduct.User.id,
           ownerNickname: updatedProduct.User.nickname,
           User: undefined,
@@ -540,6 +562,7 @@ const deleteLike = async (req, res, next) => {
         deletedLike,
         product: {
           ...updatedProduct,
+          isLiked: false, // 좋아요를 취소했으므로 isLiked를 false로 설정
           ownerId: updatedProduct.User.id,
           ownerNickname: updatedProduct.User.nickname,
           User: undefined,

@@ -87,6 +87,7 @@ const createComment = async (req, res, next) => {
     const { content } = req.body;
     const { commentTable, mainTable, idField } = getFieldType(type);
     const userId = req.user.id;
+    const userNickname = req.user.nickname;
 
     const newComment = await prisma[commentTable].create({
       data: {
@@ -97,7 +98,18 @@ const createComment = async (req, res, next) => {
       },
     });
 
-    res.status(201).send(newComment);
+    const response = {
+      id: newComment.id,
+      content: newComment.content,
+      createdAt: newComment.createdAt,
+      updatedAt: newComment.updatedAt,
+      writer: {
+        id: userId,
+        nickname: userNickname,
+      },
+    };
+
+    res.status(201).send(response);
   } catch (e) {
     next(e);
   }
@@ -111,6 +123,7 @@ const patchComment = async (req, res, next) => {
     const { content } = req.body;
     const { commentTable } = getFieldType(type);
     const userId = req.user.id;
+    const userNickname = req.user.nickname;
 
     // 댓글 존재 여부 및 작성자 확인
     const existingComment = await prisma[commentTable].findUnique({
@@ -134,7 +147,18 @@ const patchComment = async (req, res, next) => {
       data: { content },
     });
 
-    res.status(200).send(updatedComment); //수정된 댓글
+    const response = {
+      id: updatedComment.id,
+      content: updatedComment.content,
+      createdAt: updatedComment.createdAt,
+      updatedAt: updatedComment.updatedAt,
+      writer: {
+        id: userId,
+        nickname: userNickname,
+      },
+    };
+
+    res.status(200).send(response); //수정된 댓글
   } catch (e) {
     next(e);
   }
@@ -176,10 +200,16 @@ const deleteComment = async (req, res, next) => {
       },
     });
 
-    res.status(202).send({
+    if (!deletedComment) {
+      return res.status(404).send({ message: "댓글을 찾을 수 없습니다." });
+    }
+
+    const response = {
+      isSuccess: true,
       message: "삭제 처리가 완료되었습니다.",
-      data: deletedComment,
-    });
+    };
+
+    res.status(202).send(response);
   } catch (e) {
     next(e);
   }

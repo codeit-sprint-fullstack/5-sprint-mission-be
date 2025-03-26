@@ -9,16 +9,23 @@ router.get("/", service.getProductList);
 router.get("/:id", service.getProduct);
 
 // 인증 필요
-router.patch("/:id", authMiddleware.verifySessionLogin, service.patchProduct);
-router.delete("/:id", authMiddleware.verifySessionLogin, service.deleteProduct);
 // 상품 등록 - 이미지 업로드 + 유효성 검사 미들웨어 적용
 router.post(
   "/",
   authMiddleware.verifySessionLogin,
-  createProductMiddleware.handleImageUpload,
   createProductMiddleware.verifyProductFields,
+  createProductMiddleware.handleImageUpload,
   service.createProduct
 );
+// 상품 수정 - 이미지 업로드 + 유효성 검사 미들웨어 적용
+router.patch(
+  "/:id",
+  authMiddleware.verifySessionLogin,
+  createProductMiddleware.verifyProductFields,
+  createProductMiddleware.handleImageUpload,
+  service.patchProduct
+);
+router.delete("/:id", authMiddleware.verifySessionLogin, service.deleteProduct);
 router.post("/:id/like", authMiddleware.verifySessionLogin, service.createLike);
 router.delete(
   "/:id/like",

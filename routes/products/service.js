@@ -12,11 +12,14 @@ const getProductList = async (req, res, next) => {
     const orderBy = req.query.orderBy || "recent"; //(기본값: 최신순)
     const sortOption =
       orderBy === "favorite"
-        ? {
-            LikeProduct: {
-              _count: "desc", // 좋아요 수를 기준으로 내림차순 정렬
+        ? [
+            {
+              LikeProduct: {
+                _count: "desc",
+              },
             },
-          }
+            { createdAt: "desc" }, // 좋아요 수가 같을 경우 최신순으로
+          ]
         : { createdAt: orderBy === "recent" ? "desc" : "asc" };
 
     //키워드 검색
@@ -44,83 +47,51 @@ const getProductList = async (req, res, next) => {
     const products = await prisma.product.findMany({
       where: searchCriteria,
       orderBy: sortOption,
-      skip,
-      take: pageSize,
       select: {
         id: true,
-        userId: true,
         name: true,
         description: true,
         price: true,
         images: true,
-        ProductTag: true, //연결된 외부 테이블 데이터도 include말고 select로 가져옴
+        favoritesCount: true,
+        createdAt: true,
+        updatedAt: true,
+        ProductTag: {
+          select: {
+            tag: true,
+          },
+        },
         User: {
           select: {
             id: true,
             nickname: true,
           },
         },
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-
-    // 각 상품의 좋아요 수를 별도로 조회
-    const productsWithLikeCounts = await Promise.all(
-      products.map(async (product) => {
-        const likeCount = await prisma.likeProduct.count({
+        LikeProduct: {
           where: {
-            productId: product.id,
             deletedAt: null,
           },
-        });
-
-        return {
-          ...product,
-          likeCount, // 좋아요 수 추가
-        };
-      })
-    );
-
-    // 사용자가 로그인한 경우 좋아요 정보 추가
-    let productsWithLike = productsWithLikeCounts;
-    if (req.user && req.user.id) {
-      const { id: userId } = req.user;
-
-      // 사용자가 좋아요한 상품 ID 목록 가져오기
-      const likedProducts = await prisma.likeProduct.findMany({
-        where: {
-          userId,
-          productId: { in: products.map((product) => product.id) },
-          deletedAt: null,
         },
-        select: {
-          productId: true,
-        },
-      });
+      },
+      skip,
+      take: pageSize,
+    });
 
-      const likedProductIds = new Set(
-        likedProducts.map((like) => like.productId)
-      );
-
-      // 각 상품에 isLiked 필드와 소유자 정보 추가
-      productsWithLike = productsWithLikeCounts.map((product) => ({
-        ...product,
-        isLiked: likedProductIds.has(product.id),
-        ownerId: product.User.id,
-        ownerNickname: product.User.nickname,
-        User: undefined, // 원본 User 객체 제거, 키 이름 바꾸기
-      }));
-    } else {
-      // 로그인하지 않은 사용자는 모든 상품에 isLiked: false 설정
-      productsWithLike = productsWithLikeCounts.map((product) => ({
-        ...product,
-        isLiked: false,
-        ownerId: product.User.id,
-        ownerNickname: product.User.nickname,
-        User: undefined, // 원본 User 객체 제거
-      }));
-    }
+    // 응답 데이터 형식 변환
+    const formattedProducts = products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      images: product.images,
+      tags: product.ProductTag.map((pt) => pt.tag),
+      likeCount: product.favoritesCount,
+      isLiked: product.LikeProduct.length > 0,
+      ownerId: product.User.id,
+      ownerNickname: product.User.nickname,
+      createdAt: product.createdAt.toISOString(),
+      updatedAt: product.updatedAt.toISOString(),
+    }));
 
     //총 상품 수, 페이지 수 계산
     //검색 키워드에 맞는 전체 데이터 개수 불러오기
@@ -131,7 +102,7 @@ const getProductList = async (req, res, next) => {
 
     //요청 성공 시 응답 객체
     const response = {
-      ProductList: productsWithLike, //필터링된 상품 목록 (좋아요 정보 포함)
+      ProductList: formattedProducts,
       totalProducts,
       totalPages,
     };

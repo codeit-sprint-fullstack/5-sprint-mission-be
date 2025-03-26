@@ -3,14 +3,16 @@ model Product {
     userId         String
     name           String
     description    String
-    price          String
+    price          Int // String에서 Int로 변경
     images         String[]         @default([])
+    favoritesCount Int              @default(0) // 좋아요 수를 저장할 필드 추가
     createdAt      DateTime         @default(now())
     updatedAt      DateTime         @updatedAt
     deletedAt      DateTime?
     User           User             @relation(fields: [userId], references: [id])
     ProductComment ProductComment[] ///1:N
     ProductTag     ProductTag[] ///XXX: N:N 하나의 상품이 여러 개의 태그 - 하나의 태그를 여러 개의 상품이 가지고 있을 수 있음
+    LikeProduct    LikeProduct[] // LikeProduct 관계 추가
 }
 
 model ProductTag {

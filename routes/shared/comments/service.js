@@ -67,11 +67,14 @@ const createComment = async (req, res, next) => {
     const domainId = req.params.domainId;
     const { type } = req.query;
     const { content } = req.body;
-    const { commentTable, mainTable } = getFieldType(type);
+    const { commentTable, mainTable, idField } = getFieldType(type);
+    const userId = req.user.id;
 
     const newComment = await prisma[commentTable].create({
       data: {
-        [mainTable]: { connect: { id: domainId } },
+        // 관계 필드명 수정 (Product/Article 대신 productId/articleId 사용)
+        userId: userId,
+        [idField]: domainId,
         content,
       },
     });
@@ -89,8 +92,9 @@ const patchComment = async (req, res, next) => {
     const { type } = req.query;
     const { content } = req.body;
     const { commentTable } = getFieldType(type);
+    const userId = req.user.id;
 
-    // 댓글 존재 여부 확인
+    // 댓글 존재 여부 및 작성자 확인
     const existingComment = await prisma[commentTable].findUnique({
       where: {
         id,
@@ -100,6 +104,11 @@ const patchComment = async (req, res, next) => {
 
     if (!existingComment) {
       return res.status(404).send({ message: "댓글을 찾을 수 없습니다." });
+    }
+
+    // 댓글 작성자와 현재 사용자가 일치하는지 확인
+    if (existingComment.userId !== userId) {
+      return res.status(403).send({ message: "댓글 수정 권한이 없습니다." });
     }
 
     const updatedComment = await prisma[commentTable].update({
@@ -119,6 +128,7 @@ const deleteComment = async (req, res, next) => {
     const id = req.params.id;
     const { type } = req.query;
     const { commentTable } = getFieldType(type);
+    const userId = req.user.id;
 
     // 댓글 존재 여부 확인
     const existingComment = await prisma[commentTable].findUnique({
@@ -130,6 +140,11 @@ const deleteComment = async (req, res, next) => {
 
     if (!existingComment) {
       return res.status(404).send({ message: "댓글을 찾을 수 없습니다." });
+    }
+
+    // 댓글 작성자와 현재 사용자가 일치하는지 확인
+    if (existingComment.userId !== userId) {
+      return res.status(403).send({ message: "댓글 삭제 권한이 없습니다." });
     }
 
     //deletedAt 업데이트

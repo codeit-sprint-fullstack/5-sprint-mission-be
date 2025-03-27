@@ -1,5 +1,12 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
+
+// 업로드 디렉토리가 없으면 생성
+const uploadDir = "uploads/";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const verifyProductFields = (req, res, next) => {
   // req.body가 문자열로 전달된 경우 파싱
@@ -13,7 +20,12 @@ const verifyProductFields = (req, res, next) => {
     }
   }
 
-  const { name, description, price } = req.body;
+  // FormData로 전송된 경우 필드가 문자열로 전달될 수 있음
+  const name = req.body.name;
+  const description = req.body.description;
+  const price = req.body.price;
+
+  console.log("검증 중인 필드:", { name, description, price });
 
   if (!name || !description || !price) {
     return res.status(400).send({ message: "모든 필수 필드를 입력해주세요." });
@@ -42,9 +54,6 @@ const verifyProductFields = (req, res, next) => {
 
   next();
 };
-
-// 이미지 저장 디렉토리 설정
-const uploadDir = "uploads/"; // dest 속성 제거하고 문자열만 지정
 
 // 파일 저장 설정
 const storage = multer.diskStorage({
@@ -121,6 +130,16 @@ const handleImageUpload = (req, res, next) => {
       req.body.images = [];
     }
 
+    // FormData에서 tags 처리
+    if (req.body.tags && !Array.isArray(req.body.tags)) {
+      if (typeof req.body.tags === "string") {
+        req.body.tags = [req.body.tags];
+      } else {
+        req.body.tags = [];
+      }
+    }
+
+    // console.log("처리된 요청 본문:", req.body);
     next();
   });
 };

@@ -10,14 +10,14 @@ router.use(authMiddleware.verifyToken);
 
 router.get("/", service.getProductList);
 router.get("/:id", service.getProduct);
-// 상품 등록 - 이미지 업로드 + 유효성 검사 미들웨어 적용
+// 상품 등록 - 이미지 업로드 미들웨어를 먼저 적용하고, 그 다음 유효성 검사 미들웨어 적용
 router.post(
   "/",
   createProductMiddleware.handleImageUpload,
   createProductMiddleware.verifyProductFields,
   service.createProduct
 );
-// 상품 수정 - 이미지 업로드 + 유효성 검사 미들웨어 적용
+// 상품 수정 - 이미지 업로드 미들웨어를 먼저 적용하고, 그 다음 유효성 검사 미들웨어 적용
 router.patch(
   "/:id",
   createProductMiddleware.handleImageUpload,

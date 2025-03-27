@@ -214,13 +214,18 @@ const createProduct = async (req, res, next) => {
     const { name, description, price, images = [], tags = [] } = req.body;
     const { id: userId } = req.user; // 로그인한 사용자 ID 가져오기
 
+    // 이미지 경로가 문자열인 경우 배열로 변환
+    const imageArray = Array.isArray(images)
+      ? images
+      : [images].filter(Boolean);
+
     const newProduct = await prisma.product.create({
       data: {
         userId, // 현재 로그인한 사용자(상품 등록하는 소유자의 id) 저장
         name,
         description,
         price: Number(price), // 문자열로 들어올 수 있으므로 숫자로 변환
-        images: images || [], // 이미지가 없으면 빈 배열로 설정
+        images: imageArray, // 이미지 배열 사용
         //기존에 있던 tag라면 거기에 상품id연결해주고, 새로운 tag라면 새 id와 함께 생성+상품id연결
         ProductTag: {
           connectOrCreate:

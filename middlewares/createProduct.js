@@ -102,9 +102,20 @@ const handleImageUpload = (req, res, next) => {
       return res.status(400).send({ message: err.message });
     }
 
+    // req.body가 undefined인 경우 초기화
+    if (!req.body) {
+      req.body = {};
+    }
+
+    // console.log("업로드된 파일:", req.files); // 디버깅용 로그
+
     if (req.files && req.files.length > 0) {
       // 업로드된 파일 경로를 req.body.images 배열에 저장
-      req.body.images = req.files.map((file) => `/${file.path}`);
+      // 경로 구분자 통일 (Windows에서 발생할 수 있는 문제 해결)
+      req.body.images = req.files.map(
+        (file) => `/${file.path.replace(/\\/g, "/")}`
+      );
+      // console.log("업로드된 이미지 경로:", req.body.images); // 디버깅용 로그
     } else {
       // 이미지가 없는 경우 빈 배열 설정
       req.body.images = [];

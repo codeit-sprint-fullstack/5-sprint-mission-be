@@ -186,15 +186,21 @@ const createArticle = async (req, res, next) => {
       throw error;
     }
 
-    const { title, content, image } = req.body;
-    const { id: userId } = req.user; // 로그인한 사용자 ID 가져오기
+    const { title, content } = req.body;
+    const { id: userId } = req.user;
+
+    // 이미지 경로 처리
+    const image =
+      req.body.images && req.body.images.length > 0
+        ? req.body.images[0] // 첫 번째 이미지 경로만 사용
+        : null;
 
     const newArticle = await prisma.article.create({
       data: {
-        userId, // 현재 로그인한 사용자(게시글 등록하는 소유자의 id) 저장
+        userId,
         title,
         content,
-        image,
+        image, // 이미지 경로 저장
       },
       include: {
         User: {
@@ -231,8 +237,14 @@ const patchArticle = async (req, res, next) => {
     }
 
     const id = req.params.id;
-    const { title, content, image } = req.body;
-    const { id: userId } = req.user; // 로그인한 사용자 ID 가져오기
+    const { title, content } = req.body;
+    const { id: userId } = req.user;
+
+    // 이미지 경로 처리
+    const image =
+      req.body.images && req.body.images.length > 0
+        ? req.body.images[0] // 첫 번째 이미지 경로만 사용
+        : null;
 
     // 게시글 존재 여부 확인
     const existingArticle = await prisma.article.findUnique({
@@ -258,7 +270,7 @@ const patchArticle = async (req, res, next) => {
       data: {
         title,
         content,
-        image,
+        image, // 이미지 경로 업데이트
       },
       include: {
         User: {

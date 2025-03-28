@@ -4,6 +4,7 @@ GET http://localhost:5004/article
 
 POST http://localhost:5004/article
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QzQG5hdmVyLmNvbSIsImlkIjo0LCJuaWNrbmFtZSI6InRlc3QzIiwiaWF0IjoxNzQyMzQ3NTQ0LCJleHAiOjE3NDIzNTExNDR9.x1-D7Nnih8yVFZe0wnx2CiDYbGPx5ElU8_6r6o50_uo
 
 {
    "title": "게시글을 등록해보자.",
@@ -12,8 +13,10 @@ Content-Type: application/json
 
 ###
 
-PATCH http://localhost:5004/article/0fbc08c1-ab28-483a-a9e6-26cfe251f77e
+PATCH http://localhost:5004/article/00e87fba-049b-4c0e-b519-4612df52f3ce
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QzQG5hdmVyLmNvbSIsImlkIjo0LCJuaWNrbmFtZSI6InRlc3QzIiwiaWF0IjoxNzQyMzQ3NTQ0LCJleHAiOjE3NDIzNTExNDR9.x1-D7Nnih8yVFZe0wnx2CiDYbGPx5ElU8_6r6o50_uo
+
 
 {
    "title": "수정된 게시글을 등록해보자.",
@@ -23,7 +26,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5004/article/22
+GET http://localhost:5004/article/37
 
 
 ###

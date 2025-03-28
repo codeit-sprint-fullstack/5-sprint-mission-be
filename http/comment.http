@@ -1,30 +1,32 @@
-GET http://localhost:5004/comment/0fbc08c1-ab28-483a-a9e6-26cfe251f77e?lastId=54556d07-6941-4758-9ec3-cc2fefa2e223
-
+GET http://localhost:5004/comments/b368b0e4-24f1-46d4-b2d4-7b612f6dd0d6?targetType=product
 ###
 
-POST http://localhost:5004/comment/article/c20e2924-61cb-4990-93c6-714fc736c577
+POST http://localhost:5004/comment/article/b368b0e4-24f1-46d4-b2d4-7b612f6dd0d6
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh5dWtAbmF2ZXIuY29tIiwiaWQiOjEsIm5pY2tuYW1lIjoiaHl1ayIsImlhdCI6MTc0MjUyMzMzNCwiZXhwIjoxNzQyNTI2OTM0fQ.Lo3OHZvKRX3eQl08WSFnq95Sa3NHEuc34c_BqnK8-6k
 
 {
     "content":"게시글에 댓글을 남겨봅시다."
 }
 
 ###
-POST http://localhost:5004/comment/product/3a661564-c5f8-4121-ba85-bb68ded42490
+POST http://localhost:5004/comments/product/b368b0e4-24f1-46d4-b2d4-7b612f6dd0d6
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh5dWtAbmF2ZXIuY29tIiwiaWQiOjEsIm5pY2tuYW1lIjoiaHl1ayIsImlhdCI6MTc0MjUyMzMzNCwiZXhwIjoxNzQyNTI2OTM0fQ.Lo3OHZvKRX3eQl08WSFnq95Sa3NHEuc34c_BqnK8-6k
 
 {
     "content":"상품에 댓글을 남겨봅시다."
 }
 
 ###
-DELETE http://localhost:5004/comment/806523d3-6980-4035-95d4-d4557ba1261b
-
+DELETE http://localhost:5004/comment/83726a6c-77c4-431b-aee7-350e57fd3ee2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAbmF2ZXIuY29tIiwiaWQiOjEsIm5pY2tuYW1lIjoidGVzdCIsImlhdCI6MTc0MjI4MjA2OSwiZXhwIjoxNzQyMjg1NjY5fQ.9bNiX2p5iCWqdMCCsNKYPXKDXcaZTwH0I3BsaUK7JTI
 
 ###
 
-PATCH http://localhost:5004/comment/39c1200a-3a61-4e92-b6bf-1a05d5d9b901
+PATCH http://localhost:5004/comment/83726a6c-77c4-431b-aee7-350e57fd3ee2
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAbmF2ZXIuY29tIiwiaWQiOjEsIm5pY2tuYW1lIjoidGVzdCIsImlhdCI6MTc0MjI4MjA2OSwiZXhwIjoxNzQyMjg1NjY5fQ.9bNiX2p5iCWqdMCCsNKYPXKDXcaZTwH0I3BsaUK7JTI
 
 {
     "content":"댓글을 수정해 봅시다."

@@ -1,7 +1,10 @@
 model User {
-  id String @id @default(uuid())
-  username  String @unique
-  nickname String @unique
-  password String
-  createdAt DateTime @default(now())
+  id                Int      @id @default(autoincrement())
+  email             String   @unique
+  nickname          String   @unique
+  encryptedPassword String
+  refreshToken      String?
+  profileImg        String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }

@@ -16,7 +16,8 @@ export const CreateProduct = s.object({
   price: s.number(),
   description: s.size(s.string(),10,100),
   name: s.size(s.string(),1,10),
-  tags: s.optional(s.array(s.string(),1,5))
+  tags: s.optional(s.array(s.string(),1,5)),
+  images:s.optional(s.array(s.string()))
 })
 
 

@@ -1,7 +1,22 @@
-POST http://localhost:5004/auth/login
+POST http://localhost:5004/auth/signUp
 Content-Type: application/json
 
 {
-  "username":"test",
-  "password":"hhhh"
+  "email":"test3@naver.com",
+  "nickname":"test3",
+  "password":"test123!"
 }
+
+###
+
+POST http://localhost:5004/auth/signIn
+Content-Type: application/json
+
+{
+  "email":"test@naver.com",
+  "password":"test123!"
+}
+
+###
+
+POST http://localhost:5004/auth/refresh-token

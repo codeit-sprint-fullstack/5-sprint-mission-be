@@ -1,9 +1,10 @@
-GET http://localhost:5004/product
+GET http://localhost:5004/products?order=favorite
 
 ###
 
 POST http://localhost:5004/product
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAbmF2ZXIuY29tIiwiaWQiOjEsIm5pY2tuYW1lIjoidGVzdCIsImlhdCI6MTc0MjQ0NzczOSwiZXhwIjoxNzQyNDUxMzM5fQ.hjCKficx1nNkz4n8oci9ESFbavL04pP3NyvEnNmJmr4
 
 {
     "tags":["이미지없음","이미지없다"],
@@ -13,19 +14,21 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:5004/product/3a661564-c5f8-4121-ba85-bb68ded42490
-
+GET http://localhost:5004/products/5c7ea79e-e501-4117-80e7-5b1e1a282457
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh5dWtAbmF2ZXIuY29tIiwiaWQiOjEsIm5pY2tuYW1lIjoiaHl1ayIsImlhdCI6MTc0MjUyMzMzNCwiZXhwIjoxNzQyNTI2OTM0fQ.Lo3OHZvKRX3eQl08WSFnq95Sa3NHEuc34c_BqnK8-6k
 ###
 
-PATCH http://localhost:5004/product/f6cc7490-0b22-4156-9b08-2d9ca194bd75
+PATCH http://localhost:5004/product/350dcf43-5c9f-4a44-b91a-f5d1101a2fd5
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAbmF2ZXIuY29tIiwiaWQiOjEsIm5pY2tuYW1lIjoidGVzdCIsImlhdCI6MTc0MjI3NDg4NywiZXhwIjoxNzQyMjc4NDg3fQ.35a0wvvVieZnRfbjpp-4XQDiLDZH6CeocOKfV5NR1kA
 
 {
     "tags":["이미지없음","이미지없다"],
     "price": 5000,
     "description": "이미지가 없을 때 입니다.",
-    "name": "수정이 될까 이름이 길때도?"
+    "name": "수정이 될까"
 }
 
 ###
-DELETE http://localhost:5004/product/6672257b-e3ca-4289-86e0-7dc4df6d1036
+DELETE http://localhost:5004/product/350dcf43-5c9f-4a44-b91a-f5d1101a2fd5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAbmF2ZXIuY29tIiwiaWQiOjEsIm5pY2tuYW1lIjoidGVzdCIsImlhdCI6MTc0MjI3NDg4NywiZXhwIjoxNzQyMjc4NDg3fQ.35a0wvvVieZnRfbjpp-4XQDiLDZH6CeocOKfV5NR1kA

@@ -162,14 +162,6 @@ const getProduct = async (req, res, next) => {
       throw error;
     }
 
-    // 좋아요 수 조회
-    const likeCount = await prisma.likeProduct.count({
-      where: {
-        productId: id,
-        deletedAt: null,
-      },
-    });
-
     // 로그인한 사용자인 경우 좋아요 여부 확인
     let isLiked = false;
     if (userId) {
@@ -188,7 +180,7 @@ const getProduct = async (req, res, next) => {
     // 사용자가 로그인한 경우 좋아요 정보 추가 + 소유자 정보 추가
     const productWithLike = {
       ...product,
-      likeCount, // 좋아요 수 추가
+      likeCount: product.favoritesCount, // 상품 테이블의 favoritesCount 사용
       isLiked: isLiked, // 사용자의 좋아요 여부
       ownerId: product.User.id,
       ownerNickname: product.User.nickname,
@@ -273,7 +265,7 @@ const patchProduct = async (req, res, next) => {
     }
 
     const id = req.params.id;
-    const { name, description, price, images = [], tags } = req.body;
+    const { name, description, price, images = [], tags = [] } = req.body;
     const { id: userId } = req.user; // 로그인한 사용자 ID 가져오기
 
     // 상품 존재 여부 확인
@@ -389,23 +381,24 @@ const deleteProduct = async (req, res, next) => {
       data: {
         deletedAt: new Date(),
       },
-      select: {
-        id: true,
-        name: true,
-        ProductTag: true,
-        deletedAt: true,
-      },
     });
 
+    if (!deletedProduct) {
+      const error = new Error("상품을 삭제할 수 없습니다.");
+      error.name = "NotFoundError";
+      throw error;
+    }
+
     res.status(202).send({
+      isSuccess: true,
       message: "삭제 처리가 완료되었습니다.",
-      data: deletedProduct,
     });
   } catch (e) {
     next(e);
   }
 };
 
+// 상품 좋아요
 const createLike = async (req, res, next) => {
   try {
     // 인증 확인 - req.user 객체가 없는 경우 에러 발생

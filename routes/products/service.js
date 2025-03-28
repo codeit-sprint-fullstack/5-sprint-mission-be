@@ -381,6 +381,11 @@ const deleteProduct = async (req, res, next) => {
       data: {
         deletedAt: new Date(),
       },
+      select: {
+        id: true,
+        name: true,
+        deletedAt: true,
+      },
     });
 
     if (!deletedProduct) {

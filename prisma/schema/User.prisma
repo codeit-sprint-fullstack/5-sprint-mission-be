@@ -34,4 +34,5 @@ model LikeArticle {
     updatedAt DateTime  @updatedAt
     deletedAt DateTime?
     User      User      @relation(fields: [userId], references: [id])
+    Article   Article   @relation(fields: [articleId], references: [id])
 }

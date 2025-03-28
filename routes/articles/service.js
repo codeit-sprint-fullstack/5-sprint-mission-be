@@ -9,15 +9,11 @@ const getArticleList = async (req, res, next) => {
     const skip = (page - 1) * limit; //페이지네이션을 위한 skip값 계산
 
     //정렬
-    const orderBy = req.query.orderBy || "recent"; //(기본값: 최신순)
+    const sort = req.query.sort || "recent"; //(기본값: 최신순)
     const sortOption =
-      orderBy === "favorite"
+      sort === "favorite"
         ? [
-            {
-              LikeArticle: {
-                _count: "desc",
-              },
-            },
+            { likeCount: "desc" }, // likeCount 필드로 정렬
             { createdAt: "desc" }, // 좋아요 수가 같을 경우 최신순으로
           ]
         : { createdAt: orderBy === "recent" ? "desc" : "asc" };
@@ -84,7 +80,6 @@ const getArticleList = async (req, res, next) => {
     // 응답 데이터 형식 변환
     const formattedArticles = articles.map((article) => {
       const isLiked = userId ? likedArticleIds.includes(article.id) : false;
-      console.log(`Article ${article.id} isLiked:`, isLiked);
 
       return {
         id: article.id,

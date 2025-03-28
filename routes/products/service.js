@@ -13,11 +13,7 @@ const getProductList = async (req, res, next) => {
     const sortOption =
       orderBy === "favorite"
         ? [
-            {
-              LikeProduct: {
-                _count: "desc",
-              },
-            },
+            { favoritesCount: "desc" }, // likeCount 필드로 정렬
             { createdAt: "desc" }, // 좋아요 수가 같을 경우 최신순으로
           ]
         : { createdAt: orderBy === "recent" ? "desc" : "asc" };
@@ -95,7 +91,6 @@ const getProductList = async (req, res, next) => {
     // 응답 데이터 형식 변환
     const formattedProducts = products.map((product) => {
       const isLiked = userId ? likedProductIds.includes(product.id) : false;
-      console.log(`Product ${product.id} isLiked:`, isLiked);
 
       return {
         id: product.id,

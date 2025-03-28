@@ -16,7 +16,7 @@ const getArticleList = async (req, res, next) => {
             { likeCount: "desc" }, // likeCount 필드로 정렬
             { createdAt: "desc" }, // 좋아요 수가 같을 경우 최신순으로
           ]
-        : { createdAt: orderBy === "recent" ? "desc" : "asc" };
+        : { createdAt: sort === "recent" ? "desc" : "asc" };
 
     //키워드 검색
     const keyword = req.query.keyword || ""; //(기본값: 빈 문자열)

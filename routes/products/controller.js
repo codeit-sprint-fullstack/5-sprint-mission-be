@@ -6,11 +6,13 @@ import { verifyProductFields } from "../../middlewares/verifyProductFields.js";
 
 const router = express.Router();
 
-// 모든 라우트에 verifyToken 미들웨어 적용
+// 목록 조회와 상세 조회는 선택적 인증 적용
+router.get("/", authMiddleware.optionalVerifyToken, service.getProductList);
+router.get("/:id", authMiddleware.optionalVerifyToken, service.getProduct);
+
+// 나머지 라우트에 필수 인증 미들웨어 적용
 router.use(authMiddleware.verifyToken);
 
-router.get("/", service.getProductList);
-router.get("/:id", service.getProduct);
 router.delete("/:id", service.deleteProduct);
 router.post("/:id/like", service.createLike);
 router.delete("/:id/like", service.deleteLike);

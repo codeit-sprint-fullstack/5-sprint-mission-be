@@ -55,6 +55,45 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
+const optionalVerifyToken = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+
+    // 토큰이 없는 경우 그냥 다음 미들웨어로 진행
+    if (!token) {
+      return next();
+    }
+
+    // 토큰이 있는 경우 검증
+    const decoded = jwtUtils.verifyToken(token);
+
+    if (!decoded) {
+      return next();
+    }
+
+    const user = await userUtils.findById(decoded.userId);
+
+    if (!user) {
+      return next();
+    }
+
+    // 유저 정보 설정
+    req.user = {
+      id: decoded.userId,
+      email: user.email,
+      nickname: user.nickname,
+      provider: user.provider,
+      providerId: user.providerId,
+    };
+
+    next();
+  } catch (error) {
+    // 토큰 검증 실패시에도 다음 미들웨어로 진행
+    next();
+  }
+};
+
 export default {
   verifyToken,
+  optionalVerifyToken,
 };

@@ -48,58 +48,6 @@ import { validateProductPrice } from "./product.service";
  *           type: string
  *           format: date-time
  *           description: 수정 일시
- *     ProductDetail:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *           description: 상품 ID
- *         name:
- *           type: string
- *           description: 상품명
- *         description:
- *           type: string
- *           description: 상품 설명
- *         price:
- *           type: number
- *           description: 상품 가격
- *         images:
- *           type: array
- *           items:
- *             type: string
- *           description: 상품 이미지 URL 배열
- *         tags:
- *           type: array
- *           items:
- *             type: string
- *           description: 상품 태그 배열
- *         ownerId:
- *           type: string
- *           description: 판매자 ID
- *         seller:
- *           type: object
- *           properties:
- *             id:
- *               type: string
- *             nickname:
- *               type: string
- *             image:
- *               type: string
- *           description: 판매자 정보
- *         favoriteCount:
- *           type: number
- *           description: 좋아요 수
- *         isFavorite:
- *           type: boolean
- *           description: 현재 사용자의 좋아요 여부
- *         createdAt:
- *           type: string
- *           format: date-time
- *           description: 등록 일시
- *         updatedAt:
- *           type: string
- *           format: date-time
- *           description: 수정 일시
  */
 
 /**

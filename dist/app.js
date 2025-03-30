@@ -12,8 +12,9 @@ const swagger_1 = require("./swagger");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
+const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
 app.use((0, cors_1.default)({
-    origin: "http://localhost:3000", // 프론트엔드 주소
+    origin: clientUrl,
     //credentials: true, // 쿠키를 주고받기 위해 필요
 }));
 app.use(express_1.default.urlencoded({ extended: true }));

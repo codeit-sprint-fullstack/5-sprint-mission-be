@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "outDir": "./dist", // 컴파일된 파일들이 이 폴더에 생성됨
+    "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"]

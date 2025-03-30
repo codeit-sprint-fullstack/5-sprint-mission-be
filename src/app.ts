@@ -8,9 +8,10 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
 app.use(
   cors({
-    origin: "http://localhost:3000", // 프론트엔드 주소
+    origin: clientUrl,
     //credentials: true, // 쿠키를 주고받기 위해 필요
   })
 );

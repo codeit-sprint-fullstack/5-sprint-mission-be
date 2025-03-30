@@ -1,0 +1,51 @@
+export const ARTICLE_COMMENTS = [
+  {
+    id: "12345abcdegbd",
+    content: "관심있어요 !",
+    createdAt: "2025-01-22T08:12:10.456Z",
+    updatedAt: "2025-01-22T08:12:10.456Z",
+    articleId: "12345abcdegbd",
+  },
+  {
+    id: "12345abcd3eef",
+    content: "시급 얼마인가요? ",
+    createdAt: "2025-01-22T08:12:11.456Z",
+    updatedAt: "2025-01-22T08:12:11.456Z",
+    articleId: "12345abcd3eef",
+  },
+  {
+    id: "12345abcdegbddd",
+    content: "아쉬탕가 수업 가능합니다",
+    createdAt: "2025-01-22T08:12:14.456Z",
+    updatedAt: "2025-01-22T08:12:14.456Z",
+    articleId: "12345abcd3eef",
+  },
+  {
+    id: "12345abcdegbdfd",
+    content: "1팀 짱 !",
+    createdAt: "2025-01-22T09:06:58.179Z",
+    updatedAt: "2025-01-22T09:06:58.179Z",
+    articleId: "12345abcdedsf",
+  },
+  {
+    id: "12345abcdegbdfff",
+    content: "언제 구매하셨나용??",
+    createdAt: "2025-01-22T08:12:12.456Z",
+    updatedAt: "2025-01-22T08:12:13.456Z",
+    articleId: "12345abcdeee",
+  },
+  {
+    id: "12345abcdegbdefsff",
+    content: "사용기간 궁금해요",
+    createdAt: "2025-01-22T08:12:14.456Z",
+    updatedAt: "2025-01-22T08:12:16.456Z",
+    articleId: "12345abcdeee",
+  },
+  {
+    id: "12345abcdegbd333",
+    content: "겨울 싫어~~",
+    createdAt: "2025-01-22T08:12:18.456Z",
+    updatedAt: "2025-01-22T08:12:19.456Z",
+    articleId: "12345abcdefg",
+  },
+];

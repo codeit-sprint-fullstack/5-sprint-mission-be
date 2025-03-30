@@ -1,0 +1,58 @@
+export const PRODUCT_COMMENTS = [
+  {
+    id: "12345abcdegbd444",
+    content: "화이팅!",
+    createdAt: "2025-01-22T08:12:19.456Z",
+    updatedAt: "2025-01-22T08:12:19.456Z",
+    productId: "77",
+  },
+  {
+    id: "12345abcdegbd444",
+    content: "화이팅!",
+    createdAt: "2025-01-22T08:12:19.456Z",
+    updatedAt: "2025-01-22T08:12:19.456Z",
+    productId: "78",
+  },
+  {
+    id: "12345abcdegbd444",
+    content: "화이팅!",
+    createdAt: "2025-01-22T08:12:19.456Z",
+    updatedAt: "2025-01-22T08:12:19.456Z",
+    productId: "79",
+  },
+  {
+    id: "12345abcdegbd444",
+    content: "화이팅!",
+    createdAt: "2025-01-22T08:12:19.456Z",
+    updatedAt: "2025-01-22T08:12:19.456Z",
+    productId: "80",
+  },
+  {
+    id: "12345abcdegbd444",
+    content: "화이팅!",
+    createdAt: "2025-01-22T08:12:19.456Z",
+    updatedAt: "2025-01-22T08:12:19.456Z",
+    productId: "88",
+  },
+  {
+    id: "12345abcdegbd444",
+    content: "화이팅!",
+    createdAt: "2025-01-22T08:12:19.456Z",
+    updatedAt: "2025-01-22T08:12:19.456Z",
+    productId: "81",
+  },
+  {
+    id: "12345abcdegbd444",
+    content: "화이팅!",
+    createdAt: "2025-01-22T08:12:19.456Z",
+    updatedAt: "2025-01-22T08:12:19.456Z",
+    productId: "82",
+  },
+  {
+    id: "12345abcdegbd444",
+    content: "화이팅!",
+    createdAt: "2025-01-22T08:12:19.456Z",
+    updatedAt: "2025-01-22T08:12:19.456Z",
+    productId: "80",
+  },
+];

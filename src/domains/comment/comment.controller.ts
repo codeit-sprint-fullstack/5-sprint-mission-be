@@ -402,3 +402,51 @@ export const getProductCommentList = async (
     next(err);
   }
 };
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Comments:
+ *       type: object
+ *       required:
+ *         - id
+ *         - userId
+ *         - resourceId
+ *         - resourceType
+ *         - content
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *           description: 댓글의 고유 식별자
+ *           example: 4a7b9c8d-1e2f-3a4b-5c6d-7e8f9a0b1c2d
+ *         userId:
+ *           type: string
+ *           format: uuid
+ *           description: 댓글 작성자의 사용자 ID
+ *           example: 2e388cc5-8421-4cd3-98f7-befdb6d3b675
+ *         resourceId:
+ *           type: string
+ *           format: uuid
+ *           description: 댓글이 달린 리소스(상품, 게시글 등)의 ID
+ *           example: 1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
+ *         resourceType:
+ *           type: string
+ *           description: 댓글이 달린 리소스의 유형 (product, article 등)
+ *           example: product
+ *         content:
+ *           type: string
+ *           description: 댓글 내용
+ *           example: 너무 귀여워요 !!
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: 댓글 작성 시간
+ *           example: 2023-07-15T09:30:45Z
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: 댓글 수정 시간
+ *           example: 2023-07-15T09:35:22Z
+
+ */

@@ -9,7 +9,7 @@ import { validateProductPrice } from "./product.service";
  * @swagger
  * components:
  *   schemas:
- *     Product:
+ *     Products:
  *       type: object
  *       properties:
  *         id:

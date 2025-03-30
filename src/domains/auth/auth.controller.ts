@@ -381,3 +381,41 @@ export const refreshAccessToken = async (
 function next(error: unknown) {
   throw new Error("Function not implemented.");
 }
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Auths:
+ *       type: object
+ *       required:
+ *         - id
+ *         - userId
+ *         - refreshToken
+ *         - expiredAt
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *           description: 인증 정보의 고유 식별자
+ *           example: 3f8d1e94-7c51-4d8a-9d0b-a2bc3e4f5678
+ *         userId:
+ *           type: string
+ *           format: uuid
+ *           description: 인증 정보와 연결된 사용자의 ID
+ *           example: 2e388cc5-8421-4cd3-98f7-befdb6d3b675
+ *         refreshToken:
+ *           type: string
+ *           description: JWT 리프레시 토큰 (고유값)
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyZTM4OGNjNS04NDIxLTRjZDMtOThmNy1iZWZkYjZkM2I2NzUiLCJpYXQiOjE2OTM0NTY3ODksImV4cCI6MTY5NDA2MTU4OX0.jN5dL4D8MQQdOx5-DmEyfV5fsFB6Qdqo0NfzxjC9X9I
+ *         expiredAt:
+ *           type: string
+ *           format: date-time
+ *           description: 리프레시 토큰 만료 시간
+ *           example: 2025-03-30T10:15:30Z
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: 인증 정보 생성 시간
+ *           example: 2025-03-30T10:15:30Z
+ */

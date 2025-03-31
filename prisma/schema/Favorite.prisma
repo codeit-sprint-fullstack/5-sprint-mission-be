@@ -1,0 +1,8 @@
+model Favorite {
+  id         String   @id @default(uuid())
+  targetType String
+  targetId   String
+  userId     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

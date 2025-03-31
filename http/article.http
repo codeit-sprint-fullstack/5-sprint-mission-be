@@ -1,0 +1,33 @@
+GET http://localhost:5004/article
+
+###
+
+POST http://localhost:5004/article
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QzQG5hdmVyLmNvbSIsImlkIjo0LCJuaWNrbmFtZSI6InRlc3QzIiwiaWF0IjoxNzQyMzQ3NTQ0LCJleHAiOjE3NDIzNTExNDR9.x1-D7Nnih8yVFZe0wnx2CiDYbGPx5ElU8_6r6o50_uo
+
+{
+   "title": "게시글을 등록해보자.",
+   "content": "이것은 게시글의 내용입니다.",
+}
+
+###
+
+PATCH http://localhost:5004/article/00e87fba-049b-4c0e-b519-4612df52f3ce
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QzQG5hdmVyLmNvbSIsImlkIjo0LCJuaWNrbmFtZSI6InRlc3QzIiwiaWF0IjoxNzQyMzQ3NTQ0LCJleHAiOjE3NDIzNTExNDR9.x1-D7Nnih8yVFZe0wnx2CiDYbGPx5ElU8_6r6o50_uo
+
+
+{
+   "title": "수정된 게시글을 등록해보자.",
+   "content": "이것은 수정된 게시글의 내용입니다."
+}
+
+
+###
+
+GET http://localhost:5004/article/37
+
+
+###
+DELETE http://localhost:5004/article/b9a68d65-5752-4fb3-aa89-ff000d927b86

@@ -12,7 +12,7 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: "http://localhost:8000",
+        url: "https://mission10-be.onrender.com",
         description: "은비의 판다마켓 백엔드 서버",
       },
     ],

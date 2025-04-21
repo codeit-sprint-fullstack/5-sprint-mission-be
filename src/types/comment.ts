@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { ArticleComment, ProductComment, Prisma } from "@prisma/client";
+import { ArticleComment, ProductComment } from "@prisma/client";
 
 // 기본 사용자 요청 타입
 export interface UserRequest extends Request {
@@ -57,16 +57,6 @@ export interface CustomError extends Error {
   name: string;
 }
 
-// Prisma 댓글 베이스 타입 (공통 필드)
-interface CommentBase {
-  id: string;
-  content: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-}
-
 // Prisma 댓글 타입
 export type PrismaComment = ArticleComment | ProductComment;
 
@@ -85,18 +75,6 @@ export type CommentWithUser = {
     id: string;
     nickname: string;
   };
-};
-
-// Prisma 댓글 생성 입력 타입
-export type CommentCreateInput = {
-  userId: string;
-  content: string;
-  User?: {
-    connect: {
-      id: string;
-    };
-  };
-  [key: string]: any; // articleId 또는 productId를 동적으로 처리
 };
 
 // Prisma 댓글 수정 입력 타입

@@ -55,7 +55,7 @@ const save = async (userData: {
 };
 
 /**
- * 민감한 유저 데이터 필터링
+ * 유저 데이터 비밀번호 필터링
  * @param {Object} user - 필터링할 유저 데이터
  * @returns {Object} - 필터링된 유저 정보
  */

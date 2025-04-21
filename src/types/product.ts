@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { Product, ProductTag, Prisma } from "@prisma/client";
+import { Product, ProductTag } from "@prisma/client";
 
 // 기본 사용자 요청 타입
 export interface UserRequest extends Request {
@@ -15,7 +15,7 @@ export interface ProductListRequest extends UserRequest {
   query: {
     page?: string;
     pageSize?: string;
-    orderBy?: "recent" | "favorite" | "old";
+    orderBy?: "recent" | "favorite";
     keyword?: string;
   };
 }

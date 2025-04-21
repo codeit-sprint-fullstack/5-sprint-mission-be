@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { Article, User } from "@prisma/client";
+import { Article } from "@prisma/client";
 
 // 기본 사용자 요청 타입
 export interface UserRequest extends Request {
@@ -10,10 +10,10 @@ export interface UserRequest extends Request {
   };
 }
 
-// 게시글 기본 요청 타입 (id를 필수값으로 변경)
+// 게시글 기본 요청 타입
 export interface ArticleBaseRequest extends UserRequest {
   params: {
-    id: string; // optional(?) 제거
+    id: string;
   };
 }
 

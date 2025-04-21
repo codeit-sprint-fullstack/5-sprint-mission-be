@@ -9,10 +9,9 @@ import {
   CustomError,
   CommentTable,
   CommentWithUser,
-  CommentCreateInput,
 } from "../../../types/comment";
 
-// 댓글 작업 실행 함수
+// 댓글 작업 실행 함수 - 동적 테이블
 const executeCommentOperation = async <T>(
   table: CommentTable,
   operation: string,
@@ -120,7 +119,7 @@ const createComment = async (
     const domainId = req.params.domainId!;
     const { type } = req.query;
     const { content } = req.body;
-    const { commentTable, mainTable, idField } = getFieldType(type);
+    const { commentTable, mainTable } = getFieldType(type);
     const { id: userId, nickname: userNickname } = req.user;
 
     // 게시글/상품이 존재하는지 먼저 확인

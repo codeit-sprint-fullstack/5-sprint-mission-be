@@ -1,27 +1,23 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "NodeNext",
+    "target": "ES2020",
+    "module": "CommonJS",
+    "outDir": "./dist",
+    "rootDir": "./src",
     "strict": true,
-    "outDir": "./dist", // 컴파일된 JS 파일이 dist 폴더로 이동
-    "allowJs": true,
-    "checkJs": false,
-    "noImplicitAny": true,
-    "moduleResolution": "NodeNext",
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "typeRoots": ["./types", "./node_modules/@types"]
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"]
+    },
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["./"], // 현재 폴더 전체를 포함
-  "exclude": ["node_modules", "dist", "prisma"],
-  "ts-node": {
-    "experimentalSpecifierResolution": "node",
-    "experimentalResolver": true,
-    "transpileOnly": false,
-    "esm": true,
-    "logError": true
-  }
+  "include": ["src/**/*", "src/types"],
+  "exclude": ["node_modules"]
 }

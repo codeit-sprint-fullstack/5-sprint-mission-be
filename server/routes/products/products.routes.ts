@@ -13,8 +13,7 @@ import {
   addFavorite,
   removeFavorite,
 } from "../../controllers/favorites.controller";
-import { checkUUIDParams, validate } from "../../middlewares/validate";
-import { productSchema } from "../../schemas/product.schema";
+import { checkUUIDParams, upload, validate } from "../../middlewares/validate";
 
 const router = express.Router();
 
@@ -95,7 +94,7 @@ const router = express.Router();
 router.post(
   "/",
   validateUser,
-  validate(productSchema, "body"),
+  upload.array("images", 3),
   asyncHandler(createProduct)
 );
 
@@ -308,6 +307,7 @@ router.get(
 router.patch(
   "/:id",
   validateUser,
+  upload.array("images", 3),
   checkUUIDParams("id"),
   asyncHandler(updateProduct)
 );

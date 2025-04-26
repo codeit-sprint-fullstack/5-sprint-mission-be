@@ -9,6 +9,10 @@ import { specs, swaggerUi } from "./server/config/swaggerConfig";
 dotenv.config();
 
 const app = express();
+app.use((req, res, next) => {
+  console.log("[REQUEST] ", req.method, req.path);
+  next();
+});
 
 app.use(
   cors({

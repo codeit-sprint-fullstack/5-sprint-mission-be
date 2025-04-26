@@ -1,31 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import prisma from "../config/prismaClient";
-import multer from "multer";
 import { Prisma } from "@prisma/client";
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, "uploads/"),
-  filename: (_req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
-});
-
-const fileFilter: multer.Options["fileFilter"] = (_req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-
-  if (!allowedTypes.includes(file.mimetype)) {
-    return cb(null, false);
-  }
-
-  cb(null, true);
-};
-
-export const upload = multer({
-  storage,
-  fileFilter,
-  limits: {
-    files: 3,
-    fileSize: 5 * 1024 * 1024,
-  },
-});
 
 export const getProducts = async (
   req: Request,
@@ -33,22 +8,24 @@ export const getProducts = async (
   next: NextFunction
 ) => {
   try {
-    const { page = 1, take = 10, sortBy = "createdAt" } = req.query;
-    const limit = Number(take);
-    const skip = (Number(page) - 1) * limit;
+    const rawPage = req.query.page;
+    const rawLimit = req.query.limit;
+    const sortBy = req.query.sortBy || "createdAt";
+
+    const page =
+      rawPage !== undefined && rawPage !== "undefined" ? Number(rawPage) : 1;
+    const limit =
+      rawLimit !== undefined && rawLimit !== "undefined"
+        ? Number(rawLimit)
+        : 10;
+
+    const parsedPage = isNaN(page) || page < 1 ? 1 : page;
+    const parsedLimit = isNaN(limit) || limit < 1 ? 10 : limit;
+
+    const skip = (parsedPage - 1) * parsedLimit;
+
     const rawSearch = req.query.search;
-    const searchValue = typeof rawSearch === "string" ? rawSearch : "";
-
-    let orderByCondition:
-      | Prisma.ProductOrderByWithRelationInput
-      | Prisma.ProductOrderByWithRelationInput[] = { createdAt: "desc" };
-
-    if (sortBy === "favorites") {
-      orderByCondition = [
-        { favorites: { _count: "desc" } },
-        { createdAt: "desc" },
-      ];
-    }
+    const searchValue = typeof rawSearch === "string" ? rawSearch.trim() : "";
 
     const whereCondition: Prisma.ProductWhereInput =
       searchValue.length > 0
@@ -70,23 +47,38 @@ export const getProducts = async (
           }
         : {};
 
+    let orderByCondition:
+      | Prisma.ProductOrderByWithRelationInput
+      | Prisma.ProductOrderByWithRelationInput[] = { createdAt: "desc" };
+
+    if (sortBy === "favorites") {
+      orderByCondition = [
+        { favorites: { _count: "desc" } },
+        { createdAt: "desc" },
+      ];
+    }
+
     const [products, totalCount] = await Promise.all([
       prisma.product.findMany({
-        take: limit,
         skip,
+        take: parsedLimit,
         orderBy: orderByCondition,
         where: whereCondition,
         include: {
           _count: {
-            select: { favorites: true, comments: true },
+            select: {
+              favorites: true,
+              comments: true,
+            },
           },
         },
       }),
       prisma.product.count({ where: whereCondition }),
     ]);
-
     res.status(200).json({ products, totalCount });
+    return;
   } catch (err) {
+    console.error("[BACKEND] getProducts error:", err);
     next(err);
   }
 };
@@ -107,20 +99,40 @@ export const getProduct = async (
         name: true,
         description: true,
         price: true,
+        tags: true,
         imageUrls: true,
         createdAt: true,
         updatedAt: true,
-        _count: { select: { favorites: true } },
-        favorites: userId
-          ? { where: { userId }, select: { id: true } }
-          : undefined,
+        user: {
+          select: {
+            id: true,
+            nickname: true,
+          },
+        },
         comments: {
-          orderBy: { createdAt: "desc" },
+          orderBy: {
+            createdAt: "desc",
+          },
           select: {
             id: true,
             content: true,
             createdAt: true,
-            user: { select: { id: true, nickname: true } },
+            user: {
+              select: {
+                id: true,
+                nickname: true,
+              },
+            },
+          },
+        },
+        favorites: {
+          select: {
+            userId: true,
+          },
+        },
+        _count: {
+          select: {
+            favorites: true,
           },
         },
       },
@@ -129,12 +141,25 @@ export const getProduct = async (
     if (!product)
       return next({ status: 404, message: "상품을 찾을 수 없습니다." });
 
-    const isLiked = userId ? product.favorites.length > 0 : false;
-    const favoriteCount = product._count.favorites;
+    const isLiked = userId
+      ? product.favorites.some((fav) => fav.userId === userId)
+      : false;
+    const favoriteCount = product._count?.favorites ?? 0;
 
-    const { favorites, _count, ...response } = product;
-
-    res.status(200).send({ ...response, isLiked, favoriteCount });
+    res.status(200).json({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      tags: product.tags,
+      imageUrls: product.imageUrls,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+      user: product.user,
+      comments: product.comments,
+      isLiked,
+      favoriteCount,
+    });
   } catch (err) {
     next(err);
   }
@@ -154,17 +179,16 @@ export const createProduct = async (
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
       return next({ status: 400, message: "가격 형식이 올바르지 않습니다." });
     }
-
     let parsedTags: string[] = [];
-    if (typeof tags === "string") {
+
+    if (typeof tags === "string" && tags.length > 0) {
       try {
         parsedTags = JSON.parse(tags);
         if (!Array.isArray(parsedTags)) throw new Error();
       } catch {
+        console.error("[❌ 태그 파싱 실패]:", tags);
         return next({ status: 400, message: "태그 형식이 올바르지 않습니다." });
       }
-    } else if (Array.isArray(tags)) {
-      parsedTags = tags;
     }
 
     const imageUrls = Array.isArray(req.files)
@@ -206,26 +230,28 @@ export const updateProduct = async (
     if (product.userId !== req.user?.id)
       return next({ status: 403, message: "권한이 없습니다." });
 
-    let updatedData: Prisma.ProductUpdateInput = {
-      name,
-      description,
-      price: parseFloat(price) || 0,
-    };
+    const parsedPrice = parseFloat(price);
+    if (isNaN(parsedPrice) || parsedPrice < 0) {
+      return next({ status: 400, message: "가격 형식이 올바르지 않습니다." });
+    }
 
     let parsedTags: string[] = [];
-    if (typeof tags === "string") {
+
+    if (typeof tags === "string" && tags.length > 0) {
       try {
         parsedTags = JSON.parse(tags);
         if (!Array.isArray(parsedTags)) throw new Error();
       } catch {
-        return next({
-          status: 400,
-          message: "태그 형식이 올바르지 않습니다.",
-        });
+        return next({ status: 400, message: "태그 형식이 올바르지 않습니다." });
       }
-    } else if (Array.isArray(tags)) {
-      parsedTags = tags;
     }
+
+    let updatedData: Prisma.ProductUpdateInput = {
+      name,
+      description,
+      price: parsedPrice,
+      tags: { set: parsedTags },
+    };
 
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
       updatedData.imageUrls = {

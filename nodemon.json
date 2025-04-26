@@ -1,4 +1,4 @@
 {
   "watch": ["server", "prisma", "types"],
-  "exec": "ts-node --files app.ts"
+  "exec": "ts-node-dev --files --respawn app.ts"
 }

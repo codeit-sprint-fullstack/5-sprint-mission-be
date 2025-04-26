@@ -63,13 +63,24 @@ export const addComment = async (
       return next({ status: 400, message: "댓글 내용을 입력해주세요." });
     }
 
+    const createData: {
+      content: string;
+      userId: string;
+      articleId?: string;
+      productId?: string;
+    } = {
+      content,
+      userId,
+    };
+
+    if (articleId) {
+      createData.articleId = articleId;
+    } else if (productId) {
+      createData.productId = productId;
+    }
+
     const comment = await prisma.comment.create({
-      data: {
-        content,
-        userId,
-        articleId: articleId || null,
-        productId: productId || null,
-      },
+      data: createData,
       select: {
         id: true,
         content: true,

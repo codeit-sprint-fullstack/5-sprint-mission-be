@@ -91,9 +91,23 @@ export const validateUser = async (
             secret,
             options
           );
+          req.headers.authorization = `Bearer ${newAccessToken}`;
 
-          res.json({ accessToken: newAccessToken });
-          return;
+          const newDecoded = jwt.verify(newAccessToken, secret) as JwtPayload;
+          const user = await prisma.user.findUnique({
+            where: { id: newDecoded.id },
+          });
+
+          if (!user) {
+            console.warn("[❌ 유효하지 않은 사용자 ID]", newDecoded.id);
+            return next({
+              status: 401,
+              message: "유효하지 않은 사용자입니다.",
+            });
+          }
+
+          req.user = user;
+          return next();
         } catch (error) {
           return next({
             status: 401,

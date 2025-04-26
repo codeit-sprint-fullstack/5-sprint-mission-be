@@ -5,18 +5,16 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-} from "../../controllers/products.controller.js";
-import { validateUser } from "../../middlewares/authHandler.js";
-import { checkUUID } from "../../middlewares/validateParams.js";
-import asyncHandler from "../../middlewares/asyncHandler.js";
-import {
-  addComment,
-  getComments,
-} from "../../controllers/comments.controller.js";
+} from "../../controllers/products.controller";
+import { validateUser } from "../../middlewares/authHandler";
+import asyncHandler from "../../middlewares/asyncHandler";
+import { addComment, getComments } from "../../controllers/comments.controller";
 import {
   addFavorite,
   removeFavorite,
-} from "../../controllers/favorites.controller.js";
+} from "../../controllers/favorites.controller";
+import { checkUUIDParams, validate } from "../../middlewares/validate";
+import { productSchema } from "../../schemas/product.schema";
 
 const router = express.Router();
 
@@ -94,7 +92,12 @@ const router = express.Router();
  *       400:
  *         description: 잘못된 입력 형식
  */
-router.post("/", validateUser, ...createProduct);
+router.post(
+  "/",
+  validateUser,
+  validate(productSchema, "body"),
+  asyncHandler(createProduct)
+);
 
 /**
  * @swagger
@@ -221,7 +224,12 @@ router.get("/", asyncHandler(getProducts));
  *       404:
  *         description: 상품을 찾을 수 없음
  */
-router.get("/:id", validateUser, checkUUID, asyncHandler(getProduct));
+router.get(
+  "/:id",
+  validateUser,
+  checkUUIDParams("id"),
+  asyncHandler(getProduct)
+);
 
 /**
  * @swagger
@@ -297,7 +305,12 @@ router.get("/:id", validateUser, checkUUID, asyncHandler(getProduct));
  *       403:
  *         description: 수정 권한 없음
  */
-router.patch("/:id", validateUser, checkUUID, asyncHandler(updateProduct));
+router.patch(
+  "/:id",
+  validateUser,
+  checkUUIDParams("id"),
+  asyncHandler(updateProduct)
+);
 
 /**
  * @swagger
@@ -322,7 +335,12 @@ router.patch("/:id", validateUser, checkUUID, asyncHandler(updateProduct));
  *       403:
  *         description: 삭제 권한 없음
  */
-router.delete("/:id", validateUser, checkUUID, asyncHandler(deleteProduct));
+router.delete(
+  "/:id",
+  validateUser,
+  checkUUIDParams("id"),
+  asyncHandler(deleteProduct)
+);
 
 /**
  * @swagger
@@ -345,10 +363,10 @@ router.delete("/:id", validateUser, checkUUID, asyncHandler(deleteProduct));
  *       400:
  *         description: 이미 좋아요한 경우
  */
-router.post(
+router.put(
   "/:productId/favorite",
   validateUser,
-  checkUUID,
+  checkUUIDParams("productId"),
   asyncHandler(addFavorite)
 );
 
@@ -376,7 +394,7 @@ router.post(
 router.delete(
   "/:productId/favorite",
   validateUser,
-  checkUUID,
+  checkUUIDParams("productId"),
   asyncHandler(removeFavorite)
 );
 
@@ -414,7 +432,7 @@ router.delete(
 router.post(
   "/:productId/comments",
   validateUser,
-  checkUUID,
+  checkUUIDParams("productId"),
   asyncHandler(addComment)
 );
 
@@ -456,6 +474,10 @@ router.post(
  *                       nickname:
  *                         type: string
  */
-router.get("/:productId/comments", checkUUID, asyncHandler(getComments));
+router.get(
+  "/:productId/comments",
+  checkUUIDParams("productId"),
+  asyncHandler(getComments)
+);
 
 export default router;

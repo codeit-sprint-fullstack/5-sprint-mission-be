@@ -1,0 +1,4 @@
+{
+  "watch": ["server", "prisma", "types"],
+  "exec": "ts-node --files app.ts"
+}

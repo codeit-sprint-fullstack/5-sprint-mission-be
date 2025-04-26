@@ -1,31 +1,43 @@
 {
-  "type": "module",
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "ts-node prisma/seed.ts"
   },
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js",
-    "build": "npm install"
+    "dev": "nodemon",
+    "start": "ts-node-dev --files --respawn app.ts",
+    "build": "tsc"
   },
   "dependencies": {
     "@prisma/client": "^5.21.1",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.5.0",
     "express": "^4.21.1",
     "google-auth-library": "^9.15.1",
-    "is-email": "^1.0.2",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "punycode": "^2.3.1",
-    "superstruct": "^2.0.2",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.14.1",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "nodemon": "^3.1.9",
-    "prisma": "^6.2.1"
+    "prisma": "^6.2.1",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

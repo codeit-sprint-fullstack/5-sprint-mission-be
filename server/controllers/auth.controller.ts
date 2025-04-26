@@ -1,22 +1,55 @@
+import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import prisma from "../config/prismaClient.js";
-import { RegisterStruct, LoginStruct } from "../../structs.js";
+import jwt, { SignOptions } from "jsonwebtoken";
+import prisma from "../config/prismaClient";
+import { z } from "zod";
+import { registerSchema, loginSchema } from "../schemas/auth.schema";
+import { OAuth2Client } from "google-auth-library";
 
-const generateAccessToken = (user) => {
-  return jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
+export type RegisterDTO = z.infer<typeof registerSchema>;
+export type LoginDTO = z.infer<typeof loginSchema>;
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+const generateAccessToken = (user: { id: string }) => {
+  const secret = process.env.JWT_SECRET;
+  const expiresIn = (process.env.JWT_EXPIRES_IN ||
+    "1h") as unknown as SignOptions["expiresIn"];
+
+  if (!secret) {
+    throw {
+      status: 500,
+      message: "JWT_SECRET 설정이 누락되었습니다.",
+    };
+  }
+
+  return jwt.sign({ id: user.id }, secret, { expiresIn });
 };
 
-const generateRefreshToken = (user) => {
-  return jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
-  });
+const generateRefreshToken = (user: { id: string }) => {
+  const secret = process.env.JWT_REFRESH_SECRET;
+  const expiresIn = (process.env.JWT_REFRESH_EXPIRES_IN ||
+    "30d") as unknown as SignOptions["expiresIn"];
+
+  if (!secret) {
+    throw {
+      status: 500,
+      message: "JWT_REFRESH_SECRET 설정이 누락되었습니다.",
+    };
+  }
+
+  return jwt.sign({ id: user.id }, secret, { expiresIn });
 };
 
-export const googleLogin = async (req, res, next) => {
+export const googleLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { token } = req.body;
+
+  if (!token)
+    return next({ status: 400, message: "Google 토큰이 필요합니다." });
 
   try {
     const ticket = await client.verifyIdToken({
@@ -25,17 +58,20 @@ export const googleLogin = async (req, res, next) => {
     });
 
     const payload = ticket.getPayload();
+    if (!payload || !payload.email || !payload.name) {
+      return next({ status: 400, message: "구글 사용자 정보가 부족합니다." });
+    }
 
     let user = await prisma.user.findUnique({
       where: { email: payload.email },
     });
-
     if (!user) {
       user = await prisma.user.create({
         data: {
           email: payload.email,
           nickname: payload.name,
           image: payload.picture,
+          encryptedPassword: "google-oauth",
         },
       });
     }
@@ -63,32 +99,23 @@ export const googleLogin = async (req, res, next) => {
   }
 };
 
-export const signUp = async (req, res, next) => {
+export const signUp = async (
+  req: Request<{}, {}, RegisterDTO>,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const [error, validatedData] = RegisterStruct.validate(req.body);
-    if (error) {
-      return next({ status: 400, message: "잘못된 입력 형식" });
-    }
-
-    const { email, nickname, password } = validatedData;
-
-    if (!validatedData) {
-      return res.status(400).json({ message: "모든 필드를 입력해주세요." });
-    }
+    const { email, nickname, password } = req.body;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return next({ status: 400, message: "이미 존재하는 이메일입니다." });
+      return next({ status: 409, message: "이미 사용 중인 이메일입니다." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const encryptedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await prisma.user.create({
-      data: {
-        email,
-        nickname,
-        encryptedPassword: hashedPassword,
-      },
+      data: { email, nickname, encryptedPassword },
     });
 
     const accessToken = generateAccessToken(newUser);
@@ -114,25 +141,17 @@ export const signUp = async (req, res, next) => {
   }
 };
 
-export const login = async (req, res, next) => {
+export const login = async (
+  req: Request<{}, {}, LoginDTO>,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const [error, validatedData] = LoginStruct.validate(req.body);
-    if (error) {
-      return next({ status: 400, message: "잘못된 입력 형식" });
-    }
-
-    const { email, password } = validatedData;
-
-    if (!validatedData) {
-      return next({
-        status: 400,
-        message: "이메일과 비밀번호를 입력해주세요.",
-      });
-    }
+    const { email, password } = req.body;
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return next({ status: 401, message: "이메일이 잘못되었습니다." });
+      return next({ status: 401, message: "존재하지 않는 사용자입니다." });
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -166,7 +185,11 @@ export const login = async (req, res, next) => {
   }
 };
 
-export const refreshToken = async (req, res, next) => {
+export const refreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { refreshToken } = req.cookies;
 
   if (!refreshToken) {
@@ -174,10 +197,12 @@ export const refreshToken = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET!
+    ) as { id: string };
 
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
-
     if (!user) {
       return next({ status: 401, message: "유효하지 않은 사용자입니다." });
     }
@@ -186,7 +211,7 @@ export const refreshToken = async (req, res, next) => {
 
     res.json({ accessToken: newAccessToken });
   } catch (error) {
-    next({
+    return next({
       status: 401,
       message: "리프레시 토큰이 유효하지 않거나 만료되었습니다.",
     });

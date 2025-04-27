@@ -10,10 +10,6 @@ import path from "path";
 dotenv.config();
 
 const app = express();
-app.use((req, res, next) => {
-  console.log("[REQUEST] ", req.method, req.path);
-  next();
-});
 
 app.use((req, res, next) => {
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin");

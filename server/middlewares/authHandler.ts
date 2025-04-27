@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
+import jwt, { JwtPayload, SignOptions, TokenExpiredError } from "jsonwebtoken";
 import prisma from "../config/prismaClient";
 import { OAuth2Client } from "google-auth-library";
 
@@ -15,7 +15,6 @@ export const validateUser = async (
 
     if (authHeader.startsWith("Bearer google ")) {
       const token = authHeader.split(" ")[2];
-      console.log("[🔐 Google Token] 추출된 토큰:", token);
 
       try {
         const ticket = await client.verifyIdToken({
@@ -65,8 +64,8 @@ export const validateUser = async (
     let decoded: JwtPayload;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-    } catch (err: any) {
-      if (err.name === "TokenExpiredError") {
+    } catch (err) {
+      if (err instanceof TokenExpiredError) {
         const refreshToken = req.cookies?.refreshToken;
 
         if (!refreshToken) {

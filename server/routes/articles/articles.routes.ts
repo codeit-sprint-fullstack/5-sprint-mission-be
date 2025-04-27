@@ -6,7 +6,7 @@ import {
   updateArticle,
   deleteArticle,
 } from "../../controllers/articles.controller";
-import { checkUUIDParams } from "../../middlewares/validate";
+import { checkUUIDParams, upload } from "../../middlewares/validate";
 import { validateUser } from "../../middlewares/authHandler";
 import asyncHandler from "../../middlewares/asyncHandler";
 import { addComment, getComments } from "../../controllers/comments.controller";
@@ -72,7 +72,7 @@ const router = express.Router();
 router.post(
   "/",
   validateUser,
-  validate(articleSchema, "body"),
+  upload.array("images", 3),
   asyncHandler(createArticle)
 );
 
@@ -169,8 +169,8 @@ router.get(
 router.patch(
   "/:id",
   validateUser,
-  validate(articleSchema, "body"),
   checkUUIDParams("id"),
+  upload.array("images", 3),
   asyncHandler(updateArticle)
 );
 

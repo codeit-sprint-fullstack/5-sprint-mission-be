@@ -13,7 +13,7 @@ import {
   addFavorite,
   removeFavorite,
 } from "../../controllers/favorites.controller";
-import { checkUUIDParams, upload, validate } from "../../middlewares/validate";
+import { checkUUIDParams, upload } from "../../middlewares/validate";
 
 const router = express.Router();
 

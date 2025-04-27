@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import multer from "multer";
+import path from "path";
 import { ZodSchema, ZodError } from "zod";
 
 export const validate =
@@ -41,7 +42,14 @@ export const checkUUIDParams = (...keys: string[]): RequestHandler => {
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, "uploads/"),
-  filename: (_req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const basename = path.basename(file.originalname, ext);
+
+    const safeName = basename.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10);
+
+    cb(null, `${Date.now()}-${safeName}${ext}`);
+  },
 });
 
 const fileFilter: multer.Options["fileFilter"] = (_req, file, cb) => {

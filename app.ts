@@ -5,12 +5,19 @@ import cors from "cors";
 import routes from "./server/routes/index";
 import errorHandler from "./server/middlewares/errorHandler";
 import { specs, swaggerUi } from "./server/config/swaggerConfig";
+import path from "path";
 
 dotenv.config();
 
 const app = express();
 app.use((req, res, next) => {
   console.log("[REQUEST] ", req.method, req.path);
+  next();
+});
+
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
   next();
 });
 
@@ -25,7 +32,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use("/", routes);
 

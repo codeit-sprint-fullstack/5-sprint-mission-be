@@ -46,18 +46,48 @@ export const googleLogin = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { token } = req.body;
+  const { code } = req.body;
 
-  if (!token)
-    return next({ status: 400, message: "Google 토큰이 필요합니다." });
+  if (!code) {
+    return next({ status: 400, message: "Authorization code가 필요합니다." });
+  }
 
   try {
+    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID || "",
+        client_secret: process.env.GOOGLE_CLIENT_SECRET || "",
+        redirect_uri: process.env.GOOGLE_REDIRECT_URI || "",
+        grant_type: "authorization_code",
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      const errorData = await tokenResponse.json();
+      console.error("구글 토큰 교환 실패:", errorData);
+      return next({ status: 400, message: "구글 토큰 교환 실패" });
+    }
+
+    const tokenData = await tokenResponse.json();
+
+    const { id_token } = tokenData;
+
+    if (!id_token) {
+      return next({ status: 400, message: "id_token이 없습니다." });
+    }
+
     const ticket = await client.verifyIdToken({
-      idToken: token,
+      idToken: id_token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
+
     if (!payload || !payload.email || !payload.name) {
       return next({ status: 400, message: "구글 사용자 정보가 부족합니다." });
     }
@@ -65,6 +95,7 @@ export const googleLogin = async (
     let user = await prisma.user.findUnique({
       where: { email: payload.email },
     });
+
     if (!user) {
       user = await prisma.user.create({
         data: {
@@ -76,17 +107,25 @@ export const googleLogin = async (
       });
     }
 
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
+    const accessTokenJWT = generateAccessToken(user);
+    const refreshTokenJWT = generateRefreshToken(user);
 
-    res.cookie("refreshToken", refreshToken, {
+    res.cookie("accessToken", accessTokenJWT, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 60 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshTokenJWT, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     res.json({
-      accessToken,
+      accessToken: accessTokenJWT,
       user: {
         id: user.id,
         email: user.email,
@@ -95,6 +134,7 @@ export const googleLogin = async (
       },
     });
   } catch (error) {
+    console.error("구글 로그인 에러:", error);
     next(error);
   }
 };
@@ -121,9 +161,17 @@ export const signUp = async (
     const accessToken = generateAccessToken(newUser);
     const refreshToken = generateRefreshToken(newUser);
 
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 60 * 60 * 1000,
+    });
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
@@ -165,9 +213,19 @@ export const login = async (
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
+    const isProduction = process.env.NODE_ENV === "production";
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 60 * 60 * 1000,
+    });
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
@@ -216,4 +274,22 @@ export const refreshToken = async (
       message: "리프레시 토큰이 유효하지 않거나 만료되었습니다.",
     });
   }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  const isProduction = process.env.NODE_ENV === "production";
+
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+  });
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+  });
+
+  res.status(200).json({ message: "로그아웃 성공" });
 };

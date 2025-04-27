@@ -71,11 +71,26 @@ export const getProducts = async (
               comments: true,
             },
           },
+          favorites: req.user
+            ? { where: { userId: req.user.id }, select: { id: true } }
+            : undefined,
         },
       }),
       prisma.product.count({ where: whereCondition }),
     ]);
-    res.status(200).json({ products, totalCount });
+    const result = products.map((product) => {
+      const isLiked =
+        Array.isArray(product.favorites) && product.favorites.length > 0;
+      const favoriteCount = product._count?.favorites || 0;
+      const { favorites, _count, ...rest } = product;
+
+      return {
+        ...rest,
+        isLiked,
+        favoriteCount,
+      };
+    });
+    res.status(200).json({ products: result, totalCount });
     return;
   } catch (err) {
     console.error("[BACKEND] getProducts error:", err);

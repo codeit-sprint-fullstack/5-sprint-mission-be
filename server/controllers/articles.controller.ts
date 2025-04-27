@@ -1,31 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import multer from "multer";
 import prisma from "../config/prismaClient";
 import { Prisma } from "@prisma/client";
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, "uploads/"),
-  filename: (_req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
-});
-
-const fileFilter: multer.Options["fileFilter"] = (_req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-
-  if (!allowedTypes.includes(file.mimetype)) {
-    return cb(null, false);
-  }
-
-  cb(null, true);
-};
-
-export const upload = multer({
-  storage,
-  fileFilter,
-  limits: {
-    files: 3,
-    fileSize: 5 * 1024 * 1024,
-  },
-});
 
 export const getArticles = async (
   req: Request,
@@ -33,15 +8,18 @@ export const getArticles = async (
   next: NextFunction
 ) => {
   try {
-    const { cursor, take = 10, keyword = "createdAt" } = req.query;
+    const { page = 1, take = 10, sortBy = "createdAt" } = req.query;
     const rawSearch = req.query.search;
     const searchValue = typeof rawSearch === "string" ? rawSearch : "";
+
+    const currentPage = Number(page);
     const limit = Number(take);
 
     let orderByCondition:
       | Prisma.ArticleOrderByWithRelationInput
       | Prisma.ArticleOrderByWithRelationInput[] = { createdAt: "desc" };
-    if (keyword === "favorites") {
+
+    if (sortBy === "favorites") {
       orderByCondition = [
         { favorites: { _count: "desc" } },
         { createdAt: "desc" },
@@ -69,23 +47,48 @@ export const getArticles = async (
         : undefined;
 
     const articles = await prisma.article.findMany({
-      take: limit + 1,
-      cursor: cursor ? { id: String(cursor) } : undefined,
+      skip: (currentPage - 1) * limit,
+      take: limit,
       orderBy: orderByCondition,
       where: whereCondition,
       include: {
         _count: {
           select: { favorites: true },
         },
+        favorites: req.user
+          ? { where: { userId: req.user.id }, select: { id: true } }
+          : undefined,
+        user: {
+          select: {
+            id: true,
+            nickname: true,
+          },
+        },
       },
     });
 
-    let nextCursor: string | null = null;
-    if (articles.length > limit) {
-      nextCursor = articles.pop()?.id || null;
-    }
+    const result = articles.map((article) => {
+      const isLiked =
+        Array.isArray(article.favorites) && article.favorites.length > 0;
+      const favoriteCount = article._count?.favorites || 0;
+      const { favorites, _count, ...rest } = article;
 
-    res.status(200).json({ success: true, articles, nextCursor });
+      return {
+        ...rest,
+        isLiked,
+        favoriteCount,
+      };
+    });
+
+    const totalCount = await prisma.article.count({
+      where: whereCondition,
+    });
+
+    res.status(200).json({
+      success: true,
+      articles: result,
+      totalCount,
+    });
   } catch (err) {
     next(err);
   }
@@ -149,12 +152,25 @@ export const createArticle = async (
       return next({ status: 401, message: "로그인이 필요합니다." });
 
     const { title, content } = req.body;
-    const imageUrls = Array.isArray(req.files)
+
+    if (!title || !content) {
+      return next({ status: 400, message: "제목과 내용을 모두 입력해주세요." });
+    }
+
+    const uploadedImages = Array.isArray(req.files)
       ? req.files.map(
           (file: Express.Multer.File) =>
             `/uploads/${encodeURIComponent(file.filename)}`
         )
       : [];
+
+    const existingImageUrls = req.body.imageUrls
+      ? Array.isArray(req.body.imageUrls)
+        ? req.body.imageUrls
+        : [req.body.imageUrls]
+      : [];
+
+    const imageUrls = [...existingImageUrls, ...uploadedImages];
 
     const article = await prisma.article.create({
       data: {
@@ -182,11 +198,22 @@ export const updateArticle = async (
   try {
     const { id } = req.params;
     const { title, content } = req.body;
-    const newImages = Array.isArray(req.files)
+
+    if (!title || !content) {
+      return next({ status: 400, message: "제목과 내용을 모두 입력해주세요." });
+    }
+
+    const uploadedImages = Array.isArray(req.files)
       ? req.files.map(
           (file: Express.Multer.File) =>
             `/uploads/${encodeURIComponent(file.filename)}`
         )
+      : [];
+
+    const existingImageUrls = req.body.imageUrls
+      ? Array.isArray(req.body.imageUrls)
+        ? req.body.imageUrls
+        : [req.body.imageUrls]
       : [];
 
     const article = await prisma.article.findUnique({ where: { id } });
@@ -195,12 +222,14 @@ export const updateArticle = async (
     if (article.userId !== req.user?.id)
       return next({ status: 403, message: "권한이 없습니다." });
 
+    const imageUrls = [...existingImageUrls, ...uploadedImages];
+
     const updated = await prisma.article.update({
       where: { id },
       data: {
         title,
         content,
-        imageUrls: newImages.length ? newImages : article.imageUrls,
+        imageUrls,
       },
     });
 

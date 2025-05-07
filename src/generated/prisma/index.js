@@ -189,6 +189,14 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "windows"
       }
     ],
     "previewFeatures": [
@@ -208,16 +216,17 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://panda-market-owner:npg_OoaEPw2eYsZ5@ep-shy-bird-a1d5dfwa.ap-southeast-1.aws.neon.tech/panda-express?sslmode=require"
+        "value": null
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"prismaSchemaFolder\"]\n  output          = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id                Int        @id @default(autoincrement())\n  email             String     @unique\n  nickname          String     @unique\n  encryptedPassword String\n  refreshToken      String?\n  profileImg        String?\n  createdAt         DateTime   @default(now())\n  updatedAt         DateTime   @updatedAt\n  Articles          Article[]\n  Products          Product[]\n  Favorites         Favorite[]\n  Comments          Comment[]\n}\n\nmodel Article {\n  id        Int        @id @default(autoincrement())\n  title     String\n  content   String\n  img       String[]\n  likeCount Int        @default(0)\n  createdAt DateTime   @default(now())\n  updatedAt DateTime?  @updatedAt\n  authorId  Int /// 나중에 관계 맺어서 가져와야됨. user랑 1:N 관계\n  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)\n  comments  Comment[]  @relation(\"ArticleComments\")\n  favorites Favorite[] @relation(\"ArticleFavorites\")\n}\n\nmodel Product {\n  id            Int        @id @default(autoincrement())\n  favoriteCount Int        @default(0)\n  ownerId       Int\n  images        String[]\n  tags          String[]\n  price         Int\n  description   String\n  name          String\n  createdAt     DateTime   @default(now())\n  updatedAt     DateTime?  @updatedAt\n  owner         User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)\n  comments      Comment[]  @relation(\"ProductComments\")\n  favorites     Favorite[] @relation(\"ProductFavorites\")\n}\n\nmodel Comment {\n  id        Int       @id @default(autoincrement())\n  content   String\n  authorId  Int\n  createdAt DateTime  @default(now())\n  updatedAt DateTime? @updatedAt\n  productId Int?\n  articleId Int?\n  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)\n  article   Article?  @relation(fields: [articleId], references: [id], name: \"ArticleComments\", onDelete: Cascade)\n  product   Product?  @relation(fields: [productId], references: [id], name: \"ProductComments\", onDelete: Cascade)\n}\n\nmodel Favorite {\n  id        Int      @id @default(autoincrement())\n  userId    Int\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  user      User     @relation(fields: [userId], references: [id])\n  productId Int?\n  articleId Int?\n  article   Article? @relation(fields: [articleId], references: [id], name: \"ArticleFavorites\", onDelete: Cascade)\n  product   Product? @relation(fields: [productId], references: [id], name: \"ProductFavorites\", onDelete: Cascade)\n}\n",
-  "inlineSchemaHash": "6fe2c1848b84fba7653defc168ba6fe915ca852d1f3d034c271863ed650e7932",
+  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"prismaSchemaFolder\"]\n  output          = \"../src/generated/prisma\"\n  binaryTargets   = [\"native\", \"debian-openssl-3.0.x\", \"windows\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id                Int        @id @default(autoincrement())\n  email             String     @unique\n  nickname          String     @unique\n  encryptedPassword String\n  refreshToken      String?\n  profileImg        String?\n  createdAt         DateTime   @default(now())\n  updatedAt         DateTime   @updatedAt\n  Articles          Article[]\n  Products          Product[]\n  Favorites         Favorite[]\n  Comments          Comment[]\n}\n\nmodel Article {\n  id        Int        @id @default(autoincrement())\n  title     String\n  content   String\n  img       String[]\n  likeCount Int        @default(0)\n  createdAt DateTime   @default(now())\n  updatedAt DateTime?  @updatedAt\n  authorId  Int /// 나중에 관계 맺어서 가져와야됨. user랑 1:N 관계\n  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)\n  comments  Comment[]  @relation(\"ArticleComments\")\n  favorites Favorite[] @relation(\"ArticleFavorites\")\n}\n\nmodel Product {\n  id            Int        @id @default(autoincrement())\n  favoriteCount Int        @default(0)\n  ownerId       Int\n  images        String[]\n  tags          String[]\n  price         Int\n  description   String\n  name          String\n  createdAt     DateTime   @default(now())\n  updatedAt     DateTime?  @updatedAt\n  owner         User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)\n  comments      Comment[]  @relation(\"ProductComments\")\n  favorites     Favorite[] @relation(\"ProductFavorites\")\n}\n\nmodel Comment {\n  id        Int       @id @default(autoincrement())\n  content   String\n  authorId  Int\n  createdAt DateTime  @default(now())\n  updatedAt DateTime? @updatedAt\n  productId Int?\n  articleId Int?\n  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)\n  article   Article?  @relation(fields: [articleId], references: [id], name: \"ArticleComments\", onDelete: Cascade)\n  product   Product?  @relation(fields: [productId], references: [id], name: \"ProductComments\", onDelete: Cascade)\n}\n\nmodel Favorite {\n  id        Int      @id @default(autoincrement())\n  userId    Int\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  user      User     @relation(fields: [userId], references: [id])\n  productId Int?\n  articleId Int?\n  article   Article? @relation(fields: [articleId], references: [id], name: \"ArticleFavorites\", onDelete: Cascade)\n  product   Product? @relation(fields: [productId], references: [id], name: \"ProductFavorites\", onDelete: Cascade)\n}\n",
+  "inlineSchemaHash": "89609deb5862ede14ca50ccebc1b4b424c1c9c2524b1a1c6c9fb62d26d4e9139",
   "copyEngine": true
 }
 
@@ -258,6 +267,10 @@ Object.assign(exports, Prisma)
 // file annotations for bundling tools to include these files
 path.join(__dirname, "query_engine-windows.dll.node");
 path.join(process.cwd(), "src/generated/prisma/query_engine-windows.dll.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
+path.join(process.cwd(), "src/generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "src/generated/prisma/schema.prisma")

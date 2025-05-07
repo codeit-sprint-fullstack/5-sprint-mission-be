@@ -26,5 +26,7 @@ export function errorMiddleware(
     timestamp: new Date().toISOString(),
   };
 
+  console.log(result)
+
   res.status(status).json(result);
 }

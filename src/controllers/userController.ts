@@ -12,6 +12,7 @@ const getUserInfo: GetController<
 > = async (req, res, next) => {
   try {
     const userId = req.session.userId;
+    console.log(req.session);
     if (!userId) throw new UnauthorizedException();
     const result = await userService.getUserInfo(userId);
     res.status(200).send(result);

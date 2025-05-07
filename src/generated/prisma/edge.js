@@ -177,7 +177,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\hyukd\\panda-market-mission\\server\\src\\generated\\prisma",
+      "value": "C:\\Users\\hyukd\\mission\\5-sprint-mission-be\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -193,7 +193,7 @@ const config = {
     "previewFeatures": [
       "prismaSchemaFolder"
     ],
-    "sourceFilePath": "C:\\Users\\hyukd\\panda-market-mission\\server\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\hyukd\\mission\\5-sprint-mission-be\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -211,7 +211,7 @@ const config = {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://postgres:ehdgur98%2A@localhost:5432/pandadb?schema=public"
+        "value": "postgresql://panda-market-owner:npg_OoaEPw2eYsZ5@ep-shy-bird-a1d5dfwa.ap-southeast-1.aws.neon.tech/panda-express?sslmode=require"
       }
     }
   },

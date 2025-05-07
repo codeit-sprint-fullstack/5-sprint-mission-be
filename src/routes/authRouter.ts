@@ -5,5 +5,6 @@ import { Router } from "express";
 
 const router = Router();
 router.post('/signup', validate({body: userCreateSchema}), authController.createUser);
-router.post('/signin', validate({body: userLoginSchema}), authController.loginUser)
+router.post('/signin', validate({body: userLoginSchema}), authController.loginUser);
+router.post('/signout', authController.logoutUser);
 export default router;

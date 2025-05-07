@@ -20,7 +20,7 @@ async function getProductList(
       orderOption = { createdAt: "desc" };
       break;
     case "favorite":
-      orderOption = { likeCount: "desc" };
+      orderOption = { favoriteCount: "desc" };
       break;
     default:
       orderOption = { createdAt: "desc" };

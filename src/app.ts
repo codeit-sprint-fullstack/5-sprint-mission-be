@@ -12,6 +12,7 @@ import userRouter from "./routes/userRouter";
 import session from "express-session";
 import Redis from "ioredis";
 import { RedisStore } from "connect-redis";
+import cors from "cors"
 
 dotenv.config();
 const app = express();
@@ -27,21 +28,28 @@ redisClient.on("error", (err) => {
 // RedisStore 인스턴스 생성
 const store = new RedisStore({
   client: redisClient,
-  prefix: "sess:", // 선택사항
 });
 
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  credentials: true,
+  exposedHeaders: ["Set-Cookie"], // 쿠키 헤더 노출
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"] // 허용 헤더 추가
+}))
 app.use(express.json());
 app.use(
   session({
-    store,
     secret: process.env.SESSION_SECRET!,
-    resave: false,
-    saveUninitialized: true,
+    store,
     cookie: {
       httpOnly: true,
-      secure: false, // HTTPS 환경에서는 true
-      maxAge: 1000 * 60 * 60, // 1시간
+      secure: process.env.NODE_ENV === "production", // HTTPS가 아니면 false
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // 또는 "none" (HTTPS 필수)
+      maxAge: 1000 * 60 * 60,
+      // domain: "localhost" → 삭제! (로컬 개발에선 설정하지 않음)
     },
+    saveUninitialized: false, // 변경: false로 설정
+    resave: false, // 변경: false로 설정
   })
 );
 app.use("/articles", articleRouter);

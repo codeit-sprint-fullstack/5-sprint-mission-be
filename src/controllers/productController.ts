@@ -67,6 +67,7 @@ const postProduct: PostController<
 > = async (req, res, next) => {
   try {
     const ownerId = req.session.userId;
+    console.log("세션 정보:", req.session, ownerId)
     if (!ownerId) throw new UnauthorizedException();
     const { name, description, images = [], tags = [], price } = req.body;
     const result = await productService.postProduct({
@@ -78,7 +79,9 @@ const postProduct: PostController<
       ownerId,
     });
     res.status(200).send(result);
-  } catch (err) {}
+  } catch (err) {
+    next(err);
+  }
 };
 
 const updateProduct: PatchController<

@@ -1,17 +1,17 @@
-import prisma from "../config/prismaClient.js";
+import { Request, Response, NextFunction } from "express";
+import prisma from "../config/prismaClient";
 
-export const addFavorite = async (req, res, next) => {
+export const addFavorite = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { articleId, productId } = req.params;
     const userId = req.user?.id;
 
-    console.log("favorite userId", userId);
-
     if (!userId) {
-      return next({
-        status: 401,
-        message: "로그인이 필요합니다.",
-      });
+      return next({ status: 401, message: "로그인이 필요합니다." });
     }
 
     if (!articleId && !productId) {
@@ -23,11 +23,11 @@ export const addFavorite = async (req, res, next) => {
 
     await prisma.$transaction(async (tx) => {
       if (articleId) {
-        const existingFavorite = await tx.articleFavorite.findUnique({
+        const exists = await tx.articleFavorite.findUnique({
           where: { userId_articleId: { userId, articleId } },
         });
 
-        if (existingFavorite) {
+        if (exists) {
           throw { status: 400, message: "이미 좋아요를 눌렀습니다." };
         }
 
@@ -35,11 +35,11 @@ export const addFavorite = async (req, res, next) => {
       }
 
       if (productId) {
-        const existingFavorite = await tx.productFavorite.findUnique({
+        const exists = await tx.productFavorite.findUnique({
           where: { userId_productId: { userId, productId } },
         });
 
-        if (existingFavorite) {
+        if (exists) {
           throw { status: 400, message: "이미 좋아요를 눌렀습니다." };
         }
 
@@ -53,16 +53,17 @@ export const addFavorite = async (req, res, next) => {
   }
 };
 
-export const removeFavorite = async (req, res, next) => {
+export const removeFavorite = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { articleId, productId } = req.params;
     const userId = req.user?.id;
 
     if (!userId) {
-      return next({
-        status: 401,
-        message: "로그인이 필요합니다.",
-      });
+      return next({ status: 401, message: "로그인이 필요합니다." });
     }
 
     if (!articleId && !productId) {

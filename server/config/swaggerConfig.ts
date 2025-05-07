@@ -1,12 +1,8 @@
-import swaggerJsdoc from "swagger-jsdoc";
+import swaggerJsdoc, { Options } from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import { fileURLToPath } from "url";
 import path from "path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const options = {
+const options: Options = {
   definition: {
     openapi: "3.0.0",
     info: {
@@ -26,7 +22,7 @@ const options = {
     },
     security: [{ BearerAuth: [] }],
   },
-  apis: [path.resolve(__dirname, "../routes/**/*.js")],
+  apis: [path.resolve("server/routes/**/*.ts")],
 };
 
 const specs = swaggerJsdoc(options);

@@ -1,11 +1,11 @@
 import express from "express";
-import { validateUser } from "../../middlewares/authHandler.js";
-import { checkUUID } from "../../middlewares/validateParams.js";
-import asyncHandler from "../../middlewares/asyncHandler.js";
+import { validateUser } from "../../middlewares/authHandler";
+import { checkUUIDParams } from "../../middlewares/validate";
+import asyncHandler from "../../middlewares/asyncHandler";
 import {
   deleteComment,
   updateComment,
-} from "../../controllers/comments.controller.js";
+} from "../../controllers/comments.controller";
 
 const router = express.Router();
 
@@ -53,7 +53,7 @@ const router = express.Router();
 router.patch(
   "/:commentId",
   validateUser,
-  checkUUID,
+  checkUUIDParams("commentId"),
   asyncHandler(updateComment)
 );
 
@@ -83,7 +83,7 @@ router.patch(
 router.delete(
   "/:commentId",
   validateUser,
-  checkUUID,
+  checkUUIDParams("commentId"),
   asyncHandler(deleteComment)
 );
 

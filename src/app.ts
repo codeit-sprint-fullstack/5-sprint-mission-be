@@ -7,12 +7,13 @@ import authRouter from "./routes/authRouter";
 import articleRouter from "./routes/articleRouter";
 import productRouter from "./routes/productRouter";
 import commentRouter from "./routes/commentRouter";
-import imgUploadRouter from "./routes/imageRouter"
+import imgUploadRouter from "./routes/imageRouter";
 import userRouter from "./routes/userRouter";
 import session from "express-session";
 import Redis from "ioredis";
 import { RedisStore } from "connect-redis";
-import cors from "cors"
+import cors from "cors";
+import morgan from "morgan";
 
 dotenv.config();
 const app = express();
@@ -30,12 +31,19 @@ const store = new RedisStore({
   client: redisClient,
 });
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
-  credentials: true,
-  exposedHeaders: ["Set-Cookie"], // 쿠키 헤더 노출
-  allowedHeaders: ["Content-Type", "Authorization", "Cookie"] // 허용 헤더 추가
-}))
+if(process.env.NODE_ENV = 'production') {
+  app.use(morgan("combined")); // 자세한 로그
+} else {
+  app.use(morgan("dev")); // 간단한 로그
+}
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    credentials: true,
+    exposedHeaders: ["Set-Cookie"], // 쿠키 헤더 노출
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"], // 허용 헤더 추가
+  })
+);
 app.use(express.json());
 app.use(
   session({

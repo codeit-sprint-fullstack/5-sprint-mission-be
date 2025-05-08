@@ -31,7 +31,7 @@ const store = new RedisStore({
   client: redisClient,
 });
 
-if(process.env.NODE_ENV = 'production') {
+if(process.env.NODE_ENV === 'production') {
   app.use(morgan("combined")); // 자세한 로그
 } else {
   app.use(morgan("dev")); // 간단한 로그

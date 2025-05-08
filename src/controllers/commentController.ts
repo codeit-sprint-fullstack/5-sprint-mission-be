@@ -1,6 +1,6 @@
 import { BadRequestException } from "@/exceptions/BadRequestExceptions";
 import { UnauthorizedException } from "@/exceptions/UnauthorizedExceptions";
-import { Comment } from "@/generated/prisma";
+import { Comment } from "@prisma/client";
 import { commentResponseWithNextCursor } from "@/models/comment";
 import articleService from "@/services/articleService";
 import commentService from "@/services/commentService";

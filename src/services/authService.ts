@@ -2,7 +2,7 @@ import prisma from "@/config/database";
 import { SuccessResponse } from "@/types/response";
 import { BadRequestException } from "@/exceptions/BadRequestExceptions";
 import { comparePassword, hashPassword } from "@/utils/hash";
-import { User } from "@/generated/prisma";
+import { User } from "@prisma/client";
 import { SigninDto, SignupDto } from "@/models/auth";
 import createSuccessResponse from "@/utils/createSuccessResponse";
 

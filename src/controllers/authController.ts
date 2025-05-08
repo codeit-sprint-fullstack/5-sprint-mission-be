@@ -1,6 +1,6 @@
 import { BadRequestException } from "@/exceptions/BadRequestExceptions";
 import { UnauthorizedException } from "@/exceptions/UnauthorizedExceptions";
-import { User } from "@/generated/prisma";
+import { User } from "@prisma/client";
 import authService from "@/services/authService";
 import { PostController } from "@/types/controller";
 import { SuccessResponse } from "@/types/response";

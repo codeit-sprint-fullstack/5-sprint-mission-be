@@ -3,8 +3,10 @@ import { BadRequestException } from "@/exceptions/BadRequestExceptions";
 import { favoriteDto } from "@/models/favorite";
 import { ProductWithOwnerAndIsFavorite } from "@/models/product";
 import { SuccessResponse } from "@/types/response";
-import { Prisma } from "@/generated/prisma";
+import { Prisma } from "@prisma/client";
+
 import createSuccessResponse from "@/utils/createSuccessResponse";
+
 
 async function productPostFavorite(
   postFavoriteInput: favoriteDto
@@ -30,13 +32,13 @@ async function productPostFavorite(
 
   const result = await prisma.$transaction(
     async(tx: Prisma.TransactionClient) => {
-      await prisma.favorite.create({
+      await tx.favorite.create({
         data: {
           productId,
           userId,
         },
       });
-      const favoriteProduct = await prisma.product.update({
+      const favoriteProduct = await tx.product.update({
         where: {
           id: productId,
         },
@@ -83,12 +85,12 @@ async function productDeleteFavorite(
 
   await prisma.$transaction(
     async(tx: Prisma.TransactionClient) => {
-      await prisma.favorite.delete({
+      await tx.favorite.delete({
         where: {
           id: favorite.id,
         },
       });
-      const favoriteProduct = await prisma.product.update({
+      const favoriteProduct = await tx.product.update({
         where: {
           id: productId,
         },

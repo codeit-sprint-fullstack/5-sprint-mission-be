@@ -1,6 +1,6 @@
 import prisma from "@/config/database";
 import { BadRequestException } from "@/exceptions/BadRequestExceptions";
-import { Article } from "@/generated/prisma";
+import { Article } from "@prisma/client";
 import {
   ArticlesWithTotalCount,
   GetArticleListDto,

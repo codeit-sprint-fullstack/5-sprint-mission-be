@@ -1,7 +1,7 @@
 import prisma from "@/config/database";
 import { BadRequestException } from "@/exceptions/BadRequestExceptions";
 import { ForbiddenException } from "@/exceptions/ForbiddenExceptions";
-import { Comment } from "@/generated/prisma";
+import { Comment } from "@prisma/client";
 import {
   commentResponseWithNextCursor,
   CommentWithAuthor,

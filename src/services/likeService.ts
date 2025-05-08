@@ -1,6 +1,6 @@
 import prisma from "@/config/database";
 import { BadRequestException } from "@/exceptions/BadRequestExceptions";
-import { Prisma } from "@/generated/prisma";
+import { Prisma } from "@prisma/client";
 import { ArticleWithAuthorAndIsLiked } from "@/models/article";
 import { likeDto } from "@/models/like";
 import { SuccessResponse } from "@/types/response";
@@ -29,13 +29,13 @@ async function articlePostLike(
 
   const result = await prisma.$transaction(
     async (tx: Prisma.TransactionClient) => {
-      await prisma.favorite.create({
+      await tx.favorite.create({
         data: {
           articleId,
           userId,
         },
       });
-      const likedArticle = await prisma.article.update({
+      const likedArticle = await tx.article.update({
         where: {
           id: articleId,
         },
@@ -85,12 +85,12 @@ async function articleDeleteLike (
   
   await prisma.$transaction(
     async(tx: Prisma.TransactionClient) => {
-      await prisma.favorite.delete({
+      await tx.favorite.delete({
         where: {
           id: like.id,
         },
       });
-      const likedArticle = await prisma.article.update({
+      const likedArticle = await tx.article.update({
         where: {
           id: articleId,
         },
@@ -106,7 +106,7 @@ async function articleDeleteLike (
           }
         }
       });
-      const articleWithIsLiked = { ...likedArticle, isLiked: true };
+      const articleWithIsLiked = { ...likedArticle, isLiked: false };
       return articleWithIsLiked;
     }
   )

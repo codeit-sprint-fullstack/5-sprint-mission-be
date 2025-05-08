@@ -1,6 +1,6 @@
 import prisma from "@/config/database";
 import { BadRequestException } from "@/exceptions/BadRequestExceptions";
-import { Product } from "@/generated/prisma";
+import { Product } from "@prisma/client";
 import {
   GetProductListDto,
   ProductPostAndPatchDto,

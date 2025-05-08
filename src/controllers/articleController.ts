@@ -1,7 +1,7 @@
 import { BadRequestException } from "@/exceptions/BadRequestExceptions";
 import { ForbiddenException } from "@/exceptions/ForbiddenExceptions";
 import { UnauthorizedException } from "@/exceptions/UnauthorizedExceptions";
-import { Article } from "@/generated/prisma";
+import { Article } from "@prisma/client";
 import { ArticlesWithTotalCount } from "@/models/article";
 import articleService from "@/services/articleService";
 import {

@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "_moduleAliases": {
-    "@": "src"
+    "@": "dist"
   },
   "main": "index.js",
   "scripts": {

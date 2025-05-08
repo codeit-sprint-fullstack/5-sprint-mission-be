@@ -13,7 +13,8 @@
     "lint": "eslint src",
     "format": "prettier --write src",
     "migrate": "npx prisma migrate dev",
-    "prisma:generate": "npx prisma generate"
+    "prisma:generate": "npx prisma generate",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",

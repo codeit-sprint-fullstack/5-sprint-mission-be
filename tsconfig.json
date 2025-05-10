@@ -11,6 +11,6 @@
 
     "strict": true
   },
-  "include": ["server", "prisma", "types"],
+  "include": ["server", "prisma", "types", "__tests__"],
   "exclude": ["node_modules"]
 }

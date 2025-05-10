@@ -34,8 +34,4 @@ app.use("/", routes);
 
 app.use(errorHandler);
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`API Docs available at http://localhost:${PORT}/api-docs`);
-});
+export default app;

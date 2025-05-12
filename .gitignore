@@ -1,3 +1,27 @@
-node_modules
-# Keep environment variables out of version control
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# dotenv 환경 변수
 .env
+.env.*.local
+
+# 빌드 결과물
+dist/
+build/
+
+# TypeScript
+*.tsbuildinfo
+
+# MacOS
+.DS_Store
+
+# VSCode 설정 (개인 설정 제외)
+.vscode/*
+
+# Optional OS/system files
+Thumbs.db

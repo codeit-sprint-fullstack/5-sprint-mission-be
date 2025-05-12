@@ -1,0 +1,1 @@
+type UploadRequestBody = { image: Express.Multer.File };

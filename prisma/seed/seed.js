@@ -5,17 +5,16 @@ const prisma = new PrismaClient();
 
 async function main() {
   // 테이블 초기화
-  await prisma.products.deleteMany();
-  await prisma.articles.deleteMany();
-  //   await prisma.comments.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.article.deleteMany();
 
   // 시드 데이터 삽입
-  await prisma.products.createMany({
+  await prisma.product.createMany({
     data: PRODUCTS,
     skipDuplicates: true,
   });
 
-  await prisma.articles.createMany({
+  await prisma.article.createMany({
     data: ARTICLES,
     skipDuplicates: true,
   });

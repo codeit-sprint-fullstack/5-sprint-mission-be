@@ -28,6 +28,51 @@ const router = express.Router();
 
 /**
  * @swagger
+ * /products/presigned-url:
+ *   get:
+ *     summary: 상품 이미지 업로드용 Presigned URL 발급
+ *     tags: [Product]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: fileName
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 업로드할 파일명
+ *       - in: query
+ *         name: fileType
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [image/jpeg, image/png, image/webp]
+ *         description: MIME 타입
+ *     responses:
+ *       200:
+ *         description: Presigned URL 발급 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 uploadUrl:
+ *                   type: string
+ *                   description: S3에 업로드할 때 사용할 URL
+ *                 fileUrl:
+ *                   type: string
+ *                   description: 업로드된 파일을 참조할 URL
+ *       400:
+ *         description: 요청 파라미터 오류
+ */
+router.get(
+  "/presigned-url",
+  validate(presignedUrlSchema, "query"),
+  asyncHandler(getPresignedUrl)
+);
+
+/**
+ * @swagger
  * /products:
  *   post:
  *     summary: 상품 등록
@@ -474,51 +519,6 @@ router.get(
   "/:productId/comments",
   checkUUIDParams("productId"),
   asyncHandler(getComments)
-);
-
-/**
- * @swagger
- * /products/presigned-url:
- *   get:
- *     summary: 상품 이미지 업로드용 Presigned URL 발급
- *     tags: [Product]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: query
- *         name: fileName
- *         required: true
- *         schema:
- *           type: string
- *         description: 업로드할 파일명
- *       - in: query
- *         name: fileType
- *         required: true
- *         schema:
- *           type: string
- *           enum: [image/jpeg, image/png, image/webp]
- *         description: MIME 타입
- *     responses:
- *       200:
- *         description: Presigned URL 발급 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 uploadUrl:
- *                   type: string
- *                   description: S3에 업로드할 때 사용할 URL
- *                 fileUrl:
- *                   type: string
- *                   description: 업로드된 파일을 참조할 URL
- *       400:
- *         description: 요청 파라미터 오류
- */
-router.get(
-  "/presigned-url",
-  validate(presignedUrlSchema, "query"),
-  asyncHandler(getPresignedUrl)
 );
 
 export default router;

@@ -1,31 +1,22 @@
-import express from "express";
-import {
-  getProducts,
-  getProduct,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-} from "../../controllers/products.controller";
-import { validateUser } from "../../middlewares/authHandler";
-import asyncHandler from "../../middlewares/asyncHandler";
-import { addComment, getComments } from "../../controllers/comments.controller";
-import {
-  addFavorite,
-  removeFavorite,
-} from "../../controllers/favorites.controller";
-import { checkUUIDParams, validate } from "../../middlewares/validate";
-import { presignedUrlSchema } from "../../schemas/presigned.schema";
-import { getPresignedUrl } from "../../controllers/upload.controller";
-
-const router = express.Router();
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const products_controller_1 = require("../../controllers/products.controller");
+const authHandler_1 = require("../../middlewares/authHandler");
+const asyncHandler_1 = __importDefault(require("../../middlewares/asyncHandler"));
+const comments_controller_1 = require("../../controllers/comments.controller");
+const favorites_controller_1 = require("../../controllers/favorites.controller");
+const validate_1 = require("../../middlewares/validate");
+const router = express_1.default.Router();
 /**
  * @swagger
  * tags:
  *   name: Product
  *   description: 상품 관련 API
  */
-
 /**
  * @swagger
  * /products:
@@ -93,8 +84,7 @@ const router = express.Router();
  *       400:
  *         description: 잘못된 입력 형식
  */
-router.post("/", validateUser, asyncHandler(createProduct));
-
+router.post("/", authHandler_1.validateUser, validate_1.upload.array("images", 3), (0, asyncHandler_1.default)(products_controller_1.createProduct));
 /**
  * @swagger
  * /products:
@@ -165,8 +155,7 @@ router.post("/", validateUser, asyncHandler(createProduct));
  *                         type: string
  *                         format: date-time
  */
-router.get("/", asyncHandler(getProducts));
-
+router.get("/", (0, asyncHandler_1.default)(products_controller_1.getProducts));
 /**
  * @swagger
  * /products/{productId}:
@@ -220,13 +209,7 @@ router.get("/", asyncHandler(getProducts));
  *       404:
  *         description: 상품을 찾을 수 없음
  */
-router.get(
-  "/:id",
-  validateUser,
-  checkUUIDParams("id"),
-  asyncHandler(getProduct)
-);
-
+router.get("/:id", authHandler_1.validateUser, (0, validate_1.checkUUIDParams)("id"), (0, asyncHandler_1.default)(products_controller_1.getProduct));
 /**
  * @swagger
  * /products/{productId}:
@@ -301,13 +284,7 @@ router.get(
  *       403:
  *         description: 수정 권한 없음
  */
-router.patch(
-  "/:id",
-  validateUser,
-  checkUUIDParams("id"),
-  asyncHandler(updateProduct)
-);
-
+router.patch("/:id", authHandler_1.validateUser, validate_1.upload.array("images", 3), (0, validate_1.checkUUIDParams)("id"), (0, asyncHandler_1.default)(products_controller_1.updateProduct));
 /**
  * @swagger
  * /product/{productId}:
@@ -331,16 +308,10 @@ router.patch(
  *       403:
  *         description: 삭제 권한 없음
  */
-router.delete(
-  "/:id",
-  validateUser,
-  checkUUIDParams("id"),
-  asyncHandler(deleteProduct)
-);
-
+router.delete("/:id", authHandler_1.validateUser, (0, validate_1.checkUUIDParams)("id"), (0, asyncHandler_1.default)(products_controller_1.deleteProduct));
 /**
  * @swagger
- * /products/{productId}/favorite:
+ * /products/{productId}/favorites:
  *   post:
  *     summary: 상품 좋아요 추가
  *     tags: [Product]
@@ -359,16 +330,10 @@ router.delete(
  *       400:
  *         description: 이미 좋아요한 경우
  */
-router.put(
-  "/:productId/favorite",
-  validateUser,
-  checkUUIDParams("productId"),
-  asyncHandler(addFavorite)
-);
-
+router.put("/:productId/favorite", authHandler_1.validateUser, (0, validate_1.checkUUIDParams)("productId"), (0, asyncHandler_1.default)(favorites_controller_1.addFavorite));
 /**
  * @swagger
- * /products/{productId}/favorite:
+ * /products/{productId}/favorites:
  *   delete:
  *     summary: 상품 좋아요 취소
  *     tags: [Product]
@@ -387,13 +352,7 @@ router.put(
  *       404:
  *         description: 좋아요가 없는 경우
  */
-router.delete(
-  "/:productId/favorite",
-  validateUser,
-  checkUUIDParams("productId"),
-  asyncHandler(removeFavorite)
-);
-
+router.delete("/:productId/favorite", authHandler_1.validateUser, (0, validate_1.checkUUIDParams)("productId"), (0, asyncHandler_1.default)(favorites_controller_1.removeFavorite));
 /**
  * @swagger
  * /products/{productId}/comments:
@@ -425,13 +384,7 @@ router.delete(
  *       400:
  *         description: 댓글 내용이 비어 있음
  */
-router.post(
-  "/:productId/comments",
-  validateUser,
-  checkUUIDParams("productId"),
-  asyncHandler(addComment)
-);
-
+router.post("/:productId/comments", authHandler_1.validateUser, (0, validate_1.checkUUIDParams)("productId"), (0, asyncHandler_1.default)(comments_controller_1.addComment));
 /**
  * @swagger
  * /products/{productId}/comments:
@@ -470,55 +423,5 @@ router.post(
  *                       nickname:
  *                         type: string
  */
-router.get(
-  "/:productId/comments",
-  checkUUIDParams("productId"),
-  asyncHandler(getComments)
-);
-
-/**
- * @swagger
- * /products/presigned-url:
- *   get:
- *     summary: 상품 이미지 업로드용 Presigned URL 발급
- *     tags: [Product]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: query
- *         name: fileName
- *         required: true
- *         schema:
- *           type: string
- *         description: 업로드할 파일명
- *       - in: query
- *         name: fileType
- *         required: true
- *         schema:
- *           type: string
- *           enum: [image/jpeg, image/png, image/webp]
- *         description: MIME 타입
- *     responses:
- *       200:
- *         description: Presigned URL 발급 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 uploadUrl:
- *                   type: string
- *                   description: S3에 업로드할 때 사용할 URL
- *                 fileUrl:
- *                   type: string
- *                   description: 업로드된 파일을 참조할 URL
- *       400:
- *         description: 요청 파라미터 오류
- */
-router.get(
-  "/presigned-url",
-  validate(presignedUrlSchema, "query"),
-  asyncHandler(getPresignedUrl)
-);
-
-export default router;
+router.get("/:productId/comments", (0, validate_1.checkUUIDParams)("productId"), (0, asyncHandler_1.default)(comments_controller_1.getComments));
+exports.default = router;

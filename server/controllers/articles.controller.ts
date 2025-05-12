@@ -151,26 +151,11 @@ export const createArticle = async (
     if (!req.user)
       return next({ status: 401, message: "로그인이 필요합니다." });
 
-    const { title, content } = req.body;
+    const { title, content, imageUrls } = req.body;
 
     if (!title || !content) {
       return next({ status: 400, message: "제목과 내용을 모두 입력해주세요." });
     }
-
-    const uploadedImages = Array.isArray(req.files)
-      ? req.files.map(
-          (file: Express.Multer.File) =>
-            `/uploads/${encodeURIComponent(file.filename)}`
-        )
-      : [];
-
-    const existingImageUrls = req.body.imageUrls
-      ? Array.isArray(req.body.imageUrls)
-        ? req.body.imageUrls
-        : [req.body.imageUrls]
-      : [];
-
-    const imageUrls = [...existingImageUrls, ...uploadedImages];
 
     const article = await prisma.article.create({
       data: {
@@ -197,32 +182,24 @@ export const updateArticle = async (
 ) => {
   try {
     const { id } = req.params;
-    const { title, content } = req.body;
+    const { title, content, imageUrls } = req.body;
 
     if (!title || !content) {
       return next({ status: 400, message: "제목과 내용을 모두 입력해주세요." });
     }
 
-    const uploadedImages = Array.isArray(req.files)
-      ? req.files.map(
-          (file: Express.Multer.File) =>
-            `/uploads/${encodeURIComponent(file.filename)}`
-        )
-      : [];
-
-    const existingImageUrls = req.body.imageUrls
-      ? Array.isArray(req.body.imageUrls)
-        ? req.body.imageUrls
-        : [req.body.imageUrls]
-      : [];
+    if (!Array.isArray(imageUrls) || imageUrls.length > 3) {
+      return next({
+        status: 400,
+        message: "이미지 URL은 최대 3개까지 등록 가능합니다.",
+      });
+    }
 
     const article = await prisma.article.findUnique({ where: { id } });
     if (!article)
       return next({ status: 404, message: "게시글을 찾을 수 없습니다." });
     if (article.userId !== req.user?.id)
       return next({ status: 403, message: "권한이 없습니다." });
-
-    const imageUrls = [...existingImageUrls, ...uploadedImages];
 
     const updated = await prisma.article.update({
       where: { id },

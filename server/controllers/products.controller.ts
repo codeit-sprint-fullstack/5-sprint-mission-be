@@ -189,7 +189,7 @@ export const createProduct = async (
     if (!req.user)
       return next({ status: 401, message: "로그인이 필요합니다." });
 
-    const { name, description, price, tags } = req.body;
+    const { name, description, price, tags, imageUrls } = req.body;
     const parsedPrice = parseFloat(price);
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
       return next({ status: 400, message: "가격 형식이 올바르지 않습니다." });
@@ -205,13 +205,6 @@ export const createProduct = async (
         return next({ status: 400, message: "태그 형식이 올바르지 않습니다." });
       }
     }
-
-    const imageUrls = Array.isArray(req.files)
-      ? req.files.map(
-          (file: Express.Multer.File) =>
-            `/uploads/${encodeURIComponent(file.filename)}`
-        )
-      : [];
 
     const product = await prisma.product.create({
       data: {
@@ -267,19 +260,6 @@ export const updateProduct = async (
       price: parsedPrice,
       tags: { set: parsedTags },
     };
-
-    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-      updatedData.imageUrls = {
-        set: req.files.map(
-          (file: Express.Multer.File) =>
-            `/uploads/${encodeURIComponent(file.filename)}`
-        ),
-      };
-    }
-
-    if (imageUrls) {
-      updatedData.imageUrls = { set: imageUrls };
-    }
 
     const updatedProduct = await prisma.product.update({
       where: { id },

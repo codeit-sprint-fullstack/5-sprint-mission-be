@@ -1,38 +1,22 @@
-import express from "express";
-import {
-  getArticles,
-  getArticle,
-  createArticle,
-  updateArticle,
-  deleteArticle,
-} from "../../controllers/articles.controller";
-import { checkUUIDParams, validate } from "../../middlewares/validate";
-import { validateUser } from "../../middlewares/authHandler";
-import asyncHandler from "../../middlewares/asyncHandler";
-import { addComment, getComments } from "../../controllers/comments.controller";
-import {
-  addFavorite,
-  removeFavorite,
-} from "../../controllers/favorites.controller";
-
-import { presignedUrlSchema } from "../../schemas/presigned.schema";
-import { getPresignedUrl } from "../../controllers/upload.controller";
-
-const router = express.Router();
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const articles_controller_1 = require("../../controllers/articles.controller");
+const validate_1 = require("../../middlewares/validate");
+const authHandler_1 = require("../../middlewares/authHandler");
+const asyncHandler_1 = __importDefault(require("../../middlewares/asyncHandler"));
+const comments_controller_1 = require("../../controllers/comments.controller");
+const favorites_controller_1 = require("../../controllers/favorites.controller");
+const router = express_1.default.Router();
 /**
  * @swagger
  * tags:
  *   name: Article
  *   description: 게시글 관련 API
  */
-
-router.get(
-  "/presigned-url",
-  validate(presignedUrlSchema, "query"),
-  asyncHandler(getPresignedUrl)
-);
-
 /**
  * @swagger
  * /articles:
@@ -76,13 +60,7 @@ router.get(
  *                   type: string
  *                   format: date-time
  */
-router.post(
-  "/",
-  validateUser,
-
-  asyncHandler(createArticle)
-);
-
+router.post("/", authHandler_1.validateUser, validate_1.upload.array("images", 3), (0, asyncHandler_1.default)(articles_controller_1.createArticle));
 /**
  * @swagger
  * /articles:
@@ -113,8 +91,7 @@ router.post(
  *       200:
  *         description: 게시글 목록 반환
  */
-router.get("/", asyncHandler(getArticles));
-
+router.get("/", (0, asyncHandler_1.default)(articles_controller_1.getArticles));
 /**
  * @swagger
  * /articles/{articleId}:
@@ -133,13 +110,7 @@ router.get("/", asyncHandler(getArticles));
  *       404:
  *         description: 게시글을 찾을 수 없음
  */
-router.get(
-  "/:id",
-  validateUser,
-  checkUUIDParams("id"),
-  asyncHandler(getArticle)
-);
-
+router.get("/:id", authHandler_1.validateUser, (0, validate_1.checkUUIDParams)("id"), (0, asyncHandler_1.default)(articles_controller_1.getArticle));
 /**
  * @swagger
  * /articles/{articleId}:
@@ -173,14 +144,7 @@ router.get(
  *       404:
  *         description: 게시글을 찾을 수 없음
  */
-router.patch(
-  "/:id",
-  validateUser,
-  checkUUIDParams("id"),
-
-  asyncHandler(updateArticle)
-);
-
+router.patch("/:id", authHandler_1.validateUser, (0, validate_1.checkUUIDParams)("id"), validate_1.upload.array("images", 3), (0, asyncHandler_1.default)(articles_controller_1.updateArticle));
 /**
  * @swagger
  * /articles/{articleId}:
@@ -203,13 +167,7 @@ router.patch(
  *       404:
  *         description: 게시글을 찾을 수 없음
  */
-router.delete(
-  "/:id",
-  validateUser,
-  checkUUIDParams("id"),
-  asyncHandler(deleteArticle)
-);
-
+router.delete("/:id", authHandler_1.validateUser, (0, validate_1.checkUUIDParams)("id"), (0, asyncHandler_1.default)(articles_controller_1.deleteArticle));
 /**
  * @swagger
  * /articles/{articleId}/favorite:
@@ -230,13 +188,7 @@ router.delete(
  *       400:
  *         description: 이미 좋아요한 경우
  */
-router.put(
-  "/:articleId/favorite",
-  validateUser,
-  checkUUIDParams("articleId"),
-  asyncHandler(addFavorite)
-);
-
+router.put("/:articleId/favorite", authHandler_1.validateUser, (0, validate_1.checkUUIDParams)("articleId"), (0, asyncHandler_1.default)(favorites_controller_1.addFavorite));
 /**
  * @swagger
  * /articles/{articleId}/favorite:
@@ -257,13 +209,7 @@ router.put(
  *       404:
  *         description: 이미 좋아요가 취소됨
  */
-router.delete(
-  "/:articleId/favorite",
-  validateUser,
-  checkUUIDParams("articleId"),
-  asyncHandler(removeFavorite)
-);
-
+router.delete("/:articleId/favorite", authHandler_1.validateUser, (0, validate_1.checkUUIDParams)("articleId"), (0, asyncHandler_1.default)(favorites_controller_1.removeFavorite));
 /**
  * @swagger
  * /articles/{articleId}/comments:
@@ -293,13 +239,7 @@ router.delete(
  *       400:
  *         description: 유효하지 않은 댓글 내용
  */
-router.post(
-  "/:articleId/comments",
-  validateUser,
-  checkUUIDParams("articleId"),
-  asyncHandler(addComment)
-);
-
+router.post("/:articleId/comments", authHandler_1.validateUser, (0, validate_1.checkUUIDParams)("articleId"), (0, asyncHandler_1.default)(comments_controller_1.addComment));
 /**
  * @swagger
  * /articles/{articleId}/comments:
@@ -316,10 +256,5 @@ router.post(
  *       200:
  *         description: 댓글 목록 조회 성공
  */
-router.get(
-  "/:articleId/comments",
-  checkUUIDParams("articleId"),
-  asyncHandler(getComments)
-);
-
-export default router;
+router.get("/:articleId/comments", (0, validate_1.checkUUIDParams)("articleId"), (0, asyncHandler_1.default)(comments_controller_1.getComments));
+exports.default = router;

@@ -157,11 +157,22 @@ export const createArticle = async (
       return next({ status: 400, message: "제목과 내용을 모두 입력해주세요." });
     }
 
+    let parsedImageUrls: string[] = [];
+    try {
+      parsedImageUrls = JSON.parse(imageUrls);
+      if (!Array.isArray(parsedImageUrls)) throw new Error();
+    } catch {
+      return next({
+        status: 400,
+        message: "이미지 URL 형식이 올바르지 않습니다.",
+      });
+    }
+
     const article = await prisma.article.create({
       data: {
         title,
         content,
-        imageUrls,
+        imageUrls: { set: parsedImageUrls },
         userId: req.user.id,
       },
     });
@@ -188,10 +199,20 @@ export const updateArticle = async (
       return next({ status: 400, message: "제목과 내용을 모두 입력해주세요." });
     }
 
-    if (!Array.isArray(imageUrls) || imageUrls.length > 3) {
+    let parsedImageUrls: string[] = [];
+    try {
+      parsedImageUrls = JSON.parse(imageUrls);
+      if (!Array.isArray(parsedImageUrls)) throw new Error();
+      if (parsedImageUrls.length > 3) {
+        return next({
+          status: 400,
+          message: "이미지는 최대 3개까지 등록 가능합니다.",
+        });
+      }
+    } catch {
       return next({
         status: 400,
-        message: "이미지 URL은 최대 3개까지 등록 가능합니다.",
+        message: "이미지 URL 형식이 올바르지 않습니다.",
       });
     }
 
@@ -206,7 +227,7 @@ export const updateArticle = async (
       data: {
         title,
         content,
-        imageUrls,
+        imageUrls: { set: parsedImageUrls },
       },
     });
 

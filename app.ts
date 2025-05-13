@@ -11,12 +11,6 @@ dotenv.config();
 
 const app = express();
 
-app.use((req, res, next) => {
-  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-  res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
-  next();
-});
-
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,

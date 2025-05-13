@@ -206,13 +206,21 @@ export const createProduct = async (
       }
     }
 
+    let parsedImageUrls: string[] = [];
+    try {
+      parsedImageUrls = JSON.parse(imageUrls);
+      if (!Array.isArray(parsedImageUrls)) throw new Error();
+    } catch {
+      return next({ status: 400, message: "이미지 형식이 잘못되었습니다." });
+    }
+
     const product = await prisma.product.create({
       data: {
         name,
         description,
         price: parsedPrice,
         tags: { set: parsedTags },
-        imageUrls: { set: imageUrls },
+        imageUrls: { set: parsedImageUrls },
         userId: req.user.id,
       },
     });
@@ -254,11 +262,20 @@ export const updateProduct = async (
       }
     }
 
+    let parsedImageUrls: string[] = [];
+    try {
+      parsedImageUrls = JSON.parse(imageUrls);
+      if (!Array.isArray(parsedImageUrls)) throw new Error();
+    } catch {
+      return next({ status: 400, message: "이미지 형식이 잘못되었습니다." });
+    }
+
     let updatedData: Prisma.ProductUpdateInput = {
       name,
       description,
       price: parsedPrice,
       tags: { set: parsedTags },
+      imageUrls: { set: parsedImageUrls },
     };
 
     const updatedProduct = await prisma.product.update({

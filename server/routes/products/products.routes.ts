@@ -16,7 +16,9 @@ import {
 import { checkUUIDParams, validate } from "../../middlewares/validate";
 import { presignedUrlSchema } from "../../schemas/presigned.schema";
 import { getPresignedUrl } from "../../controllers/upload.controller";
+import multer from "multer";
 
+const upload = multer();
 const router = express.Router();
 
 /**
@@ -138,7 +140,7 @@ router.get(
  *       400:
  *         description: 잘못된 입력 형식
  */
-router.post("/", validateUser, asyncHandler(createProduct));
+router.post("/", validateUser, upload.none(), asyncHandler(createProduct));
 
 /**
  * @swagger
@@ -350,6 +352,7 @@ router.patch(
   "/:id",
   validateUser,
   checkUUIDParams("id"),
+  upload.none(),
   asyncHandler(updateProduct)
 );
 

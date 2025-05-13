@@ -17,7 +17,9 @@ import {
 
 import { presignedUrlSchema } from "../../schemas/presigned.schema";
 import { getPresignedUrl } from "../../controllers/upload.controller";
+import multer from "multer";
 
+const upload = multer();
 const router = express.Router();
 
 /**
@@ -76,12 +78,7 @@ router.get(
  *                   type: string
  *                   format: date-time
  */
-router.post(
-  "/",
-  validateUser,
-
-  asyncHandler(createArticle)
-);
+router.post("/", validateUser, upload.none(), asyncHandler(createArticle));
 
 /**
  * @swagger
@@ -177,7 +174,7 @@ router.patch(
   "/:id",
   validateUser,
   checkUUIDParams("id"),
-
+  upload.none(),
   asyncHandler(updateArticle)
 );
 

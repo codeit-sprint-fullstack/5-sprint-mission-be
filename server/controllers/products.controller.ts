@@ -189,7 +189,7 @@ export const createProduct = async (
     if (!req.user)
       return next({ status: 401, message: "로그인이 필요합니다." });
 
-    const { name, description, price, tags } = req.body;
+    const { name, description, price, tags, imageUrls } = req.body;
     const parsedPrice = parseFloat(price);
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
       return next({ status: 400, message: "가격 형식이 올바르지 않습니다." });
@@ -206,12 +206,13 @@ export const createProduct = async (
       }
     }
 
-    const imageUrls = Array.isArray(req.files)
-      ? req.files.map(
-          (file: Express.Multer.File) =>
-            `/uploads/${encodeURIComponent(file.filename)}`
-        )
-      : [];
+    let parsedImageUrls: string[] = [];
+    try {
+      parsedImageUrls = JSON.parse(imageUrls);
+      if (!Array.isArray(parsedImageUrls)) throw new Error();
+    } catch {
+      return next({ status: 400, message: "이미지 형식이 잘못되었습니다." });
+    }
 
     const product = await prisma.product.create({
       data: {
@@ -219,7 +220,7 @@ export const createProduct = async (
         description,
         price: parsedPrice,
         tags: { set: parsedTags },
-        imageUrls: { set: imageUrls },
+        imageUrls: { set: parsedImageUrls },
         userId: req.user.id,
       },
     });
@@ -261,25 +262,21 @@ export const updateProduct = async (
       }
     }
 
+    let parsedImageUrls: string[] = [];
+    try {
+      parsedImageUrls = JSON.parse(imageUrls);
+      if (!Array.isArray(parsedImageUrls)) throw new Error();
+    } catch {
+      return next({ status: 400, message: "이미지 형식이 잘못되었습니다." });
+    }
+
     let updatedData: Prisma.ProductUpdateInput = {
       name,
       description,
       price: parsedPrice,
       tags: { set: parsedTags },
+      imageUrls: { set: parsedImageUrls },
     };
-
-    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-      updatedData.imageUrls = {
-        set: req.files.map(
-          (file: Express.Multer.File) =>
-            `/uploads/${encodeURIComponent(file.filename)}`
-        ),
-      };
-    }
-
-    if (imageUrls) {
-      updatedData.imageUrls = { set: imageUrls };
-    }
 
     const updatedProduct = await prisma.product.update({
       where: { id },

@@ -3,6 +3,8 @@ node_modules/
 .env
 *.log
 logs/
+.env.test
+dist/
 
 # Prisma
 prisma/dev.db
@@ -12,3 +14,6 @@ prisma/migrations/
 # Uploads
 uploads/
 public/uploads/
+
+# Jest 커버리지 리포트
+coverage/

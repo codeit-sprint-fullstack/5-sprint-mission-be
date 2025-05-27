@@ -11,12 +11,6 @@ dotenv.config();
 
 const app = express();
 
-app.use((req, res, next) => {
-  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-  res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
-  next();
-});
-
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
@@ -34,8 +28,4 @@ app.use("/", routes);
 
 app.use(errorHandler);
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`API Docs available at http://localhost:${PORT}/api-docs`);
-});
+export default app;

@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  console.error(`[ERROR] ${err.message}`, err.stack);
+  console.error(`[ERROR] ${err.message}`, err.stack || "");
 
   if (err.status) {
     res.status(err.status).json({

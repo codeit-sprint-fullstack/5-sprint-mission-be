@@ -151,32 +151,28 @@ export const createArticle = async (
     if (!req.user)
       return next({ status: 401, message: "로그인이 필요합니다." });
 
-    const { title, content } = req.body;
+    const { title, content, imageUrls } = req.body;
 
     if (!title || !content) {
       return next({ status: 400, message: "제목과 내용을 모두 입력해주세요." });
     }
 
-    const uploadedImages = Array.isArray(req.files)
-      ? req.files.map(
-          (file: Express.Multer.File) =>
-            `/uploads/${encodeURIComponent(file.filename)}`
-        )
-      : [];
-
-    const existingImageUrls = req.body.imageUrls
-      ? Array.isArray(req.body.imageUrls)
-        ? req.body.imageUrls
-        : [req.body.imageUrls]
-      : [];
-
-    const imageUrls = [...existingImageUrls, ...uploadedImages];
+    let parsedImageUrls: string[] = [];
+    try {
+      parsedImageUrls = JSON.parse(imageUrls);
+      if (!Array.isArray(parsedImageUrls)) throw new Error();
+    } catch {
+      return next({
+        status: 400,
+        message: "이미지 URL 형식이 올바르지 않습니다.",
+      });
+    }
 
     const article = await prisma.article.create({
       data: {
         title,
         content,
-        imageUrls,
+        imageUrls: { set: parsedImageUrls },
         userId: req.user.id,
       },
     });
@@ -197,24 +193,28 @@ export const updateArticle = async (
 ) => {
   try {
     const { id } = req.params;
-    const { title, content } = req.body;
+    const { title, content, imageUrls } = req.body;
 
     if (!title || !content) {
       return next({ status: 400, message: "제목과 내용을 모두 입력해주세요." });
     }
 
-    const uploadedImages = Array.isArray(req.files)
-      ? req.files.map(
-          (file: Express.Multer.File) =>
-            `/uploads/${encodeURIComponent(file.filename)}`
-        )
-      : [];
-
-    const existingImageUrls = req.body.imageUrls
-      ? Array.isArray(req.body.imageUrls)
-        ? req.body.imageUrls
-        : [req.body.imageUrls]
-      : [];
+    let parsedImageUrls: string[] = [];
+    try {
+      parsedImageUrls = JSON.parse(imageUrls);
+      if (!Array.isArray(parsedImageUrls)) throw new Error();
+      if (parsedImageUrls.length > 3) {
+        return next({
+          status: 400,
+          message: "이미지는 최대 3개까지 등록 가능합니다.",
+        });
+      }
+    } catch {
+      return next({
+        status: 400,
+        message: "이미지 URL 형식이 올바르지 않습니다.",
+      });
+    }
 
     const article = await prisma.article.findUnique({ where: { id } });
     if (!article)
@@ -222,14 +222,12 @@ export const updateArticle = async (
     if (article.userId !== req.user?.id)
       return next({ status: 403, message: "권한이 없습니다." });
 
-    const imageUrls = [...existingImageUrls, ...uploadedImages];
-
     const updated = await prisma.article.update({
       where: { id },
       data: {
         title,
         content,
-        imageUrls,
+        imageUrls: { set: parsedImageUrls },
       },
     });
 
